@@ -25,7 +25,7 @@
   <meta name="full-screen" content="yes"/>
   <meta name="x5-fullscreen" content="true"/>
   <meta name="360-fullscreen" content="true"/>
-
+  
   <!-- force screen orientation on some browser -->
   <meta name="screen-orientation" content="portrait"/>
   <meta name="x5-orientation" content="portrait">
@@ -38,18 +38,11 @@
   <!--<link rel="apple-touch-icon-precomposed" href=".png" />-->
 
   <link rel="stylesheet" type="text/css" href="style.css"/>
-  <script src="./polyfill.js"></script>
 
 </head>
 <body>
   <canvas id="GameCanvas" oncontextmenu="event.preventDefault()" tabindex="0"></canvas>
-
-<script src="./vconsole.min.js"></script>
-<script type="text/javascript">
-    // open web debugger console
-    window.VConsole && (window.vConsole = new VConsole());
-</script>
-
+  
 <!-- Polyfills bundle. -->
 <script src="src/polyfills.bundle.js" charset="utf-8"> </script>
 
