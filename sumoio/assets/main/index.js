@@ -1,3 +1,197 @@
+System.register("chunks:///_virtual/GameRoot.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc', './audioManager.ts'], function (exports) {
+  'use strict';
+
+  var _applyDecoratedDescriptor, _inheritsLoose, _defineProperty, _assertThisInitialized, _initializerDefineProperty, cclegacy, _decorator, AudioSource, assert, game, Component, audioManager;
+
+  return {
+    setters: [function (module) {
+      _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
+      _inheritsLoose = module.inheritsLoose;
+      _defineProperty = module.defineProperty;
+      _assertThisInitialized = module.assertThisInitialized;
+      _initializerDefineProperty = module.initializerDefineProperty;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      AudioSource = module.AudioSource;
+      assert = module.assert;
+      game = module.game;
+      Component = module.Component;
+    }, function (module) {
+      audioManager = module.audioManager;
+    }],
+    execute: function () {
+      var _dec, _dec2, _class, _class2, _descriptor, _temp;
+
+      cclegacy._RF.push({}, "03e874h6DpBPomHhbFiHlox", "GameRoot", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var GameRoot = exports('GameRoot', (_dec = ccclass('GameRoot'), _dec2 = property(AudioSource), _dec(_class = (_class2 = (_temp = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(GameRoot, _Component);
+
+        function GameRoot() {
+          var _this;
+
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+
+          _this = _Component.call.apply(_Component, [this].concat(args)) || this;
+
+          _defineProperty(_assertThisInitialized(_this), "currentMap", '');
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "_audioSource", _descriptor, _assertThisInitialized(_this));
+
+          return _this;
+        }
+
+        var _proto = GameRoot.prototype;
+
+        _proto.onLoad = function onLoad() {
+          var audioSource = this.getComponent(AudioSource);
+          assert(audioSource);
+          this._audioSource = audioSource;
+          game.addPersistRootNode(this.node); // init AudioManager
+
+          audioManager.instance.init(this._audioSource);
+        };
+
+        _proto.onEnable = function onEnable() {
+          audioManager.instance.playMusic(true);
+        };
+
+        _proto.start = function start() {};
+
+        return GameRoot;
+      }(Component), _temp), _descriptor = _applyDecoratedDescriptor(_class2.prototype, "_audioSource", [_dec2], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _class2)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/poolManager.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
+  'use strict';
+
+  var _defineProperty, _createClass, cclegacy, _decorator, instantiate, NodePool;
+
+  return {
+    setters: [function (module) {
+      _defineProperty = module.defineProperty;
+      _createClass = module.createClass;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      instantiate = module.instantiate;
+      NodePool = module.NodePool;
+    }],
+    execute: function () {
+      var _dec, _class, _class2, _temp;
+
+      cclegacy._RF.push({}, "07b4eDnPw1IYJCIJkfrfyf/", "poolManager", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var poolManager = exports('poolManager', (_dec = ccclass("poolManager"), _dec(_class = (_temp = _class2 = /*#__PURE__*/function () {
+        function poolManager() {
+          _defineProperty(this, "dictPool", {});
+
+          _defineProperty(this, "dictPrefab", {});
+        }
+
+        var _proto = poolManager.prototype;
+        /**
+         * 根据预设从对象池中获取对应节点
+         */
+
+        _proto.getNode = function getNode(prefab, parent) {
+          var name = prefab.data.name;
+          this.dictPrefab[name] = prefab;
+          var node;
+
+          if (this.dictPool.hasOwnProperty(name)) {
+            //已有对应的对象池
+            var pool = this.dictPool[name];
+
+            if (pool.size() > 0) {
+              node = pool.get();
+            } else {
+              node = instantiate(prefab);
+            }
+          } else {
+            //没有对应对象池，创建他！
+            var _pool = new NodePool();
+
+            this.dictPool[name] = _pool;
+            node = instantiate(prefab);
+          }
+
+          node.parent = parent;
+          return node;
+        }
+        /**
+         * 将对应节点放回对象池中
+         */
+        ;
+
+        _proto.putNode = function putNode(node) {
+          var name = node.name;
+          var pool = null;
+
+          if (this.dictPool.hasOwnProperty(name)) {
+            //已有对应的对象池
+            pool = this.dictPool[name];
+          } else {
+            //没有对应对象池，创建他！
+            pool = new NodePool();
+            this.dictPool[name] = pool;
+          }
+
+          pool.put(node);
+        }
+        /**
+         * 根据名称，清除对应对象池
+         */
+        ;
+
+        _proto.clearPool = function clearPool(name) {
+          if (this.dictPool.hasOwnProperty(name)) {
+            var pool = this.dictPool[name];
+            pool.clear();
+          }
+        } // update (deltaTime: number) {
+        //     // Your update function goes here.
+        // }
+        ;
+
+        _createClass(poolManager, null, [{
+          key: "instance",
+          get: function get() {
+            if (this._instance) {
+              return this._instance;
+            }
+
+            this._instance = new poolManager();
+            return this._instance;
+          }
+        }]);
+
+        return poolManager;
+      }(), _defineProperty(_class2, "_instance", void 0), _temp)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
 System.register("chunks:///_virtual/Sumo.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
   'use strict';
 
@@ -74,42 +268,106 @@ System.register("chunks:///_virtual/Sumo.ts", ['./_rollupPluginModLoBabelHelpers
   };
 });
 
-System.register("chunks:///_virtual/MenuController.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
+System.register("chunks:///_virtual/MenuController.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc', './mxManager.ts', './constant.ts', './audioManager.ts', './SocketConnection.ts', './InitSceneManager.ts'], function (exports) {
   'use strict';
 
-  var _applyDecoratedDescriptor, _inheritsLoose, _defineProperty, _assertThisInitialized, _initializerDefineProperty, cclegacy, _decorator, EditBox, Node, macro, director, systemEvent, SystemEvent, Vec3, Component;
+  var _applyDecoratedDescriptor, _initializerDefineProperty, _inheritsLoose, _defineProperty, _assertThisInitialized, cclegacy, _decorator, Material, Prefab, Node, SpriteFrame, Label, director, macro, game, instantiate, Vec3, MeshRenderer, randomRange, SkeletalAnimationComponent, systemEvent, SystemEvent, Animation, Sprite, Color, Component, MxManager, constant, audioManager, SocketConnection, SocketListener, InitSceneManager;
 
   return {
     setters: [function (module) {
       _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
+      _initializerDefineProperty = module.initializerDefineProperty;
       _inheritsLoose = module.inheritsLoose;
       _defineProperty = module.defineProperty;
       _assertThisInitialized = module.assertThisInitialized;
-      _initializerDefineProperty = module.initializerDefineProperty;
     }, function (module) {
       cclegacy = module.cclegacy;
       _decorator = module._decorator;
-      EditBox = module.EditBox;
+      Material = module.Material;
+      Prefab = module.Prefab;
       Node = module.Node;
-      macro = module.macro;
+      SpriteFrame = module.SpriteFrame;
+      Label = module.Label;
       director = module.director;
+      macro = module.macro;
+      game = module.game;
+      instantiate = module.instantiate;
+      Vec3 = module.Vec3;
+      MeshRenderer = module.MeshRenderer;
+      randomRange = module.randomRange;
+      SkeletalAnimationComponent = module.SkeletalAnimationComponent;
       systemEvent = module.systemEvent;
       SystemEvent = module.SystemEvent;
-      Vec3 = module.Vec3;
+      Animation = module.Animation;
+      Sprite = module.Sprite;
+      Color = module.Color;
       Component = module.Component;
+    }, function (module) {
+      MxManager = module.MxManager;
+    }, function (module) {
+      constant = module.constant;
+    }, function (module) {
+      audioManager = module.audioManager;
+    }, function (module) {
+      SocketConnection = module.SocketConnection;
+      SocketListener = module.SocketListener;
+    }, function (module) {
+      InitSceneManager = module.InitSceneManager;
     }],
     execute: function () {
-      var _dec, _dec2, _dec3, _class, _class2, _descriptor, _descriptor2, _temp;
+      var _dec, _dec2, _class, _class2, _descriptor, _temp, _dec3, _dec4, _class4, _class5, _descriptor2, _temp2, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _class7, _class8, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _temp3;
 
       cclegacy._RF.push({}, "16e06lwqwJFjJauKigdojGv", "MenuController", undefined);
 
       var ccclass = _decorator.ccclass,
           property = _decorator.property;
-      var MenuController = exports('MenuController', (_dec = ccclass('MenuController'), _dec2 = property({
-        type: EditBox
-      }), _dec3 = property({
+      var Character = exports('Character', (_dec = ccclass('Character'), _dec2 = property(Material), _dec(_class = (_class2 = (_temp = function Character() {
+        _initializerDefineProperty(this, "characterMaterial", _descriptor, this);
+      }, _temp), _descriptor = _applyDecoratedDescriptor(_class2.prototype, "characterMaterial", [_dec2], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _class2)) || _class));
+      var food = exports('food', (_dec3 = ccclass('food'), _dec4 = property(Prefab), _dec3(_class4 = (_class5 = (_temp2 = function food() {
+        _initializerDefineProperty(this, "foodNode", _descriptor2, this);
+      }, _temp2), _descriptor2 = _applyDecoratedDescriptor(_class5.prototype, "foodNode", [_dec4], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _class5)) || _class4));
+      var MenuController = exports('MenuController', (_dec5 = ccclass('MenuController'), _dec6 = property(Prefab), _dec7 = property({
         type: Node
-      }), _dec(_class = (_class2 = (_temp = /*#__PURE__*/function (_Component) {
+      }), _dec8 = property({
+        type: Node
+      }), _dec9 = property({
+        type: Character
+      }), _dec10 = property({
+        type: food
+      }), _dec11 = property({
+        type: Node
+      }), _dec12 = property({
+        type: Node
+      }), _dec13 = property({
+        type: Node
+      }), _dec14 = property({
+        type: Node
+      }), _dec15 = property({
+        type: SpriteFrame
+      }), _dec16 = property({
+        type: SpriteFrame
+      }), _dec17 = property({
+        type: Material
+      }), _dec18 = property({
+        type: Material
+      }), _dec19 = property({
+        type: Label
+      }), _dec5(_class7 = (_class8 = (_temp3 = /*#__PURE__*/function (_Component) {
         _inheritsLoose(MenuController, _Component);
 
         function MenuController() {
@@ -123,11 +381,56 @@ System.register("chunks:///_virtual/MenuController.ts", ['./_rollupPluginModLoBa
 
           _defineProperty(_assertThisInitialized(_this), "startLoc", void 0);
 
+          _defineProperty(_assertThisInitialized(_this), "startX", void 0);
+
+          _defineProperty(_assertThisInitialized(_this), "startY", void 0);
+
           _defineProperty(_assertThisInitialized(_this), "startZ", void 0);
 
-          _initializerDefineProperty(_assertThisInitialized(_this), "currentLevel", _descriptor, _assertThisInitialized(_this));
+          _initializerDefineProperty(_assertThisInitialized(_this), "characterNode", _descriptor3, _assertThisInitialized(_this));
 
-          _initializerDefineProperty(_assertThisInitialized(_this), "sumo", _descriptor2, _assertThisInitialized(_this));
+          _initializerDefineProperty(_assertThisInitialized(_this), "playerNode", _descriptor4, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "foodNode", _descriptor5, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "character", _descriptor6, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "food", _descriptor7, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "shopNode", _descriptor8, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "threedNode", _descriptor9, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "missionNode", _descriptor10, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "soundNode", _descriptor11, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "soundOff", _descriptor12, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "soundOn", _descriptor13, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "menuMaterial", _descriptor14, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "shopMaterial", _descriptor15, _assertThisInitialized(_this));
+
+          _defineProperty(_assertThisInitialized(_this), "sumo", null);
+
+          _defineProperty(_assertThisInitialized(_this), "playerData", {
+            "character": -1,
+            "bag": -1,
+            "headPhone": -1,
+            "goggles": -1,
+            "target": 0,
+            "food": -1
+          });
+
+          _defineProperty(_assertThisInitialized(_this), "ShopMenu", null);
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "waitingText", _descriptor16, _assertThisInitialized(_this));
+
+          _defineProperty(_assertThisInitialized(_this), "previousAnimation", 0);
+
+          _defineProperty(_assertThisInitialized(_this), "animationTimeOut", null);
 
           return _this;
         }
@@ -135,19 +438,143 @@ System.register("chunks:///_virtual/MenuController.ts", ['./_rollupPluginModLoBa
         var _proto = MenuController.prototype;
 
         _proto.onLoad = function onLoad() {
-          if (typeof window['gameManager'] !== "undefined") {
-            try {
-              window['gameManager'].onGameStart();
-            } catch (err) {
-              window['gameManager'].onError(err.stack.toString());
-            }
+          var _this2 = this;
+
+          MxManager.instance.onGameStart();
+
+          if (MxManager.instance.isMiloApp) {
+            SocketConnection.instance.send({
+              command: 'CLIENT_LOADED',
+              data: {
+                msg: 'Client loaded sucessfully'
+              }
+            });
+            InitSceneManager.instance.gameLoaded();
+            this.waitingText.string = "Waiting for other users";
+            SocketConnection.instance.on(SocketListener.ON_WAIT_TIME, function (value) {
+              _this2.waitingText.string = "Game Starts in " + value;
+            }, this);
+            SocketConnection.instance.on(SocketListener.GAME_STARTED, function (value) {
+              clearTimeout(_this2.animationTimeOut);
+              director.loadScene('GameScene');
+            }, this);
+          } else {
+            this.waitingText.string = "";
           }
 
           macro.ENABLE_MULTI_TOUCH = false;
           director.preloadScene('GameScene');
-          this.currentLevel.node.on('text-changed', this.botMinSizeEnded, this);
+          constant.setCoinBalance(10);
+          this.checkSounds(); // if (window.localStorage.getItem("playerData") == null || window.localStorage.getItem("playerData") == undefined)
+          // {
+          //     var strngData = JSON.stringify(this.playerData);
+          //     window.localStorage.setItem("playerData", strngData);
+          // }
+          // else
+          // {
+          //     var strngData = (window.localStorage.getItem("playerData"));
+          //     this.playerData = JSON.parse(strngData);
+          // }
+
+          this.ShopMenu = this.shopNode.getComponent("ShopMenu");
+          this.ShopMenu.initialise(this);
+          this.addMenuCharacter(); // cc.game.on('backPressed', function (result) { });
+
+          game.on('backPressed', function (status) {
+            // this.rewardAdsExist(status);
+            _this2.onShopClick();
+          }, this); // this.currentLevel.node.on('text-changed', this.botMinSizeEnded, this);
+
           if (window.localStorage.getItem("currentLevel") == null || window.localStorage.getItem("currentLevel") == undefined) window.localStorage.setItem("currentLevel", "0");
-          this.currentLevel.string = window.localStorage.getItem("currentLevel");
+        };
+
+        _proto.addMenuCharacter = function addMenuCharacter() {
+          // this.playerData.character = -1;
+          //to always reset accesories
+          var strngData = JSON.stringify(this.playerData);
+          window.localStorage.setItem("playerData", strngData);
+          this.playerData = JSON.parse(strngData);
+          var characterIndex = this.playerData.character == -1 ? 0 : this.playerData.character;
+          var player = instantiate(this.characterNode);
+          this.playerNode.addChild(player);
+          player.setPosition(new Vec3(0, 0, 0));
+          player.getChildByName("Penguine_Anim").getChildByName("penguin_body01").getComponent(MeshRenderer).setMaterial(this.character[characterIndex].characterMaterial, 0); // player.getChildByName("penguin_01").getChildByName("penguin_body01").getComponent(MeshRenderer).setMaterial(this.character[characterIndex].characterMaterial, 0);
+
+          this.sumo = player;
+          this.setPlayerUI();
+        };
+
+        _proto.startAnimation = function startAnimation() {
+          var _this3 = this;
+
+          var range = Math.floor(randomRange(0, 4));
+
+          while (range == this.previousAnimation) {
+            range = Math.floor(randomRange(0, 4));
+          }
+
+          this.previousAnimation = range;
+          var animationDuration = 0;
+          var skeletalAnimation = this.sumo.getChildByName("Penguine_Anim").getComponent(SkeletalAnimationComponent);
+
+          switch (this.previousAnimation) {
+            case 0:
+              skeletalAnimation.play('idle');
+              animationDuration = skeletalAnimation.getState('idle').duration;
+              break;
+
+            case 1:
+              skeletalAnimation.play('win');
+              animationDuration = skeletalAnimation.getState('win').duration;
+              break;
+
+            case 2:
+              skeletalAnimation.play('powerLose');
+              animationDuration = skeletalAnimation.getState('powerLose').duration;
+              break;
+
+            case 3:
+              skeletalAnimation.play('push');
+              animationDuration = skeletalAnimation.getState('push').duration;
+              break;
+          }
+
+          clearTimeout(this.animationTimeOut);
+          this.animationTimeOut = setTimeout(function () {
+            _this3.startAnimation();
+          }, animationDuration * 1000);
+        };
+
+        _proto.setPlayerUI = function setPlayerUI() {
+          this.startAnimation();
+
+          if (this.playerData.bag >= 0) {
+            this.sumo.getChildByName("Penguine_Anim").getChildByName("Chest_M Socket").getChildByName("accessories_schoolbag_01").active = true;
+            this.sumo.getChildByName("Penguine_Anim").getChildByName("Chest_M Socket").getChildByName("accessories_schoolbag_01").getComponent(MeshRenderer).setMaterial(this.ShopMenu.bagAcceesories[this.playerData.bag].material, 0); // this.sumo.getChildByName("bag").getChildByName("accessories_schoolbag_01").getComponent(MeshRenderer).setMaterial(this.ShopMenu.bagAcceesories[this.playerData.bag].material, 0);
+            // this.sumo.getChildByName("bag").getChildByName("accessories_schoolbag_01").getComponent(MeshRenderer).mesh = this.ShopMenu.bagAcceesories[this.playerData.bag].mesh;
+          } else this.sumo.getChildByName("Penguine_Anim").getChildByName("Chest_M Socket").getChildByName("accessories_schoolbag_01").active = false; // this.sumo.getChildByName("bag").getChildByName("accessories_schoolbag_01").active = false;
+
+
+          if (this.playerData.headPhone >= 0) {
+            this.sumo.getChildByName("Penguine_Anim").getChildByName("Head_M Socket").getChildByName("accessories_headset01").active = true;
+            this.sumo.getChildByName("Penguine_Anim").getChildByName("Head_M Socket").getChildByName("accessories_headset01").getComponent(MeshRenderer).setMaterial(this.ShopMenu.headPhoneAcceesories[this.playerData.headPhone].material, 0); // this.sumo.getChildByName("headset").getChildByName("accessories_headset01").getComponent(MeshRenderer).setMaterial(this.ShopMenu.headPhoneAcceesories[this.playerData.headPhone].material, 0);
+            // this.sumo.getChildByName("headset").getChildByName("accessories_headset01").getComponent(MeshRenderer).mesh = this.ShopMenu.headPhoneAcceesories[this.playerData.headPhone].mesh;
+          } else this.sumo.getChildByName("Penguine_Anim").getChildByName("Head_M Socket").getChildByName("accessories_headset01").active = false; // this.sumo.getChildByName("headset").getChildByName("accessories_headset01").active = false;
+
+
+          if (this.playerData.goggles >= 0) {
+            this.sumo.getChildByName("Penguine_Anim").getChildByName("Head_M Socket").getChildByName("accessories_glasses_01").active = true;
+            this.sumo.getChildByName("Penguine_Anim").getChildByName("Head_M Socket").getChildByName("accessories_glasses_01").getComponent(MeshRenderer).setMaterial(this.ShopMenu.gogglesAcceesories[this.playerData.goggles].material, 0); // this.sumo.getChildByName("glasses").getChildByName("accessories_glasses_01").getComponent(MeshRenderer).setMaterial(this.ShopMenu.gogglesAcceesories[this.playerData.goggles].material, 0);
+            // this.sumo.getChildByName("glasses").getChildByName("accessories_glasses_01").getComponent(MeshRenderer).mesh = this.ShopMenu.gogglesAcceesories[this.playerData.goggles].mesh;
+          } else this.sumo.getChildByName("Penguine_Anim").getChildByName("Head_M Socket").getChildByName("accessories_glasses_01").active = false; // this.sumo.getChildByName("glasses").getChildByName("accessories_glasses_01").active = false;
+
+
+          if (this.playerData.target >= 0) {
+            this.sumo.getChildByName("Penguine_Anim").getChildByName("accessories_target_01").active = true;
+            this.sumo.getChildByName("Penguine_Anim").getChildByName("accessories_target_01").getComponent(MeshRenderer).setMaterial(this.ShopMenu.targetAcceesories[this.playerData.target].material, 0); // this.sumo.getChildByName("target").getChildByName("accessories_target_01").getComponent(MeshRenderer).setMaterial(this.ShopMenu.targetAcceesories[this.playerData.target].material, 0);
+            // this.sumo.getChildByName("target").getChildByName("accessories_target_01").getComponent(MeshRenderer).mesh = this.ShopMenu.targetAcceesories[this.playerData.target].mesh;
+          } else this.sumo.getChildByName("Penguine_Anim").getChildByName("accessories_target_01").active = false; // this.sumo.getChildByName("target").getChildByName("accessories_target_01").active = false;
+
         };
 
         _proto.start = function start() {
@@ -158,19 +585,66 @@ System.register("chunks:///_virtual/MenuController.ts", ['./_rollupPluginModLoBa
 
         _proto.touchStart = function touchStart(touch) {
           this.startLoc = touch.getLocation();
+          this.startX = this.sumo.rotation.getEulerAngles(new Vec3()).x;
+          this.startY = this.sumo.rotation.getEulerAngles(new Vec3()).y;
           this.startZ = this.sumo.rotation.getEulerAngles(new Vec3()).z;
         };
 
         _proto.touchMove = function touchMove(touch) {
-          var loc = touch.getLocationX();
-          var dist = this.startLoc.x - loc; // let angle = clamp(dist, -360, 360);
+          var locX = touch.getLocationX();
+          var locY = touch.getLocationY();
+          var distX = this.startLoc.x + locX;
+          var distY = this.startLoc.y + locY; // let angle = clamp(dist, -360, 360);
           // let endQuat = Quat.fromEuler(new Quat(), -90, 0, angle);
 
-          this.sumo.setRotationFromEuler(-90, 0, this.startZ + dist);
+          this.sumo.setRotationFromEuler(this.sumo.eulerAngles.x, this.startZ + distX, this.sumo.eulerAngles.z);
+          this.foodNode.setRotationFromEuler(this.startY + distY, this.startZ + distX, 0);
         };
 
         _proto.startGame = function startGame() {
-          director.loadScene('GameScene');
+          audioManager.instance.playSound(constant.AUDIO_SOUND.buttonClick);
+          clearTimeout(this.animationTimeOut);
+
+          if (MxManager.instance.isMiloApp) {
+            // TODO 
+            // Disable play button
+            SocketConnection.instance.send({
+              command: 'CLIENT_READY',
+              data: this.playerData
+            });
+            this.waitingText.string = "Please Wait..";
+          } else {
+            director.loadScene('GameScene');
+          }
+        };
+
+        _proto.onShopClick = function onShopClick() {
+          audioManager.instance.playSound(constant.AUDIO_SOUND.buttonClick);
+          this.threedNode.getChildByName("bg").getComponent(MeshRenderer).setMaterial(this.shopMaterial, 0);
+          var anim = this.node.getComponent(Animation);
+          anim.play('shopOpen');
+          this.ShopMenu.addCharacterScrollContent();
+          clearTimeout(this.animationTimeOut);
+          var skeletalAnimation = this.sumo.getChildByName("Penguine_Anim").getComponent(SkeletalAnimationComponent);
+          skeletalAnimation.play('walk');
+          setTimeout(function () {
+            skeletalAnimation.play('idle');
+          }, 500);
+        };
+
+        _proto.checkSounds = function checkSounds() {
+          if (constant.CheckSoundEnabled()) {
+            this.soundNode.getComponent(Sprite).spriteFrame = this.soundOn;
+            this.missionNode.getComponent(Sprite).color = Color.GREEN;
+          } else {
+            this.soundNode.getComponent(Sprite).spriteFrame = this.soundOff;
+            this.missionNode.getComponent(Sprite).color = Color.RED;
+          }
+        };
+
+        _proto.onMissionClicked = function onMissionClicked() {
+          audioManager.instance.toggleGameSound();
+          this.checkSounds();
         };
 
         _proto.onDestroy = function onDestroy() {
@@ -184,19 +658,185 @@ System.register("chunks:///_virtual/MenuController.ts", ['./_rollupPluginModLoBa
         };
 
         return MenuController;
-      }(Component), _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "currentLevel", [_dec2], {
+      }(Component), _temp3), (_descriptor3 = _applyDecoratedDescriptor(_class8.prototype, "characterNode", [_dec6], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return null;
         }
-      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "sumo", [_dec3], {
+      }), _descriptor4 = _applyDecoratedDescriptor(_class8.prototype, "playerNode", [_dec7], {
         configurable: true,
         enumerable: true,
         writable: true,
-        initializer: null
-      })), _class2)) || _class));
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor5 = _applyDecoratedDescriptor(_class8.prototype, "foodNode", [_dec8], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor6 = _applyDecoratedDescriptor(_class8.prototype, "character", [_dec9], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return [];
+        }
+      }), _descriptor7 = _applyDecoratedDescriptor(_class8.prototype, "food", [_dec10], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return [];
+        }
+      }), _descriptor8 = _applyDecoratedDescriptor(_class8.prototype, "shopNode", [_dec11], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor9 = _applyDecoratedDescriptor(_class8.prototype, "threedNode", [_dec12], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor10 = _applyDecoratedDescriptor(_class8.prototype, "missionNode", [_dec13], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor11 = _applyDecoratedDescriptor(_class8.prototype, "soundNode", [_dec14], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor12 = _applyDecoratedDescriptor(_class8.prototype, "soundOff", [_dec15], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor13 = _applyDecoratedDescriptor(_class8.prototype, "soundOn", [_dec16], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor14 = _applyDecoratedDescriptor(_class8.prototype, "menuMaterial", [_dec17], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor15 = _applyDecoratedDescriptor(_class8.prototype, "shopMaterial", [_dec18], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor16 = _applyDecoratedDescriptor(_class8.prototype, "waitingText", [_dec19], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      })), _class8)) || _class7));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/EventManager.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
+  'use strict';
+
+  var _defineProperty, cclegacy, _decorator;
+
+  return {
+    setters: [function (module) {
+      _defineProperty = module.defineProperty;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+    }],
+    execute: function () {
+      var _dec, _class, _temp;
+
+      cclegacy._RF.push({}, "2680bDo3khI/pPRcB0pUuIo", "EventManager", undefined);
+
+      var ccclass = _decorator.ccclass;
+      var EventManager = exports('EventManager', (_dec = ccclass('EventManager'), _dec(_class = (_temp = /*#__PURE__*/function () {
+        function EventManager() {
+          _defineProperty(this, "events", {});
+        }
+
+        var _proto = EventManager.prototype;
+
+        _proto.addListener = function addListener(event, callback) {
+          // Check if the callback is not a function
+          if (typeof callback !== 'function') {
+            console.error("The listener callback must be a function, the given type is " + typeof callback);
+            return false;
+          } // Check if the event is not a string
+
+
+          if (typeof event !== 'string') {
+            console.error("The event name must be a string, the given type is " + typeof event);
+            return false;
+          } // Create the event if not exists
+
+
+          if (this.events[event] === undefined) {
+            this.events[event] = {
+              listeners: []
+            };
+          }
+
+          this.events[event].listeners.push(callback);
+        };
+
+        _proto.removeListener = function removeListener(event, callback) {
+          // Check if this event not exists
+          if (this.events[event] === undefined) {
+            console.warn("This event: " + event + " does not exist");
+            return false;
+          }
+
+          this.events[event].listeners = this.events[event].listeners.filter(function (listener) {
+            return listener.toString() !== callback.toString();
+          });
+        };
+
+        _proto.dispatch = function dispatch(event, details) {
+          // Check if this event not exists
+          if (this.events[event] === undefined) {
+            console.warn("This event: " + event + " does not exist");
+            return false;
+          }
+
+          this.events[event].listeners.forEach(function (listener) {
+            listener(details);
+          });
+        };
+
+        return EventManager;
+      }(), _temp)) || _class));
 
       cclegacy._RF.pop();
     }
@@ -250,7 +890,7 @@ System.register("chunks:///_virtual/Gummy.ts", ['./_rollupPluginModLoBabelHelper
 
           _this = _Component.call.apply(_Component, [this].concat(args)) || this;
 
-          _defineProperty(_assertThisInitialized(_this), "currAngle", 2);
+          _defineProperty(_assertThisInitialized(_this), "currAngle", 1);
 
           return _this;
         }
@@ -289,54 +929,994 @@ System.register("chunks:///_virtual/Gummy.ts", ['./_rollupPluginModLoBabelHelper
   };
 });
 
-System.register("chunks:///_virtual/Config.ts", ['cc'], function (exports) {
+System.register("chunks:///_virtual/foodSkins.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc', './constant.ts', './audioManager.ts'], function (exports) {
   'use strict';
 
-  var cclegacy;
+  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, _defineProperty, cclegacy, _decorator, SpriteFrame, Sprite, Label, instantiate, Vec3, Component, constant, audioManager;
+
   return {
     setters: [function (module) {
+      _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
+      _inheritsLoose = module.inheritsLoose;
+      _initializerDefineProperty = module.initializerDefineProperty;
+      _assertThisInitialized = module.assertThisInitialized;
+      _defineProperty = module.defineProperty;
+    }, function (module) {
       cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      SpriteFrame = module.SpriteFrame;
+      Sprite = module.Sprite;
+      Label = module.Label;
+      instantiate = module.instantiate;
+      Vec3 = module.Vec3;
+      Component = module.Component;
+    }, function (module) {
+      constant = module.constant;
+    }, function (module) {
+      audioManager = module.audioManager;
     }],
     execute: function () {
-      cclegacy._RF.push({}, "392b7gsXL9LSaxxkxkfDxSp", "Config", undefined);
+      var _dec, _dec2, _dec3, _class, _class2, _descriptor, _descriptor2, _temp;
 
-      var Constants = exports('Constants', {
-        "initialiserTimeOut": 10,
-        "serverInfo": {
-          "resultEndPoint": {
-            "dev": "https://mxgamesapi.dev.mxplay.com/v1/game/result",
-            "prod": "https://mxgamesapi.mxplay.com/v1/game/result"
-          },
-          "serverUrlEndPoint": {
-            "dev": "wss://zatsvu.colyseus.in/",
-            "prod": "wss://iy5aen.colyseus.in/"
-          },
-          "isProd": false
-        },
-        "purchases": {
-          "powerup": 20,
-          "extraLife": 40
-        },
-        "totalRating": 9,
-        "noOfCharacterInMap": 4,
-        "autoLoadAdEnabled": true,
-        "stickyBannersEnabled": false,
-        "ads": {
-          "showStartAdOdd": 1,
-          "adTimerInSec": 6
-        },
-        "stickyAds": {
-          "adUnit": "/21723553151/Test/Test_MXplayer_Local_Native_Banner2",
-          "adHeight": 50,
-          "adWidth": 320,
-          "adRefreshDuration": 30
-        },
-        "scoringMultiplayer": {
-          "winningPoint": 200,
-          "quittingPoint": -50,
-          "losingPoint": -20
+      cclegacy._RF.push({}, "34c0a1tj5NCc5aFkjL+L1vl", "foodSkins", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      /**
+       * Predefined variables
+       * Name = FoodSkins
+       * DateTime = Sat Jan 22 2022 03:17:59 GMT+0530 (India Standard Time)
+       * Author = sushant
+       * FileBasename = foodSkins.ts
+       * FileBasenameNoExtension = foodSkins
+       * URL = db://assets/Script/menuScene/shop/foodSkins.ts
+       * ManualUrl = https://docs.cocos.com/creator/3.3/manual/en/
+       *
+       */
+
+      var FoodSkins = exports('FoodSkins', (_dec = ccclass('FoodSkins'), _dec2 = property({
+        type: SpriteFrame
+      }), _dec3 = property({
+        type: SpriteFrame
+      }), _dec(_class = (_class2 = (_temp = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(FoodSkins, _Component);
+
+        function FoodSkins() {
+          var _this;
+
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+
+          _this = _Component.call.apply(_Component, [this].concat(args)) || this;
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "defaultFrame", _descriptor, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "normalFrame", _descriptor2, _assertThisInitialized(_this));
+
+          _defineProperty(_assertThisInitialized(_this), "skinName", null);
+
+          _defineProperty(_assertThisInitialized(_this), "count", null);
+
+          _defineProperty(_assertThisInitialized(_this), "isActive", true);
+
+          _defineProperty(_assertThisInitialized(_this), "isEquipped", false);
+
+          _defineProperty(_assertThisInitialized(_this), "shopController", null);
+
+          _defineProperty(_assertThisInitialized(_this), "type", null);
+
+          _defineProperty(_assertThisInitialized(_this), "currentIndex", 0);
+
+          return _this;
         }
-      });
+
+        var _proto = FoodSkins.prototype;
+
+        _proto.start = function start() {// [3]
+        };
+
+        _proto.initialiseData = function initialiseData(obj, index, shopLayer) {
+          this.shopController = shopLayer;
+          var plyData = this.shopController.menuController.playerData;
+          this.currentIndex = index;
+          this.type = constant.ACCESSORIESTYPE.FOOD;
+          var accessoriesfoodSkin = constant.getFood();
+
+          if (index == accessoriesfoodSkin.length) {
+            this.isActive = false;
+            this.count = index;
+            this.node.getChildByName("image").getComponent(Sprite).spriteFrame = this.defaultFrame;
+            this.node.getChildByName("commingSoon").active = true;
+            return;
+          }
+
+          this.isEquipped = false;
+          this.isActive = obj.unlocked;
+          this.count = index;
+          this.skinName = obj.name;
+
+          if (plyData.food == -1 && this.count == 0) {
+            this.isEquipped = true;
+          }
+
+          if (!obj.unlocked) this.node.getChildByName("lockIcon").active = true;
+          this.node.getChildByName("name").getComponent(Label).string = this.skinName;
+          var data = instantiate(this.shopController.menuController.food[this.count].foodNode);
+          this.node.getChildByName("Plane").getChildByName("characterNode").addChild(data);
+          data.setPosition(new Vec3(0, 0, 0));
+
+          if (this.skinName == "Snapper") {
+            data.setRotationFromEuler(90, 0, 0);
+          }
+
+          if (plyData.food == this.count) this.isEquipped = true;
+          this.node.getChildByName("equipped").active = this.isEquipped;
+
+          if (this.isEquipped) {
+            var food = instantiate(this.shopController.menuController.food[this.count].foodNode);
+            this.shopController.menuController.playerNode.getChildByName("foodNode").addChild(food);
+          }
+        };
+
+        _proto.onEquipClicked = function onEquipClicked() {
+          if (this.isActive) {
+            if (this.isEquipped) {
+              return;
+            } else {
+              audioManager.instance.playSound(constant.AUDIO_SOUND.buttonClick);
+              this.shopController.updatePlayerAccessoriesData(5, this.count);
+              this.node.getChildByName("equipped").active = true;
+              this.shopController.menuController.playerNode.getChildByName("foodNode").removeAllChildren();
+              var food = instantiate(this.shopController.menuController.food[this.count].foodNode);
+              this.shopController.menuController.playerNode.getChildByName("foodNode").addChild(food);
+
+              for (var i = 0; i < this.shopController.characterFoodArray.length; i++) {
+                var skinData = this.shopController.characterFoodArray[i].getComponent("FoodSkins");
+
+                if (this.shopController.characterFoodArray[i] != this.node) {
+                  skinData.isEquipped = false;
+                  this.shopController.characterFoodArray[i].getChildByName("equipped").active = false;
+                }
+              }
+            }
+
+            this.isEquipped = !this.isEquipped;
+          } else {
+            this.shopController.onShowBuyPopup(this);
+          }
+        };
+
+        return FoodSkins;
+      }(Component), _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "defaultFrame", [_dec2], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "normalFrame", [_dec3], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      })), _class2)) || _class));
+      /**
+       * [1] Class member could be defined like this.
+       * [2] Use `property` decorator if your want the member to be serializable.
+       * [3] Your initialization goes here.
+       * [4] Your update function goes here.
+       *
+       * Learn more about scripting: https://docs.cocos.com/creator/3.3/manual/en/scripting/
+       * Learn more about CCClass: https://docs.cocos.com/creator/3.3/manual/en/scripting/ccclass.html
+       * Learn more about life-cycle callbacks: https://docs.cocos.com/creator/3.3/manual/en/scripting/life-cycle-callbacks.html
+       */
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/csvManager.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
+  'use strict';
+
+  var _defineProperty, cclegacy, _decorator;
+
+  return {
+    setters: [function (module) {
+      _defineProperty = module.defineProperty;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+    }],
+    execute: function () {
+      var _dec, _class, _temp;
+
+      cclegacy._RF.push({}, "3681eWu0OFKpLrMuVi+8FnM", "csvManager", undefined);
+
+      var ccclass = _decorator.ccclass;
+      var CELL_DELIMITERS = [",", ";", "\t", "|", "^"];
+      var LINE_DELIMITERS = ["\r\n", "\r", "\n"];
+
+      var getterCast = function getterCast(value, index, cast, d) {
+        if (cast instanceof Array) {
+          if (cast[index] === "number") {
+            return Number(d[index]);
+          } else if (cast[index] === "boolean") {
+            return d[index] === "true" || d[index] === "t" || d[index] === "1";
+          } else {
+            return d[index];
+          }
+        } else {
+          if (!isNaN(Number(value))) {
+            return Number(d[index]);
+          } else if (value == "false" || value == "true" || value == "t" || value == "f") {
+            return d[index] === "true" || d[index] === "t" || d[index] === "1";
+          } else {
+            return d[index];
+          }
+        }
+      };
+
+      var CSV = {
+        //
+
+        /* =========================================
+            * Constants ===============================
+            * ========================================= */
+        STANDARD_DECODE_OPTS: {
+          skip: 0,
+          limit: false,
+          header: false,
+          cast: false,
+          comment: ""
+        },
+        STANDARD_ENCODE_OPTS: {
+          delimiter: CELL_DELIMITERS[0],
+          newline: LINE_DELIMITERS[0],
+          skip: 0,
+          limit: false,
+          header: false
+        },
+        quoteMark: '"',
+        doubleQuoteMark: '""',
+        quoteRegex: /"/g,
+        opts: {},
+
+        /* =========================================
+            * Utility Functions =======================
+            * ========================================= */
+        assign: function assign() {
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+
+          var params = Array.prototype.slice.call(arguments);
+          var base = args[0];
+          var rest = args.slice(1);
+
+          for (var i = 0, len = rest.length; i < len; i++) {
+            for (var attr in rest[i]) {
+              base[attr] = rest[i][attr];
+            }
+          }
+
+          return base;
+        },
+        map: function map(collection, fn) {
+          var results = [];
+
+          for (var i = 0, len = collection.length; i < len; i++) {
+            results[i] = fn(collection[i], i);
+          }
+
+          return results;
+        },
+        getType: function getType(obj) {
+          return Object.prototype.toString.call(obj).slice(8, -1);
+        },
+        getLimit: function getLimit(limit, len) {
+          return limit === false ? len : 1;
+        },
+        buildObjectConstructor: function buildObjectConstructor(fields, sample, cast) {
+          return function (d) {
+            var object = {};
+
+            var setter = function setter(attr, value) {
+              return object[attr] = value;
+            };
+
+            if (cast) {
+              fields.forEach(function (attr, idx) {
+                setter(attr, getterCast(sample[idx], idx, cast, d));
+              });
+            } else {
+              fields.forEach(function (attr, idx) {
+                setter(attr, getterCast(sample[idx], idx, null, d));
+              });
+            } // body.push("return object;");
+            // body.join(";\n");
+
+
+            return object;
+          };
+        },
+        buildArrayConstructor: function buildArrayConstructor(fields, sample, cast) {
+          return function (d) {
+            var row = new Array(sample.length);
+
+            var setter = function setter(idx, value) {
+              return row[idx] = value;
+            };
+
+            if (cast) {
+              fields.forEach(function (attr, idx) {
+                setter(attr, getterCast(sample[idx], idx, cast, d));
+              });
+            } else {
+              fields.forEach(function (attr, idx) {
+                setter(attr, getterCast(sample[idx], idx, null, d));
+              });
+            }
+
+            return row;
+          };
+        },
+        frequency: function frequency(coll, needle, limit) {
+          if (limit === void 0) limit = false;
+          var count = 0;
+          var lastIndex = 0;
+          var maxIndex = this.getLimit(limit, coll.length);
+
+          while (lastIndex < maxIndex) {
+            lastIndex = coll.indexOf(needle, lastIndex);
+            if (lastIndex === -1) break;
+            lastIndex += 1;
+            count++;
+          }
+
+          return count;
+        },
+        mostFrequent: function mostFrequent(coll, needles, limit) {
+          var max = 0;
+          var detected = '';
+
+          for (var cur = needles.length - 1; cur >= 0; cur--) {
+            if (this.frequency(coll, needles[cur], limit) > max) {
+              detected = needles[cur];
+            }
+          }
+
+          return detected || needles[0];
+        },
+        unsafeParse: function unsafeParse(text, opts, fn) {
+          var lines = text.split(opts.newline);
+
+          if (opts.skip > 0) {
+            lines.splice(opts.skip);
+          }
+
+          var fields;
+          var constructor;
+
+          function cells(lines) {
+            var line = lines.shift();
+
+            if (line.indexOf('"') >= 0) {
+              // 含引号
+              // 找到这行完整的数据, 找到对称的双引号
+              var lastIndex = 0;
+              var findIndex = 0;
+              var count = 0;
+
+              while (lines.length > 0) {
+                lastIndex = line.indexOf('"', findIndex);
+                if (lastIndex === -1 && count % 2 === 0) break;
+
+                if (lastIndex !== -1) {
+                  findIndex = lastIndex + 1;
+                  count++;
+                } else {
+                  line = line + opts.newline + lines.shift();
+                }
+              }
+
+              var list = [];
+              var item;
+              var quoteCount = 0;
+              var start = 0;
+              var end = 0;
+              var length = line.length;
+
+              for (var key in line) {
+                if (!line.hasOwnProperty(key)) {
+                  continue;
+                }
+
+                var numKey = parseInt(key);
+                var _value = line[key];
+
+                if (numKey === 0 && _value === '"') {
+                  quoteCount++;
+                  start = 1;
+                }
+
+                if (_value === '"') {
+                  quoteCount++;
+
+                  if (line[numKey - 1] === opts.delimiter && start === numKey) {
+                    start++;
+                  }
+                }
+
+                if (_value === '"' && quoteCount % 2 === 0) {
+                  if (line[numKey + 1] === opts.delimiter || numKey + 1 === length) {
+                    end = numKey;
+                    item = line.substring(start, end);
+                    list.push(item);
+                    start = end + 2;
+                    end = start;
+                  }
+                }
+
+                if (_value === opts.delimiter && quoteCount % 2 === 0) {
+                  end = numKey;
+
+                  if (end > start) {
+                    item = line.substring(start, end);
+                    list.push(item);
+                    start = end + 1;
+                    end = start;
+                  } else if (end === start) {
+                    list.push("");
+                    start = end + 1;
+                    end = start;
+                  }
+                }
+              }
+
+              end = length;
+
+              if (end >= start) {
+                item = line.substring(start, end);
+                list.push(item);
+              }
+
+              return list;
+            } else {
+              return line.split(opts.delimiter);
+            }
+          }
+
+          if (opts.header) {
+            if (opts.header === true) {
+              opts.comment = cells(lines); // 第一行是注释
+
+              opts.cast = cells(lines); // 第二行是数据类型
+
+              fields = cells(lines);
+            } else if (this.getType(opts.header) === "Array") {
+              fields = opts.header;
+            }
+
+            constructor = this.buildObjectConstructor(fields, lines[0].split(opts.delimiter), opts.cast);
+          } else {
+            constructor = this.buildArrayConstructor(fields, lines[0].split(opts.delimiter), opts.cast);
+          }
+
+          while (lines.length > 0) {
+            var row = cells(lines);
+
+            if (row.length > 1) {
+              fn(constructor(row), fields[0]);
+            }
+          }
+
+          return true;
+        },
+        safeParse: function safeParse(text, opts) {
+          var newline = opts.newline;
+          var lines = text.split(newline);
+
+          if (opts.skip > 0) {
+            lines.splice(opts.skip);
+          }
+
+          return true;
+        },
+        encodeCells: function encodeCells(line, delimiter, newline) {
+          var row = line.slice(0);
+
+          for (var i = 0, len = row.length; i < len; i++) {
+            if (row[i].indexOf(this.quoteMark) !== -1) {
+              row[i] = row[i].replace(this.quoteRegex, this.doubleQuoteMark);
+            }
+
+            if (row[i].indexOf(delimiter) !== -1 || row[i].indexOf(newline) !== -1) {
+              row[i] = this.quoteMark + row[i] + this.quoteMark;
+            }
+          }
+
+          return row.join(delimiter);
+        },
+        encodeArrays: function encodeArrays(coll, opts, fn) {
+          var delimiter = opts.delimiter;
+          var newline = opts.newline;
+
+          if (opts.header && this.getType(opts.header) === "Array") {
+            fn(this.encodeCells(opts.header, delimiter, newline));
+          }
+
+          for (var cur = 0, lim = this.getLimit(opts.limit, coll.length); cur < lim; cur++) {
+            fn(this.encodeCells(coll[cur], delimiter, newline));
+          }
+
+          return true;
+        },
+        encodeObjects: function encodeObjects(coll, opts, fn) {
+          var delimiter = opts.delimiter;
+          var newline = opts.newline;
+          var header = [];
+          var row = [];
+
+          for (var key in coll[0]) {
+            header.push(key);
+            row.push(coll[0][key]);
+          }
+
+          if (opts.header === true) {
+            fn(this.encodeCells(header, delimiter, newline));
+          } else if (this.getType(opts.header) === "Array") {
+            fn(this.encodeCells(opts.header, delimiter, newline));
+          }
+
+          fn(this.encodeCells(row, delimiter, '\n'));
+
+          for (var cur = 1, lim = this.getLimit(opts.limit, coll.length); cur < lim; cur++) {
+            row = [];
+
+            for (var i = 0, len = header.length; i < len; i++) {
+              row.push(coll[cur][header[i]]);
+            }
+
+            fn(this.encodeCells(row, delimiter, newline));
+          }
+
+          return true;
+        },
+        parse: function parse(text, opts, fn) {
+          var rows = [];
+
+          if (this.getType(opts) === "Function") {
+            fn = opts;
+            opts = {};
+          } else if (this.getType(fn) !== "Function") {
+            fn = rows.push.bind(rows);
+          }
+
+          opts = this.assign({}, this.STANDARD_DECODE_OPTS, opts);
+          this.opts = opts;
+
+          if (!opts.delimiter || !opts.newline) {
+            var limit = Math.min(48, Math.floor(text.length / 20), text.length);
+            opts.delimiter = opts.delimiter || this.mostFrequent(text, CELL_DELIMITERS, limit !== 0);
+            opts.newline = opts.newline || this.mostFrequent(text, LINE_DELIMITERS, limit !== 0);
+          } // modify by jl 由表自行控制不要含有双引号.提高解析效率
+
+
+          return this.unsafeParse(text, opts, fn) && (rows.length > 0 ? rows : true);
+        },
+        encode: function encode(coll, opts, fn) {
+          var lines = [];
+
+          if (this.getType(opts) === "Function") {
+            fn = opts; // opts = {};
+          } else if (this.getType(fn) !== "Function") {
+            lines = [];
+            fn = lines.push.bind(lines);
+          }
+
+          opts = this.assign({}, this.STANDARD_ENCODE_OPTS, opts);
+
+          if (opts.skip > 0) {
+            coll = coll.slice(opts.skip);
+          }
+
+          return (this.getType(coll[0]) === "Array" ? this.encodeArrays : this.encodeObjects)(coll, opts, fn) && (lines.length > 0 ? lines.join(opts.newline) : true);
+        }
+      };
+      var csvManager = exports('csvManager', (_dec = ccclass("csvManager"), _dec(_class = (_temp = /*#__PURE__*/function () {
+        function csvManager() {
+          _defineProperty(this, "csvTables", {});
+
+          _defineProperty(this, "csvTableForArr", {});
+
+          _defineProperty(this, "tableCast", {});
+
+          _defineProperty(this, "tableComment", {});
+        }
+
+        var _proto = csvManager.prototype;
+
+        _proto.addTable = function addTable(tableName, tableContent, force) {
+          if (this.csvTables[tableName] && !force) {
+            return;
+          }
+
+          var tableData = {};
+          var tableArr = [];
+          var opts = {
+            header: true
+          };
+          CSV.parse(tableContent, opts, function (row, keyName) {
+            tableData[row[keyName]] = row;
+            tableArr.push(row);
+          });
+          this.tableCast[tableName] = CSV.opts.cast;
+          this.tableComment[tableName] = CSV.opts.comment;
+          this.csvTables[tableName] = tableData;
+          this.csvTableForArr[tableName] = tableArr; //this.csvTables[tableName].initFromText(tableContent);
+        };
+
+        _proto.getTableArr = function getTableArr(tableName) {
+          return this.csvTableForArr[tableName];
+        };
+
+        _proto.getTable = function getTable(tableName) {
+          return this.csvTables[tableName];
+        };
+
+        _proto.queryOne = function queryOne(tableName, key, value) {
+          var table = this.getTable(tableName);
+
+          if (!table) {
+            return null;
+          }
+
+          if (key) {
+            for (var tbItem in table) {
+              if (!table.hasOwnProperty(tbItem)) {
+                continue;
+              }
+
+              if (table[tbItem][key] === value) {
+                return table[tbItem];
+              }
+            }
+          } else {
+            return table[value];
+          }
+        };
+
+        _proto.queryByID = function queryByID(tableName, ID) {
+          return this.queryOne(tableName, null, ID);
+        };
+
+        _proto.queryAll = function queryAll(tableName, key, value) {
+          var table = this.getTable(tableName);
+
+          if (!table || !key) {
+            return null;
+          }
+
+          var ret = {};
+
+          for (var tbItem in table) {
+            if (!table.hasOwnProperty(tbItem)) {
+              continue;
+            }
+
+            if (table[tbItem][key] === value) {
+              ret[tbItem] = table[tbItem];
+            }
+          }
+
+          return ret;
+        };
+
+        _proto.queryIn = function queryIn(tableName, key, values) {
+          var table = this.getTable(tableName);
+
+          if (!table || !key) {
+            return null;
+          }
+
+          var ret = {};
+          var keys = Object.keys(table);
+          var length = keys.length;
+
+          for (var i = 0; i < length; i++) {
+            var item = table[keys[i]];
+
+            if (values.indexOf(item[key]) > -1) {
+              ret[keys[i]] = item;
+            }
+          }
+
+          return ret;
+        };
+
+        _proto.queryByCondition = function queryByCondition(tableName, condition) {
+          if (condition.constructor !== Object) {
+            return null;
+          }
+
+          var table = this.getTable(tableName);
+
+          if (!table) {
+            return null;
+          }
+
+          var ret = {};
+          var tableKeys = Object.keys(table);
+          var tableKeysLength = tableKeys.length;
+          var keys = Object.keys(condition);
+          var keysLength = keys.length;
+
+          for (var i = 0; i < tableKeysLength; i++) {
+            var item = table[tableKeys[i]];
+            var fit = true;
+
+            for (var j = 0; j < keysLength; j++) {
+              var key = keys[j];
+              fit = fit && condition[key].indexOf(item[key]) > -1 && !ret[tableKeys[i]];
+            }
+
+            if (fit) {
+              ret[tableKeys[i]] = item;
+            }
+          }
+
+          return ret;
+        };
+
+        return csvManager;
+      }(), _temp)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/configuration.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
+  'use strict';
+
+  var _defineProperty, _createClass, cclegacy, _decorator, sys, log;
+
+  return {
+    setters: [function (module) {
+      _defineProperty = module.defineProperty;
+      _createClass = module.createClass;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      sys = module.sys;
+      log = module.log;
+    }],
+    execute: function () {
+      var _dec, _class, _class2, _temp;
+
+      cclegacy._RF.push({}, "3847d/eUQRHv70w/7Q0rfwv", "configuration", undefined);
+
+      var ccclass = _decorator.ccclass;
+      var configuration = exports('configuration', (_dec = ccclass("configuration"), _dec(_class = (_temp = _class2 = /*#__PURE__*/function () {
+        function configuration() {
+          _defineProperty(this, "jsonData", null);
+
+          _defineProperty(this, "path", null);
+
+          _defineProperty(this, "KEY_CONFIG", 'CarConfig');
+
+          _defineProperty(this, "markSave", false);
+
+          _defineProperty(this, "saveTimer", -1);
+        }
+
+        var _proto = configuration.prototype;
+
+        _proto.start = function start() {
+          var _this = this;
+
+          this.jsonData = {
+            "userId": ""
+          };
+          this.path = this.getConfigPath();
+          var content;
+
+          if (sys.isNative) {
+            var valueObject = jsb.fileUtils.getValueMapFromFile(this.path);
+            content = valueObject[this.KEY_CONFIG];
+          } else {
+            content = sys.localStorage.getItem(this.KEY_CONFIG);
+          }
+
+          if (content && content.length) {
+            if (content.startsWith('@')) {
+              content = content.substring(1);
+            }
+
+            try {
+              //初始化操作
+              var jsonData = JSON.parse(content);
+              this.jsonData = jsonData;
+            } catch (excepaiton) {}
+          } //启动无限定时器，每1秒保存一次数据，而不是无限保存数据
+
+
+          this.saveTimer = setInterval(function () {
+            _this.scheduleSave();
+          }, 500);
+        };
+
+        _proto.setConfigDataWithoutSave = function setConfigDataWithoutSave(key, value) {
+          var account = this.jsonData.userId;
+
+          if (this.jsonData[account]) {
+            this.jsonData[account][key] = value;
+          } else {
+            console.error("no account can not save");
+          }
+        };
+
+        _proto.setConfigData = function setConfigData(key, value) {
+          this.setConfigDataWithoutSave(key, value); // this.save();
+
+          this.markSave = true; //标记为需要存储，避免一直在写入，而是每隔一段时间进行写入
+        };
+
+        _proto.getConfigData = function getConfigData(key) {
+          var account = this.jsonData.userId;
+
+          if (this.jsonData[account]) {
+            var value = this.jsonData[account][key];
+            return value ? value : "";
+          } else {
+            log("no account can not load");
+            return "";
+          }
+        };
+
+        _proto.setGlobalData = function setGlobalData(key, value) {
+          this.jsonData[key] = value;
+          this.save();
+        };
+
+        _proto.getGlobalData = function getGlobalData(key) {
+          return this.jsonData[key];
+        };
+
+        _proto.setUserId = function setUserId(userId) {
+          this.jsonData.userId = userId;
+
+          if (!this.jsonData[userId]) {
+            this.jsonData[userId] = {};
+          }
+
+          this.save();
+        };
+
+        _proto.getUserId = function getUserId() {
+          return this.jsonData.userId;
+        };
+
+        _proto.scheduleSave = function scheduleSave() {
+          if (!this.markSave) {
+            return;
+          }
+
+          this.save();
+        }
+        /**
+         * 标记为已修改
+         */
+        ;
+
+        _proto.markModified = function markModified() {
+          this.markSave = true;
+        };
+
+        _proto.save = function save() {
+          // 写入文件
+          var str = JSON.stringify(this.jsonData);
+          var zipStr = str;
+          this.markSave = false;
+
+          if (!sys.isNative) {
+            var ls = sys.localStorage;
+            ls.setItem(this.KEY_CONFIG, zipStr);
+            return;
+          }
+
+          var valueObj = {};
+          valueObj[this.KEY_CONFIG] = zipStr;
+          jsb.fileUtils.writeToFile(valueObj, this.path);
+        };
+
+        _proto.getConfigPath = function getConfigPath() {
+          var platform = sys.platform;
+          var path = ""; // if (platform === sys.OS_WINDOWS) {
+          //     path = "src/conf";
+          // } else if (platform === sys.OS_LINUX) {
+          //     path = "./conf";
+          // } else {
+
+          if (sys.isNative) {
+            path = jsb.fileUtils.getWritablePath();
+            path = path + "conf";
+          } else {
+            path = "src/conf";
+          } // }
+
+
+          return path;
+        };
+
+        _proto.parseUrl = function parseUrl(paramStr) {
+          if (!paramStr || typeof paramStr === 'string' && paramStr.length <= 0) {
+            // 没有带参数，直接忽略
+            return;
+          }
+
+          var dictParam = {};
+
+          if (typeof paramStr === 'string') {
+            paramStr = paramStr.split('?')[1]; // 去除掉 ？号
+
+            var arrParam = paramStr.split("&");
+            arrParam.forEach(function (paramValue) {
+              var idxEqual = paramValue.indexOf("=");
+
+              if (idxEqual !== -1) {
+                var key = paramValue.substring(0, idxEqual);
+                dictParam[key] = paramValue.substring(idxEqual + 1);
+              }
+            });
+          } else {
+            dictParam = paramStr;
+          }
+
+          if (dictParam.action) {
+            this.setGlobalData('urlParams', dictParam);
+          } // todo：记录来源，以后用到
+
+
+          if (dictParam.source) {
+            this.setGlobalData('source', dictParam.source);
+          }
+
+          if (dictParam.adchannelid) {
+            this.setGlobalData('adchannelid', dictParam.adchannelid);
+          }
+        }
+        /**
+         * 生成随机账户
+         * @returns
+         */
+        ;
+
+        configuration.generateGuestAccount = function generateGuestAccount() {
+          return "" + Date.now() + (0 | 10);
+        };
+
+        _createClass(configuration, null, [{
+          key: "instance",
+          get: function get() {
+            if (this._instance) {
+              return this._instance;
+            }
+
+            this._instance = new configuration();
+
+            this._instance.start();
+
+            return this._instance;
+          }
+        }]);
+
+        return configuration;
+      }(), _defineProperty(_class2, "_instance", void 0), _temp)) || _class));
 
       cclegacy._RF.pop();
     }
@@ -346,7 +1926,7 @@ System.register("chunks:///_virtual/Config.ts", ['cc'], function (exports) {
 System.register("chunks:///_virtual/BotController.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
   'use strict';
 
-  var _inheritsLoose, _defineProperty, _assertThisInitialized, cclegacy, _decorator, Vec3, instantiate, Component;
+  var _inheritsLoose, _defineProperty, _assertThisInitialized, cclegacy, _decorator, instantiate, MeshRenderer, Component;
 
   return {
     setters: [function (module) {
@@ -356,8 +1936,8 @@ System.register("chunks:///_virtual/BotController.ts", ['./_rollupPluginModLoBab
     }, function (module) {
       cclegacy = module.cclegacy;
       _decorator = module._decorator;
-      Vec3 = module.Vec3;
       instantiate = module.instantiate;
+      MeshRenderer = module.MeshRenderer;
       Component = module.Component;
     }],
     execute: function () {
@@ -379,11 +1959,9 @@ System.register("chunks:///_virtual/BotController.ts", ['./_rollupPluginModLoBab
 
           _this = _Component.call(this) || this;
 
-          _defineProperty(_assertThisInitialized(_this), "_botArrayList", []);
+          _defineProperty(_assertThisInitialized(_this), "_totalPlayerArrayList", []);
 
           _defineProperty(_assertThisInitialized(_this), "playerCamera", void 0);
-
-          _defineProperty(_assertThisInitialized(_this), "botRotation", [new Vec3(0, 0, 0), new Vec3(0, 45, 0), new Vec3(0, -45, 0), new Vec3(0, 135, 0), new Vec3(0, -135, 0)]);
 
           _defineProperty(_assertThisInitialized(_this), "_gameController", void 0);
 
@@ -395,24 +1973,33 @@ System.register("chunks:///_virtual/BotController.ts", ['./_rollupPluginModLoBab
 
         _proto.start = function start() {};
 
-        _proto.addBots = function addBots(bot, name, player) {
+        _proto.addBots = function addBots(botPlayer, bot, name, player) {
           var totalBots = this._gameController.gameData.totalBotPresent;
           var easyBot = this._gameController.gameData.easyBot;
           var mediumBot = this._gameController.gameData.mediumBot;
           var hardBot = this._gameController.gameData.hardBot;
 
           for (var i = 0; i < totalBots; i++) {
-            var bot1 = instantiate(bot);
-            bot1.getComponent("Bot")._playerList = this._botArrayList;
+            var playerData = {
+              "character": this.generateRandomNumber(0, bot.length - 1),
+              "bag": this.generateRandomNumber(-1, this._gameController.bagAcceesories.length - 1),
+              "headPhone": this.generateRandomNumber(-1, this._gameController.headPhoneAcceesories.length - 1),
+              "goggles": this.generateRandomNumber(-1, this._gameController.gogglesAcceesories.length - 1),
+              "target": this.generateRandomNumber(0, this._gameController.targetAcceesories.length - 1)
+            };
+            var bot1 = instantiate(botPlayer);
+            bot1.getComponent("Bot")._playerList = this._totalPlayerArrayList;
             bot1.getComponent("Bot").playerCamera = this.playerCamera;
             bot1.getComponent("Bot").addName(name, this._gameController.getWorld(), this._gameController);
 
             this._gameController.addToWorld(bot1);
 
             bot1.setPosition(this._gameController.gameData.position[i]);
-            bot1.eulerAngles = this._gameController.gameData.angle[totalBots - 1 - i];
+            bot1.eulerAngles = this._gameController.gameData.angle[i];
 
-            this._botArrayList.push(bot1);
+            this._totalPlayerArrayList.push(bot1);
+
+            bot1.getChildByName("Penguine_Anim").getChildByName("penguin_body01").getComponent(MeshRenderer).setMaterial(bot[playerData.character].characterMaterial, 0);
 
             if (easyBot > 0) {
               easyBot--;
@@ -424,9 +2011,30 @@ System.register("chunks:///_virtual/BotController.ts", ['./_rollupPluginModLoBab
               hardBot--;
               bot1.getComponent("Bot").setProperties("hard");
             }
+
+            this.initialiseAccessoriesData(bot1, playerData);
           }
 
-          this._botArrayList.push(player);
+          this._totalPlayerArrayList.push(player);
+        };
+
+        _proto.initialiseAccessoriesData = function initialiseAccessoriesData(bot, playerData) {
+          if (playerData.bag == -1) bot.getChildByName("Penguine_Anim").getChildByName("Chest_M Socket").getChildByName("accessories_schoolbag_01").active = false;else {
+            bot.getChildByName("Penguine_Anim").getChildByName("Chest_M Socket").getChildByName("accessories_schoolbag_01").getComponent(MeshRenderer).setMaterial(this._gameController.bagAcceesories[playerData.bag].material, 0);
+          }
+          if (playerData.headPhone == -1) bot.getChildByName("Penguine_Anim").getChildByName("Head_M Socket").getChildByName("accessories_headset01").active = false;else {
+            bot.getChildByName("Penguine_Anim").getChildByName("Head_M Socket").getChildByName("accessories_headset01").getComponent(MeshRenderer).setMaterial(this._gameController.headPhoneAcceesories[playerData.headPhone].material, 0);
+          }
+          if (playerData.goggles == -1) bot.getChildByName("Penguine_Anim").getChildByName("Head_M Socket").getChildByName("accessories_glasses_01").active = false;else {
+            bot.getChildByName("Penguine_Anim").getChildByName("Head_M Socket").getChildByName("accessories_glasses_01").getComponent(MeshRenderer).setMaterial(this._gameController.gogglesAcceesories[playerData.goggles].material, 0);
+          }
+          if (playerData.target == -1) bot.getChildByName("Penguine_Anim").getChildByName("accessories_target_01").active = false;else {
+            bot.getChildByName("Penguine_Anim").getChildByName("accessories_target_01").getComponent(MeshRenderer).setMaterial(this._gameController.targetAcceesories[playerData.target].material, 0);
+          }
+        };
+
+        _proto.generateRandomNumber = function generateRandomNumber(min, max) {
+          return Math.floor(Math.random() * (max - min + 1)) + min;
         } // update (deltaTime: number) {
         //     // [4]
         // }
@@ -450,58 +2058,310 @@ System.register("chunks:///_virtual/BotController.ts", ['./_rollupPluginModLoBab
   };
 });
 
-System.register("chunks:///_virtual/GameController.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc', './BotController.ts', './GameConfig.ts', './PowerUpController.ts'], function (exports) {
+System.register("chunks:///_virtual/PlayerMovement.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc', './GameConfig.ts', './Helper.ts'], function (exports) {
   'use strict';
 
-  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, _defineProperty, cclegacy, _decorator, Label, Prefab, Node, Vec2, instantiate, Vec3, CapsuleCollider, Component, BotController, GameConfig, PowerUpController;
+  var _inheritsLoose, _defineProperty, _assertThisInitialized, cclegacy, _decorator, Vec3, Component, GameConfig, Helper;
+
+  return {
+    setters: [function (module) {
+      _inheritsLoose = module.inheritsLoose;
+      _defineProperty = module.defineProperty;
+      _assertThisInitialized = module.assertThisInitialized;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      Vec3 = module.Vec3;
+      Component = module.Component;
+    }, function (module) {
+      GameConfig = module.GameConfig;
+    }, function (module) {
+      Helper = module.Helper;
+    }],
+    execute: function () {
+      var _dec, _class, _temp;
+
+      cclegacy._RF.push({}, "465f28KiQZEUqz7f7nOJuR+", "PlayerMovement", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var PlayerMovement = exports('PlayerMovement', (_dec = ccclass('PlayerMovement'), _dec(_class = (_temp = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(PlayerMovement, _Component);
+
+        function PlayerMovement() {
+          var _this;
+
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+
+          _this = _Component.call.apply(_Component, [this].concat(args)) || this;
+
+          _defineProperty(_assertThisInitialized(_this), "sessionId", void 0);
+
+          _defineProperty(_assertThisInitialized(_this), "userId", void 0);
+
+          _defineProperty(_assertThisInitialized(_this), "isSelfUpdateAllowed", false);
+
+          _defineProperty(_assertThisInitialized(_this), "positonStack", []);
+
+          _defineProperty(_assertThisInitialized(_this), "startPos", void 0);
+
+          _defineProperty(_assertThisInitialized(_this), "startAngle", new Vec3());
+
+          _defineProperty(_assertThisInitialized(_this), "startScale", new Vec3());
+
+          _defineProperty(_assertThisInitialized(_this), "endPos", void 0);
+
+          _defineProperty(_assertThisInitialized(_this), "endAngle", void 0);
+
+          _defineProperty(_assertThisInitialized(_this), "endScale", void 0);
+
+          _defineProperty(_assertThisInitialized(_this), "maxFrames", 3);
+
+          _defineProperty(_assertThisInitialized(_this), "frames", _this.maxFrames + 1);
+
+          _defineProperty(_assertThisInitialized(_this), "gameFps", _this.maxFrames * GameConfig.network.dataPerSec);
+
+          _defineProperty(_assertThisInitialized(_this), "lastCalledTime", 0);
+
+          _defineProperty(_assertThisInitialized(_this), "delta", 0);
+
+          _defineProperty(_assertThisInitialized(_this), "fps", 0);
+
+          return _this;
+        }
+
+        var _proto = PlayerMovement.prototype;
+
+        _proto.showFps = function showFps() {
+          if (!this.lastCalledTime) {
+            this.lastCalledTime = Date.now();
+            this.fps = 0;
+            return;
+          }
+
+          this.delta = (Date.now() - this.lastCalledTime) / 1000;
+          this.lastCalledTime = Date.now();
+          this.fps = 1 / this.delta;
+          console.log(Math.round(this.fps));
+        };
+
+        _proto.setPropertiesFromServer = function setPropertiesFromServer(sessionId, player) {
+          this.sessionId = sessionId;
+          this.userId = player.userId;
+        };
+
+        _proto.startUpdateFromServer = function startUpdateFromServer() {
+          Helper.setFixedInterval(this.updatePositionFromServer.bind(this), 1000 / this.gameFps);
+        } // Updating position from server
+        ;
+
+        _proto.onPositionUpdate = function onPositionUpdate(plyr) {
+          // this.showFps();
+          this.positonStack.push({
+            pos: new Vec3(plyr.x, this.node.position.y, plyr.z),
+            angle: new Vec3(plyr.eulerAngles.x, plyr.eulerAngles.y, plyr.eulerAngles.z),
+            scale: new Vec3(plyr._currentScale, plyr._currentScale, plyr._currentScale)
+          });
+
+          if (this.positonStack.length > 5) {
+            this.positonStack.splice(0, this.positonStack.length - 5);
+          }
+        };
+
+        _proto.startSelfUpdate = function startSelfUpdate() {
+          this.isSelfUpdateAllowed = true;
+        };
+
+        _proto.updatePositionFromServer = function updatePositionFromServer(dt) {
+          if (this.frames > this.maxFrames) {
+            if (this.positonStack.length) {
+              this.startPos = new Vec3(this.node.position.x, this.node.position.y, this.node.position.z);
+              this.startAngle = new Vec3(this.node.eulerAngles.x, this.node.eulerAngles.y, this.node.eulerAngles.z);
+              this.startScale = new Vec3(this.node.scale.x, this.node.scale.y, this.node.scale.z);
+              var data = this.positonStack.shift();
+              this.endPos = data.pos;
+              this.endAngle = data.angle;
+              this.endScale = data.scale;
+              this.frames = 1;
+            }
+          }
+
+          if (this.frames <= this.maxFrames) {
+            this.node.position = Vec3.lerp(new Vec3(), this.startPos, this.endPos, this.frames / this.maxFrames);
+            this.node.eulerAngles = Vec3.lerp(new Vec3(), this.startAngle, this.endAngle, this.frames / this.maxFrames);
+            this.node.scale = Vec3.lerp(new Vec3(), this.startScale, this.endScale, this.frames / this.maxFrames);
+          }
+
+          ++this.frames;
+        };
+
+        return PlayerMovement;
+      }(Component), _temp)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/GameController.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc', './mxManager.ts', './constant.ts', './audioManager.ts', './GameConfig.ts', './SocketConnection.ts', './BotController.ts', './commonFun.ts', './PowerUpController.ts'], function (exports) {
+  'use strict';
+
+  var _applyDecoratedDescriptor, _initializerDefineProperty, _inheritsLoose, _assertThisInitialized, _defineProperty, cclegacy, _decorator, Material, SpriteFrame, Mesh, Prefab, Node, RichText, Vec2, randomRange, instantiate, Vec3, CapsuleCollider, MeshRenderer, Sprite, ProgressBar, tween, Label, Animation, RigidBody, PhysicsSystem, Component, MxManager, constant, audioManager, GameConfig, SocketConnection, SocketListener, BotController, CommonFun, PowerUpController;
 
   return {
     setters: [function (module) {
       _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
-      _inheritsLoose = module.inheritsLoose;
       _initializerDefineProperty = module.initializerDefineProperty;
+      _inheritsLoose = module.inheritsLoose;
       _assertThisInitialized = module.assertThisInitialized;
       _defineProperty = module.defineProperty;
     }, function (module) {
       cclegacy = module.cclegacy;
       _decorator = module._decorator;
-      Label = module.Label;
+      Material = module.Material;
+      SpriteFrame = module.SpriteFrame;
+      Mesh = module.Mesh;
       Prefab = module.Prefab;
       Node = module.Node;
+      RichText = module.RichText;
       Vec2 = module.Vec2;
+      randomRange = module.randomRange;
       instantiate = module.instantiate;
       Vec3 = module.Vec3;
       CapsuleCollider = module.CapsuleCollider;
+      MeshRenderer = module.MeshRenderer;
+      Sprite = module.Sprite;
+      ProgressBar = module.ProgressBar;
+      tween = module.tween;
+      Label = module.Label;
+      Animation = module.Animation;
+      RigidBody = module.RigidBody;
+      PhysicsSystem = module.PhysicsSystem;
       Component = module.Component;
+    }, function (module) {
+      MxManager = module.MxManager;
+    }, function (module) {
+      constant = module.constant;
+    }, function (module) {
+      audioManager = module.audioManager;
+    }, function (module) {
+      GameConfig = module.GameConfig;
+    }, function (module) {
+      SocketConnection = module.SocketConnection;
+      SocketListener = module.SocketListener;
     }, function (module) {
       BotController = module.BotController;
     }, function (module) {
-      GameConfig = module.GameConfig;
+      CommonFun = module.CommonFun;
     }, function (module) {
       PowerUpController = module.PowerUpController;
     }],
     execute: function () {
-      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _temp;
+      var _dec, _dec2, _class, _class2, _descriptor, _temp, _dec3, _dec4, _dec5, _dec6, _class4, _class5, _descriptor2, _descriptor3, _descriptor4, _temp2, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _dec25, _dec26, _dec27, _dec28, _dec29, _dec30, _dec31, _dec32, _dec33, _dec34, _dec35, _dec36, _class7, _class8, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _descriptor25, _descriptor26, _descriptor27, _descriptor28, _descriptor29, _descriptor30, _descriptor31, _descriptor32, _descriptor33, _temp3;
 
       cclegacy._RF.push({}, "48d51HOjkBIObFppQAdshF3", "GameController", undefined);
 
       var ccclass = _decorator.ccclass,
           property = _decorator.property;
-      var GameController = exports('GameController', (_dec = ccclass('GameController'), _dec2 = property({
-        type: Label
-      }), _dec3 = property({
+      var CharacterGame = exports('CharacterGame', (_dec = ccclass('CharacterGame'), _dec2 = property(Material), _dec(_class = (_class2 = (_temp = function CharacterGame() {
+        _initializerDefineProperty(this, "characterMaterial", _descriptor, this);
+      }, _temp), _descriptor = _applyDecoratedDescriptor(_class2.prototype, "characterMaterial", [_dec2], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _class2)) || _class));
+      var CharacterItem = exports('CharacterItem', (_dec3 = ccclass('CharacterItem'), _dec4 = property(SpriteFrame), _dec5 = property(Material), _dec6 = property(Mesh), _dec3(_class4 = (_class5 = (_temp2 = function CharacterItem() {
+        _initializerDefineProperty(this, "frame", _descriptor2, this);
+
+        _initializerDefineProperty(this, "material", _descriptor3, this);
+
+        _initializerDefineProperty(this, "mesh", _descriptor4, this);
+      }, _temp2), (_descriptor2 = _applyDecoratedDescriptor(_class5.prototype, "frame", [_dec4], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor3 = _applyDecoratedDescriptor(_class5.prototype, "material", [_dec5], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor4 = _applyDecoratedDescriptor(_class5.prototype, "mesh", [_dec6], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      })), _class5)) || _class4));
+      var GameController = exports('GameController', (_dec7 = ccclass('GameController'), _dec8 = property({
+        type: CharacterGame
+      }), _dec9 = property({
+        type: CharacterGame
+      }), _dec10 = property({
         type: Prefab
-      }), _dec4 = property({
-        type: Prefab
-      }), _dec5 = property({
-        type: Prefab
-      }), _dec6 = property({
-        type: Prefab
-      }), _dec7 = property({
+      }), _dec11 = property({
+        type: CharacterItem
+      }), _dec12 = property({
+        type: CharacterItem
+      }), _dec13 = property({
+        type: CharacterItem
+      }), _dec14 = property({
+        type: CharacterItem
+      }), _dec15 = property({
         type: Node
-      }), _dec8 = property({
+      }), _dec16 = property({
+        type: Prefab
+      }), _dec17 = property({
+        type: Prefab
+      }), _dec18 = property({
+        type: Prefab
+      }), _dec19 = property({
+        type: Prefab
+      }), _dec20 = property({
+        type: Prefab
+      }), _dec21 = property({
+        type: Prefab
+      }), _dec22 = property({
+        type: Prefab
+      }), _dec23 = property({
+        type: Prefab
+      }), _dec24 = property({
         type: Node
-      }), _dec(_class = (_class2 = (_temp = /*#__PURE__*/function (_Component) {
+      }), _dec25 = property({
+        type: Node
+      }), _dec26 = property({
+        type: Node
+      }), _dec27 = property({
+        type: Node
+      }), _dec28 = property({
+        type: Node
+      }), _dec29 = property({
+        type: Node
+      }), _dec30 = property({
+        type: RichText
+      }), _dec31 = property({
+        type: RichText
+      }), _dec32 = property({
+        type: Node
+      }), _dec33 = property({
+        type: Node
+      }), _dec34 = property({
+        type: SpriteFrame
+      }), _dec35 = property({
+        type: SpriteFrame
+      }), _dec36 = property({
+        type: SpriteFrame
+      }), _dec7(_class7 = (_class8 = (_temp3 = /*#__PURE__*/function (_Component) {
         _inheritsLoose(GameController, _Component);
 
         function GameController() {
@@ -513,19 +2373,63 @@ System.register("chunks:///_virtual/GameController.ts", ['./_rollupPluginModLoBa
 
           _this = _Component.call.apply(_Component, [this].concat(args)) || this;
 
-          _initializerDefineProperty(_assertThisInitialized(_this), "debugLabel", _descriptor, _assertThisInitialized(_this));
+          _initializerDefineProperty(_assertThisInitialized(_this), "botPrefabList", _descriptor5, _assertThisInitialized(_this));
 
-          _initializerDefineProperty(_assertThisInitialized(_this), "player", _descriptor2, _assertThisInitialized(_this));
+          _initializerDefineProperty(_assertThisInitialized(_this), "playerPrefabList", _descriptor6, _assertThisInitialized(_this));
 
-          _initializerDefineProperty(_assertThisInitialized(_this), "bot", _descriptor3, _assertThisInitialized(_this));
+          _initializerDefineProperty(_assertThisInitialized(_this), "foodPrefabList", _descriptor7, _assertThisInitialized(_this));
 
-          _initializerDefineProperty(_assertThisInitialized(_this), "gummyBear", _descriptor4, _assertThisInitialized(_this));
+          _initializerDefineProperty(_assertThisInitialized(_this), "bagAcceesories", _descriptor8, _assertThisInitialized(_this));
 
-          _initializerDefineProperty(_assertThisInitialized(_this), "namePrefab", _descriptor5, _assertThisInitialized(_this));
+          _initializerDefineProperty(_assertThisInitialized(_this), "headPhoneAcceesories", _descriptor9, _assertThisInitialized(_this));
 
-          _initializerDefineProperty(_assertThisInitialized(_this), "playerCamera", _descriptor6, _assertThisInitialized(_this));
+          _initializerDefineProperty(_assertThisInitialized(_this), "gogglesAcceesories", _descriptor10, _assertThisInitialized(_this));
 
-          _initializerDefineProperty(_assertThisInitialized(_this), "platform", _descriptor7, _assertThisInitialized(_this));
+          _initializerDefineProperty(_assertThisInitialized(_this), "targetAcceesories", _descriptor11, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "directionalLight", _descriptor12, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "player", _descriptor13, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "bot", _descriptor14, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "gummyBear", _descriptor15, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "PoisionSize", _descriptor16, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "PoisionSpeed", _descriptor17, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "GainSpeed", _descriptor18, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "Sheild", _descriptor19, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "characterHud", _descriptor20, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "playerCamera", _descriptor21, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "TrianglePlatform", _descriptor22, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "CircularPlatform", _descriptor23, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "InfinePlatform", _descriptor24, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "StarPlatform", _descriptor25, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "SquarelPatform", _descriptor26, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "gameTimer", _descriptor27, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "gameScore", _descriptor28, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "gameOver", _descriptor29, _assertThisInitialized(_this));
+
+          _defineProperty(_assertThisInitialized(_this), "gameTimerCount", 0);
+
+          _defineProperty(_assertThisInitialized(_this), "platformVertices", []);
+
+          _defineProperty(_assertThisInitialized(_this), "isReady", false);
+
+          _defineProperty(_assertThisInitialized(_this), "playerMap", {});
 
           _defineProperty(_assertThisInitialized(_this), "playerClass", void 0);
 
@@ -535,7 +2439,31 @@ System.register("chunks:///_virtual/GameController.ts", ['./_rollupPluginModLoBa
 
           _defineProperty(_assertThisInitialized(_this), "world", void 0);
 
-          _defineProperty(_assertThisInitialized(_this), "gameData", void 0);
+          _defineProperty(_assertThisInitialized(_this), "gameData", {});
+
+          _defineProperty(_assertThisInitialized(_this), "playerBoardData", []);
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "powerUpProgress", _descriptor30, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "SheildImg", _descriptor31, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "GainSpeedImg", _descriptor32, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "PoisionSpeedImg", _descriptor33, _assertThisInitialized(_this));
+
+          _defineProperty(_assertThisInitialized(_this), "_currentDuration", void 0);
+
+          _defineProperty(_assertThisInitialized(_this), "platform", null);
+
+          _defineProperty(_assertThisInitialized(_this), "currentTime", null);
+
+          _defineProperty(_assertThisInitialized(_this), "gameUiController", null);
+
+          _defineProperty(_assertThisInitialized(_this), "commonFun", null);
+
+          _defineProperty(_assertThisInitialized(_this), "totalPlayers", 0);
+
+          _defineProperty(_assertThisInitialized(_this), "gameOverList", []);
 
           return _this;
         }
@@ -543,57 +2471,425 @@ System.register("chunks:///_virtual/GameController.ts", ['./_rollupPluginModLoBa
         var _proto = GameController.prototype;
 
         _proto.start = function start() {
+          this.powerupController = new PowerUpController(this);
+          this.gameUiController = this.node.parent.getChildByName('Canvas').getComponent('GameUIController');
+          this.gameData = {};
+
+          if (MxManager.instance.isMiloApp) {
+            SocketConnection.instance.send({
+              command: 'GAME_LOADED',
+              data: {
+                msg: 'Client game loaded'
+              }
+            });
+            this.registerListeners();
+          }
+
+          this.commonFun = new CommonFun();
           this.world = this.node.getParent();
-          var currentLevel = parseInt(window.localStorage.getItem("currentLevel"));
-          var actualPlayerCount = 1;
-          var totalBotPresent = GameConfig.gameplay["default"].noOfBotsInGame - actualPlayerCount;
-          var easyBot = this.getPercentage(GameConfig.gameplay["default"].botsProbabilty.easy * 100, totalBotPresent);
-          var mediumBot = this.getPercentage(GameConfig.gameplay["default"].botsProbabilty.medium * 100, totalBotPresent);
-          var hardBot = this.getPercentage(GameConfig.gameplay["default"].botsProbabilty.hard * 100, totalBotPresent);
 
-          if (currentLevel < GameConfig.gameplay.levels.length) {
-            totalBotPresent = GameConfig.gameplay.levels[currentLevel].noOfBotsInGame - actualPlayerCount;
-            easyBot = this.getPercentage(GameConfig.gameplay.levels[currentLevel].botsProbabilty.easy * 100, totalBotPresent);
-            mediumBot = this.getPercentage(GameConfig.gameplay.levels[currentLevel].botsProbabilty.medium * 100, totalBotPresent);
-            hardBot = this.getPercentage(GameConfig.gameplay.levels[currentLevel].botsProbabilty.hard * 100, totalBotPresent);
+          if (MxManager.instance.isMiloApp) {
+            this.powerupController.setEatables([this.gummyBear, this.PoisionSize, this.PoisionSpeed, this.GainSpeed, this.Sheild]);
+            this.setGameData(SocketConnection.instance.room.state.gameData);
+            this.activatePlatform(this.gameData.currentMap);
+
+            for (var index = 0; index < SocketConnection.instance.onlinePlayers.length; index++) {
+              var player = SocketConnection.instance.onlinePlayers[index];
+              this.addPlayerToWorld(player, player.sessionId);
+            }
+
+            SocketConnection.instance.on(SocketListener.ON_ADD, this.onNewPlayerAdd, this);
+            SocketConnection.instance.on(SocketListener.ON_PLAYER_CHANGE, this.onPlayerPosChange, this);
+            SocketConnection.instance.on(SocketListener.ON_PLAYER_DEAD, this.playerDeadListener, this);
+            SocketConnection.instance.on(SocketListener.ON_BUMP, this.onHitFromServerListener, this);
+            SocketConnection.instance.on(SocketListener.ON_POWERUP_BUMP, this.onPowerUpBumpListener, this);
+            SocketConnection.instance.on(SocketListener.ON_GAME_OVER, this.onGameOverListener, this);
+            SocketConnection.instance.on(SocketListener.ON_CROWN, this.onCrownActiveListener, this);
+            SocketConnection.instance.on(SocketListener.ON_SCORE_CHANGE, this.onScoreChangeListener, this);
+          } else {
+            var currentLevel = parseInt(window.localStorage.getItem("currentLevel"));
+            var currentLevelData = null;
+            var actualPlayerCount = 1;
+            if (currentLevel < GameConfig.gameplay.levels.length) currentLevelData = GameConfig.gameplay.levels[currentLevel];else currentLevelData = GameConfig.gameplay["default"];
+            var totalBotPresent = currentLevelData.noOfBotsInGame;
+            var easyBot = this.getPercentage(currentLevelData.botsProbabilty.easy * 100, totalBotPresent);
+            var mediumBot = this.getPercentage(currentLevelData.botsProbabilty.medium * 100, totalBotPresent);
+            var hardBot = this.getPercentage(currentLevelData.botsProbabilty.hard * 100, totalBotPresent);
+
+            if (totalBotPresent > 0) {
+              while (easyBot + mediumBot + hardBot != totalBotPresent) {
+                if (easyBot > 0) easyBot -= 1;else if (mediumBot > 0) mediumBot -= 1;else if (hardBot > 0) hardBot -= 1;
+              }
+            } else totalBotPresent = 0;
+
+            var playerPosition = this.DrawCirclePointsForPlayers(totalBotPresent + 1, 10, new Vec2(0, 0));
+            var angle = this.getAngleForPlayer(360, totalBotPresent + 1);
+            this.totalPlayers = totalBotPresent + actualPlayerCount;
+            var ob1 = {
+              "currentLevel": currentLevel,
+              "levelDetail": currentLevelData,
+              "actualPlayerCount": actualPlayerCount,
+              "totalBotPresent": totalBotPresent,
+              "easyBot": easyBot,
+              "mediumBot": mediumBot,
+              "hardBot": hardBot,
+              "position": playerPosition,
+              "angle": angle,
+              "currentMap": currentLevelData.map.currentMap
+            };
+            this.gameData = Object.assign({}, ob1);
+            this.generatePlatform();
+            this.isReady = true;
+            var playerPos = GameConfig.debug.playerPos;
+            if (playerPos == -1) playerPos = Math.floor(randomRange(0, totalBotPresent));else if (playerPos >= totalBotPresent + 1) playerPos = 0;
+            var gamePos = this.gameData.position;
+            var playerPosnew = gamePos.splice(playerPos, 1);
+            this.gameData.position = gamePos;
+            var pangle = this.gameData.angle;
+            var playerAnglenew = pangle.splice(playerPos, 1);
+            this.gameData.angle = pangle; // Adding Player
+
+            var _player = instantiate(this.player);
+
+            this.addToWorld(_player);
+            this.initialiseAccessoriesData(_player);
+            var playerAngle = playerAnglenew[0];
+
+            _player.setPosition(playerPosnew[0]);
+
+            _player.eulerAngles = playerAngle;
+            this.playerClass = _player.getComponent('Player');
+            this.playerClass.setCamera(this.playerCamera, this, playerAngle);
+            this.playerClass.addName(this.characterHud, this.world);
+            this.playerClass.isReady = true; //initialising light
+
+            if (GameConfig.debug.camera.angleChange) this.directionalLight.eulerAngles = new Vec3(-35, _player.eulerAngles.y + 180, 0); // Adding bots
+
+            this.generateBot(_player); // Adding Player Collider
+
+            var collider = _player.getComponent(CapsuleCollider);
+
+            collider.on('onCollisionEnter', this.onCollision, this);
+          }
+        };
+
+        _proto.initialiseAccessoriesData = function initialiseAccessoriesData(player) {
+          var strngData;
+
+          if (!MxManager.instance.isMiloApp) {
+            strngData = window.localStorage.getItem("playerData");
+          } else {
+            strngData = player.getComponent('Player').playerData;
           }
 
-          while (easyBot + mediumBot + hardBot != totalBotPresent) {
-            if (easyBot > 0) easyBot -= 1;else if (mediumBot > 0) mediumBot -= 1;else if (hardBot > 0) hardBot -= 1;
+          var playerData = JSON.parse(strngData);
+          var characterIndex = playerData.character == -1 ? 0 : playerData.character;
+          player.getChildByName("Penguine_Anim").getChildByName("penguin_body01").getComponent(MeshRenderer).setMaterial(this.playerPrefabList[characterIndex].characterMaterial, 0);
+          if (playerData.bag == -1) player.getChildByName("Penguine_Anim").getChildByName("Chest_M Socket").getChildByName("accessories_schoolbag_01").active = false;else {
+            player.getChildByName("Penguine_Anim").getChildByName("Chest_M Socket").getChildByName("accessories_schoolbag_01").getComponent(MeshRenderer).setMaterial(this.bagAcceesories[playerData.bag].material, 0);
           }
+          if (playerData.headPhone == -1) player.getChildByName("Penguine_Anim").getChildByName("Head_M Socket").getChildByName("accessories_headset01").active = false;else {
+            player.getChildByName("Penguine_Anim").getChildByName("Head_M Socket").getChildByName("accessories_headset01").getComponent(MeshRenderer).setMaterial(this.headPhoneAcceesories[playerData.headPhone].material, 0);
+          }
+          if (playerData.goggles == -1) player.getChildByName("Penguine_Anim").getChildByName("Head_M Socket").getChildByName("accessories_glasses_01").active = false;else {
+            player.getChildByName("Penguine_Anim").getChildByName("Head_M Socket").getChildByName("accessories_glasses_01").getComponent(MeshRenderer).setMaterial(this.gogglesAcceesories[playerData.goggles].material, 0);
+          }
+          if (playerData.target == -1) player.getChildByName("Penguine_Anim").getChildByName("accessories_target_01").active = false;else {
+            player.getChildByName("Penguine_Anim").getChildByName("accessories_target_01").getComponent(MeshRenderer).setMaterial(this.targetAcceesories[playerData.target].material, 0);
+          }
+        };
 
-          this.debugLabel.string = "current Level " + currentLevel + "\n totalBotPresent " + totalBotPresent + "\n easyBot " + easyBot + "\n mediumBot " + mediumBot + "\n hardBot " + hardBot;
-          var playerPosition = this.DrawCirclePoints(totalBotPresent, 10, new Vec2(0, 0));
-          var angle = this.getAngleForPlayer(360, totalBotPresent);
-          var ob1 = {
-            "currentLevel": currentLevel,
-            "actualPlayerCount": actualPlayerCount,
-            "totalBotPresent": totalBotPresent,
-            "easyBot": easyBot,
-            "mediumBot": mediumBot,
-            "hardBot": hardBot,
-            "position": playerPosition,
-            "angle": angle
-          };
-          this.gameData = Object.assign({}, ob1); // Adding Player
-
-          var player = instantiate(this.player);
-          this.addToWorld(player);
-          player.setPosition(new Vec3(0, 0.5, 15));
-          this.playerClass = player.getComponent('Player');
-          this.playerClass.setCamera(this.playerCamera, this);
-          this.playerClass.addName(this.namePrefab, this.world); // Adding bots
-
+        _proto.generateBot = function generateBot(player) {
           this.botController = new BotController(this);
           this.botController.playerCamera = this.playerClass.playerCamera;
-          this.botController.addBots(this.bot, this.namePrefab, player); // Adding Eatables
+          this.botController.addBots(this.bot, this.botPrefabList, this.characterHud, player);
+        };
 
-          this.powerupController = new PowerUpController(this);
-          this.powerupController.setEatables([this.gummyBear]);
-          this.powerupController.spawnPowerup("GummyBear"); // Adding Player Collider
+        _proto.setGameData = function setGameData(gameData) {
+          // this.gameData.angle = SocketConnection.instance.room.state.gameData.angle;
+          // this.gameData.position = SocketConnection.instance.room.state.gameData.position;
+          this.gameData.actualPlayerCount = SocketConnection.instance.room.state.gameData.actualPlayerCount;
+          this.gameData.currentLevel = SocketConnection.instance.room.state.gameData.currentLevel;
+          this.gameData.currentMap = SocketConnection.instance.room.state.gameData.currentMap;
+          this.gameData.easyBot = SocketConnection.instance.room.state.gameData.easyBot;
+          this.gameData.mediumBot = SocketConnection.instance.room.state.gameData.mediumBot;
+          this.gameData.hardBot = SocketConnection.instance.room.state.gameData.hardBot;
+          this.gameData.totalBotPresent = SocketConnection.instance.room.state.gameData.totalBotPresent;
+        };
 
-          var collider = player.getComponent(CapsuleCollider);
-          collider.on('onCollisionEnter', this.onCollision, this);
+        _proto.activatePlatform = function activatePlatform(platformName) {
+          switch (platformName) {
+            case "triangle":
+              {
+                var triangleVertices = [new Vec3(22, 0.5, 15), new Vec3(-22, 0.5, 15), new Vec3(0, 0.5, -22)];
+                this.platform = this.TrianglePlatform;
+                this.platformVertices = triangleVertices;
+              }
+              break;
+
+            case "circular":
+              {
+                var circularVertices = this.DrawCirclePoints(10, 25, new Vec2(0, 0));
+                this.platform = this.CircularPlatform;
+                this.platformVertices = circularVertices;
+              }
+              break;
+
+            case "infinite":
+              {
+                var circleOne = this.DrawCirclePoints(10, 17, new Vec2(17, 0));
+                var circleTwo = this.DrawCirclePoints(10, 17, new Vec2(-17, 0));
+                circleTwo.splice(0, 1);
+                var infineVertices = [];
+
+                for (var i = 0; i < circleOne.length; i++) {
+                  if (i != 5) infineVertices.push(circleOne[i]);else infineVertices = infineVertices.concat(circleTwo);
+                }
+
+                var parts = this.splitInteger(this.gameData.totalBotPresent + 1, 2);
+                var playerPosition1 = this.DrawCirclePointsForPlayers(parts[0], 10, new Vec2(17, 0));
+                var playerPosition2 = this.DrawCirclePointsForPlayers(parts[1], 10, new Vec2(-17, 0));
+                playerPosition1 = playerPosition1.concat(playerPosition2);
+                var angle1 = this.getAngleForPlayer(360, parts[0]);
+                var angle2 = this.getAngleForPlayer(360, parts[1]);
+                angle1 = angle1.concat(angle2);
+                this.gameData.position = playerPosition1;
+                this.gameData.angle = angle1;
+                this.platform = this.InfinePlatform;
+                this.platformVertices = infineVertices;
+              }
+              break;
+
+            case "star":
+              {
+                var starVertices = [new Vec3(0, 0.5, -23), new Vec3(9, 0.5, -9), new Vec3(25, 0.5, -5), new Vec3(14, 0.5, 7), new Vec3(15, 0.5, 23), new Vec3(0, 0.5, 17), new Vec3(-15, 0.5, 23), new Vec3(-14, 0.5, 7), new Vec3(-25, 0.5, -5), new Vec3(-9, 0.5, -9)];
+                this.platform = this.StarPlatform;
+                this.platformVertices = starVertices;
+              }
+              break;
+
+            case "square":
+              {
+                var squareVertices = [new Vec3(23, 0.5, -23), new Vec3(23, 0.5, 23), new Vec3(-23, 0.5, 23), new Vec3(-23, 0.5, -23)];
+                this.platform = this.SquarelPatform;
+                this.platformVertices = squareVertices;
+              }
+              break;
+          }
+
+          this.platform.active = true;
+        };
+
+        _proto.generatePlatform = function generatePlatform() {
+          if (this.gameData.currentMap == "isRandom") {
+            var range = Math.floor(randomRange(0, GameConfig.debug.mapList.length - 1));
+            this.gameData.currentMap = GameConfig.debug.mapList[range];
+          }
+
+          this.activatePlatform(this.gameData.currentMap);
+        };
+
+        _proto.splitInteger = function splitInteger(num, parts) {
+          var val;
+          var retData;
+          var mod = num % parts;
+
+          if (mod == 0) {
+            val = num / parts;
+            retData = Array(parts).fill(val);
+          } else {
+            val = (num - mod) / parts;
+            retData = Array(parts).fill(val);
+
+            for (var i = 0; i < mod; i++) {
+              retData[i] = retData[i] + 1;
+            }
+
+            retData.reverse();
+          }
+
+          return retData;
+        };
+
+        _proto.getRangeVal = function getRangeVal(percentage, minPercentage, maxPercentage, minValue, maxValue) {
+          var minPercentage = minPercentage;
+          var maxPercentage = maxPercentage;
+          var minValue = minValue;
+          var maxValue = maxValue;
+          return (percentage - minPercentage) / (maxPercentage - minPercentage) * (maxValue - minValue) + minValue;
+        };
+
+        _proto.startPowerupProgress = function startPowerupProgress(time, powerType) {
+          this.powerUpProgress.active = true;
+          if (powerType == "sheild") this.powerUpProgress.getChildByName("powerUpImage").getChildByName("image").getComponent(Sprite).spriteFrame = this.SheildImg;
+          if (powerType == "GainSpeed") this.powerUpProgress.getChildByName("powerUpImage").getChildByName("image").getComponent(Sprite).spriteFrame = this.GainSpeedImg;
+          if (powerType == "PoisionSpeed") this.powerUpProgress.getChildByName("powerUpImage").getChildByName("image").getComponent(Sprite).spriteFrame = this.PoisionSpeedImg;
+          this._currentDuration = time;
+          var value = this.getRangeVal(time, 0, this._currentDuration, 0, 1);
+          this.powerUpProgress.getChildByName("ProgressBar").getComponent(ProgressBar).progress = value;
+          var value1 = this.getRangeVal(time - 1, 0, this._currentDuration, 0, 1);
+          tween(this.powerUpProgress.getChildByName("ProgressBar").getComponent(ProgressBar)).to(1, {
+            progress: value1
+          }).start();
+          this.powerUpProgress.getChildByName("powerUpImage").getChildByName("counter").getComponent(Label).string = time;
+        };
+
+        _proto.updatePowerProgress = function updatePowerProgress(value) {
+          var progressValue = this.getRangeVal(value - 1, 0, this._currentDuration, 0, 1);
+          tween(this.powerUpProgress.getChildByName("ProgressBar").getComponent(ProgressBar)).to(1, {
+            progress: progressValue
+          }).start();
+          this.powerUpProgress.getChildByName("powerUpImage").getChildByName("counter").getComponent(Label).string = value;
+          if (value == 0) this.powerUpProgress.active = false;
+        };
+
+        _proto.gameTimerUpdate = function gameTimerUpdate() {
+          this.gameTimerCount--;
+          this.gameTimer.string = "<color=#000000>" + "<size=56>" + "Time  : " + "</size>" + "<color=#449b9a>" + "<size=56>" + this.gameTimerCount + "</size>";
+
+          if (this.gameTimerCount == this.gameData.levelDetail.time - this.gameData.levelDetail.powerUp.initialiseDuration) {
+            this.powerupController.startSpawningNewPowerups();
+          }
+
+          if (this.checkIfOnlyOnePlayerRemaining()) return;
+
+          if (!parseInt(window.localStorage.getItem("isStopped"))) {
+            this.checkCharacterWithHighScore();
+            this.updatePlayerCount();
+          }
+
+          if (this.gameTimerCount <= 0) {
+            this.onTimerRunsOut();
+          }
+        };
+
+        _proto.checkIfOnlyOnePlayerRemaining = function checkIfOnlyOnePlayerRemaining() {
+          if (this.botController._totalPlayerArrayList.length == 1) {
+            var comp = this.gameOver.getComponent("GameOver");
+            comp.showWinPopup(this);
+            this.onTimerRunsOut();
+            return true;
+          }
+
+          return false;
+        };
+
+        _proto.onTimerRunsOut = function onTimerRunsOut() {
+          this.unschedule(this.gameTimerUpdate);
+          this.gameOverList = [];
+          var boardList = [];
+          window.localStorage.setItem("isStopped", "1");
+
+          while (this.botController._totalPlayerArrayList.length > 0) {
+            var currentCharacter = this.checkCharacterWithHighScore();
+            this.commonFun.removeObjectFromArray(this.botController._totalPlayerArrayList, currentCharacter);
+            this.gameOverList.push(currentCharacter);
+            var currentScript = currentCharacter.getComponent("Bot") == null ? currentCharacter.getComponent("Player") : currentCharacter.getComponent("Bot");
+            var d = new Date();
+            var ob1 = {
+              "name": currentScript._charName,
+              "time": d.getTime(),
+              "isSelf": false
+            };
+            boardList.push(ob1);
+          }
+
+          for (var i = boardList.length - 1; i >= 0; i--) {
+            this.playerBoardData.push(boardList[i]);
+          }
+
+          var comp = this.gameOver.getComponent("GameOver");
+          comp.showGameOverPopup(this);
+        };
+
+        _proto.checkCharacterWithHighScore = function checkCharacterWithHighScore() {
+          var player = this.getPlayerCrown(0); //checkusing sumo size
+
+          var currentBigCharacter = null;
+          if (player.length == 1) currentBigCharacter = player[0];else {
+            player = this.getPlayerCrown(1); //checkusing sumo pushed
+
+            if (player.length == 1) currentBigCharacter = player[0];else {
+              player = this.getPlayerCrown(2); //checkusing sumo score
+
+              if (player.length == 1) currentBigCharacter = player[0];else {
+                var no = Math.floor(randomRange(0, player.length - 1));
+                currentBigCharacter = player[no];
+              }
+            }
+          }
+          if (currentBigCharacter) currentBigCharacter.getChildByName("Penguine_Anim").getChildByName("Head_M Socket").getChildByName("crown_01").active = true;
+          return currentBigCharacter;
+        };
+
+        _proto.getPlayerCrown = function getPlayerCrown(value) {
+          var topData = 0;
+          var previousData = 0; //get character with big size
+
+          for (var i = 0; i < this.botController._totalPlayerArrayList.length; i++) {
+            var charcter = this.botController._totalPlayerArrayList[i];
+            var currentScript = charcter.getComponent("Bot") == null ? charcter.getComponent("Player") : charcter.getComponent("Bot");
+            charcter.getChildByName("Penguine_Anim").getChildByName("Head_M Socket").getChildByName("crown_01").active = false;
+
+            if (value == 0) {
+              if (currentScript.getCurrentScale() > previousData) {
+                previousData = currentScript.getCurrentScale();
+                topData = currentScript.getCurrentScale();
+              }
+            } else if (value == 1) {
+              if (currentScript._totalSumoPushed > previousData) {
+                previousData = currentScript._totalSumoPushed;
+                topData = currentScript._totalSumoPushed;
+              }
+            } else {
+              if (currentScript._score > previousData) {
+                previousData = currentScript._score;
+                topData = currentScript._score;
+              }
+            }
+          } //get the same character size in a array
+
+
+          var totalCharacter = [];
+
+          for (var _i = 0; _i < this.botController._totalPlayerArrayList.length; _i++) {
+            var _charcter = this.botController._totalPlayerArrayList[_i];
+
+            var _currentScript = _charcter.getComponent("Bot") == null ? _charcter.getComponent("Player") : _charcter.getComponent("Bot");
+
+            if (value == 0) {
+              if (_currentScript.getCurrentScale() == topData) totalCharacter.push(_charcter);
+            } else if (value == 1) {
+              if (_currentScript._totalSumoPushed == topData) totalCharacter.push(_charcter);
+            } else {
+              if (_currentScript._score == topData) totalCharacter.push(_charcter);
+            }
+          }
+
+          return totalCharacter;
+        };
+
+        _proto.updatePlayerCount = function updatePlayerCount() {
+          this.gameUiController.node.getChildByName("Hud").getChildByName("hudbar").getChildByName("totalPlayer").getChildByName("playerCount").getComponent(RichText).string = "<color=#ffffff>" + "<size=60>" + this.botController._totalPlayerArrayList.length + "</size>";
+        };
+
+        _proto.onGameStart = function onGameStart() {
+          window.localStorage.setItem("isStopped", "0");
+          var anim = this.gameUiController.node.getChildByName("Hud").getComponent(Animation);
+          anim.play('showHud');
+          this.gameScore.string = "<color=#000000>" + "<size=56>" + "Score : " + "</size>" + "<color=#449b9a>" + "<size=56>" + 0 + "</size>";
+
+          if (!MxManager.instance.isMiloApp) {
+            // Adding Eatables
+            this.powerupController.setEatables([this.gummyBear, this.PoisionSize, this.PoisionSpeed, this.GainSpeed, this.Sheild]);
+            this.powerupController.spawnPowerup("GummyBear");
+            this.gameTimerCount = this.gameData.levelDetail.time;
+            this.gameTimerUpdate();
+            this.schedule(this.gameTimerUpdate, 1);
+          }
+
+          var d = new Date();
+          this.currentTime = d.getTime();
         };
 
         _proto.addToWorld = function addToWorld(child) {
@@ -607,37 +2903,104 @@ System.register("chunks:///_virtual/GameController.ts", ['./_rollupPluginModLoBa
         _proto.onCollision = function onCollision(event) {
           var otherCollider = event.otherCollider;
 
-          if (otherCollider.node.name == 'spaceStation') {
-            this.playerClass.moveStationCamera();
-            return;
-          }
-
           if (otherCollider.node.name == 'deathPlatform') {
-            this.playerClass.resetStationCamera();
+            this.playerClass._onDeathPlatform(event);
+
+            var comp = this.gameOver.getComponent("GameOver");
+            comp.showGameOverPopup(this);
             return;
           }
 
-          if (otherCollider.node.name == 'Platform') {
+          if (otherCollider.node.name == 'platform') {
             return;
+          }
+
+          var playerExist = false;
+
+          for (var i = 0; i < 10; i++) {
+            var playerName = 'Player';
+            var BotName = 'bot';
+
+            if (i > 0) {
+              playerName = playerName + i;
+              BotName = BotName + i;
+            }
+
+            if (otherCollider.node.name == playerName) {
+              playerExist = true;
+              break;
+            }
+
+            if (otherCollider.node.name == BotName) {
+              playerExist = true;
+              break;
+            }
+          }
+
+          if (playerExist) {
+            this.playerClass._onCollisionEnter(event);
           }
 
           if (otherCollider.node.name == 'GummyBear') {
-            // if (this.playerClass.lastColliderId != otherCollider.uuid) {
+            audioManager.instance.playSound(constant.AUDIO_SOUND.foodEat);
+            audioManager.instance.playSound(constant.AUDIO_SOUND.gainPowerUp);
             this.powerupController.removeGummy(otherCollider);
-            var gainValue = GameConfig.powerup[otherCollider.node.name].gain;
-            this.playerClass.resize(gainValue); //     this.playerClass.lastColliderId = otherCollider.uuid;
-            // }
-          } else if (otherCollider.node.name == 'Bot') {
-            this.playerClass._onCollisionEnter(event);
+            var gainValue = GameConfig.powerup[otherCollider.node.name].gainPercentage;
+            this.playerClass.resize(gainValue, true);
+            this.playerClass.updateScore(GameConfig.powerup[otherCollider.node.name].score);
+          }
+
+          if (this.playerClass.checkSheildActive() || this.playerClass.checkGainSpeedActive() || this.playerClass.checkPoisionSpeedActive()) return;
+
+          if (otherCollider.node.name == 'PoisionSize') {
+            audioManager.instance.playSound(constant.AUDIO_SOUND.foodEat);
+            audioManager.instance.playSound(constant.AUDIO_SOUND.countDown);
+            this.powerupController.removeGummy(otherCollider);
+            var _gainValue = GameConfig.powerup[otherCollider.node.name].lossPercentage;
+            this.playerClass.resize(_gainValue, false);
+            this.playerClass.updateScore(GameConfig.powerup[otherCollider.node.name].score);
+          }
+
+          if (otherCollider.node.name == 'PoisionSpeed') {
+            audioManager.instance.playSound(constant.AUDIO_SOUND.foodEat);
+            audioManager.instance.playSound(constant.AUDIO_SOUND.slowPowerUp);
+            this.powerupController.removeGummy(otherCollider);
+            var lossValue = GameConfig.powerup[otherCollider.node.name].lossSpeedPercentage;
+            var duration = GameConfig.powerup[otherCollider.node.name].duration;
+            this.playerClass.reEvaluateSpeed(lossValue, duration, false);
+            this.playerClass.updateScore(GameConfig.powerup[otherCollider.node.name].score);
+          }
+
+          if (otherCollider.node.name == 'GainSpeed') {
+            audioManager.instance.playSound(constant.AUDIO_SOUND.foodEat);
+            audioManager.instance.playSound(constant.AUDIO_SOUND.speedPowerUp);
+            this.powerupController.removeGummy(otherCollider);
+            var _lossValue = GameConfig.powerup[otherCollider.node.name].increaseSpeedPercentage;
+            var _duration = GameConfig.powerup[otherCollider.node.name].duration;
+            this.playerClass.reEvaluateSpeed(_lossValue, _duration, true);
+            this.playerClass.updateScore(GameConfig.powerup[otherCollider.node.name].score);
+          }
+
+          if (otherCollider.node.name == 'Sheild') {
+            audioManager.instance.playSound(constant.AUDIO_SOUND.foodEat);
+            audioManager.instance.playSound(constant.AUDIO_SOUND.sheildPowerUp);
+            this.powerupController.removeGummy(otherCollider);
+            var _duration2 = GameConfig.powerup[otherCollider.node.name].duration;
+            this.playerClass.startSheild(_duration2);
+            this.playerClass.updateScore(GameConfig.powerup[otherCollider.node.name].score);
           }
         };
 
         _proto.touchCallBack = function touchCallBack(vector, angle) {
-          this.playerClass.touchCallBack(vector, angle);
+          if (this.isReady) this.playerClass.touchCallBack(vector, angle);
+        };
+
+        _proto.sliderCallBack = function sliderCallBack(name, value) {
+          this.playerClass.sliderCallBack(name, value);
         };
 
         _proto.touchAngleCallBack = function touchAngleCallBack(vector, angle) {
-          this.playerClass.touchAngleCallBack(vector, angle);
+          if (this.isReady) this.playerClass.touchAngleCallBack(vector, angle);
         };
 
         _proto.getPercentage = function getPercentage(percentToGet, number) {
@@ -659,6 +3022,21 @@ System.register("chunks:///_virtual/GameController.ts", ['./_rollupPluginModLoBa
           return pointArray;
         };
 
+        _proto.DrawCirclePointsForPlayers = function DrawCirclePointsForPlayers(points, radius, center) {
+          var pointArray = [];
+          var slice = 2 * Math.PI / points;
+
+          for (var i = 0; i < points; i++) {
+            var angle = slice * i;
+            var newX = Number(center.x + radius * Math.sin(angle));
+            var newY = Number(center.y + radius * Math.cos(angle));
+            var p = new Vec3(newX, 0.5, newY);
+            pointArray.push(p);
+          }
+
+          return pointArray;
+        };
+
         _proto.getAngleForPlayer = function getAngleForPlayer(num, parts) {
           var arrayData = this.getsplitRange(num, parts);
           var angleData = [];
@@ -667,15 +3045,23 @@ System.register("chunks:///_virtual/GameController.ts", ['./_rollupPluginModLoBa
           for (var i = 0; i < arrayData.length; i++) {
             var p = new Vec3(0, previousAngle, 0);
             previousAngle += arrayData[i];
+            p.y = p.y + 180;
             angleData.push(p);
           }
 
           return angleData;
         };
 
+        _proto.rotateRight = function rotateRight(arr) {
+          var last = arr.pop();
+          arr.unshift(last);
+          return arr;
+        };
+
         _proto.getsplitRange = function getsplitRange(num, parts) {
-          var n = Math.floor(num / parts);
           var arr = [];
+          if (parts <= 0) return arr;
+          var n = Math.floor(num / parts);
 
           for (var i = 0; i < parts; i++) {
             arr.push(n);
@@ -687,8 +3073,8 @@ System.register("chunks:///_virtual/GameController.ts", ['./_rollupPluginModLoBa
             return arr;
           }
 
-          for (var _i = 0; _i < parts; _i++) {
-            arr[_i]++;
+          for (var _i2 = 0; _i2 < parts; _i2++) {
+            arr[_i2]++;
 
             if (arr.reduce(function (a, b) {
               return a + b;
@@ -696,48 +3082,613 @@ System.register("chunks:///_virtual/GameController.ts", ['./_rollupPluginModLoBa
               return arr;
             }
           }
+        } // milo
+        ;
+
+        _proto.onNewPlayerAdd = function onNewPlayerAdd() {
+          for (var index = 0; index < SocketConnection.instance.onlinePlayers.length; index++) {
+            var player = SocketConnection.instance.onlinePlayers[index];
+
+            if (!this.playerMap[player.sessionId]) {
+              var sid = this.serarchPlayer(player.userId);
+              this.removeFromWorld(this.playerMap[sid].node);
+              delete this.playerMap[sid];
+              this.addPlayerToWorld(player, player.sessionId);
+            }
+          }
+        };
+
+        _proto.serarchPlayer = function serarchPlayer(userId) {
+          var foundId = '';
+
+          for (var _key2 in this.playerMap) {
+            if (Object.prototype.hasOwnProperty.call(this.playerMap, _key2)) {
+              var element = this.playerMap[_key2];
+              if (element.userId == userId) foundId = _key2;
+            }
+          }
+
+          return foundId;
+        };
+
+        _proto.addPlayerToWorld = function addPlayerToWorld(player, sessionId) {
+          var plyr = instantiate(this.player);
+          plyr.position.set(new Vec3(player.x, player.y, player.z));
+          this.addToWorld(plyr);
+          plyr.getComponent(RigidBody).setGroup(PhysicsSystem.PhysicsGroup['nonCollidingPlayer']);
+          var playerClass = plyr.getComponent('Player');
+          playerClass.setPropertiesFromServer(sessionId, player);
+          if (player.playerData == undefined || player.playerData == null) debugger;
+          playerClass.playerData = player.playerData;
+          this.initialiseAccessoriesData(plyr);
+          playerClass.node.eulerAngles.set(new Vec3(player.eulerAngles.x, player.eulerAngles.y, player.eulerAngles.z));
+          playerClass.setCamera(this.playerCamera, this, new Vec3(player.eulerAngles.x, player.eulerAngles.y, player.eulerAngles.z));
+          playerClass.addName(this.characterHud, this.world);
+          this.playerMap[sessionId] = playerClass;
+
+          if (SocketConnection.instance.sessionId != sessionId) {
+            playerClass.startUpdateFromServer();
+          } else {
+            this.playerClass = this.playerMap[sessionId];
+            playerClass.startSelfUpdate(); // Adding Player Collider
+
+            /*  const collider = this.playerClass.node.getComponent(CapsuleCollider)!;
+             collider.on('onCollisionEnter', this.onCollision, this); */
+
+            this.setGameReady();
+          }
+        };
+
+        _proto.setGameReady = function setGameReady() {
+          this.playerClass.isReady = true;
+          this.isReady = true;
+          this.sendPlayerLocation();
+        };
+
+        _proto.sendPlayerLocation = function sendPlayerLocation() {
+          if (this.isReady) {
+            setInterval(this.sendPlayerUpdate.bind(this), 1000 / GameConfig.network.dataPerSec);
+          }
+        };
+
+        _proto.sendPlayerUpdate = function sendPlayerUpdate() {
+          if (!SocketConnection.instance.isConnected) return;
+          var pos = this.playerClass.node.position;
+          var angle = this.playerClass.node.eulerAngles;
+          SocketConnection.instance.send({
+            command: 'PLAYER_POS',
+            data: {
+              x: pos.x,
+              y: pos.y,
+              z: pos.z,
+              angle: {
+                x: angle.x,
+                y: angle.y,
+                z: angle.z
+              }
+            }
+          });
+        };
+
+        _proto.onHitFromServerListener = function onHitFromServerListener(data) {
+          var collider = this.playerMap[data.collider];
+          this.playerMap[SocketConnection.instance.sessionId].collisionReceivedFromServer(data, collider);
+        };
+
+        _proto.onPowerUpBumpListener = function onPowerUpBumpListener(data) {
+          this.playerMap[SocketConnection.instance.sessionId].powerUpBumpListener(data);
+        };
+
+        _proto.onPlayerPosChange = function onPlayerPosChange(playerContext) {
+          if (playerContext.sessionId != SocketConnection.instance.room.sessionId) {
+            if (this.playerMap[playerContext.sessionId]) {
+              this.playerMap[playerContext.sessionId].onPositionUpdate(playerContext);
+            }
+          }
+        };
+
+        _proto.removeFromWorld = function removeFromWorld(node) {
+          this.world.removeChild(node);
+        };
+
+        _proto.updateServerGameTime = function updateServerGameTime(value) {
+          this.gameTimer.string = "<color=#000000>" + "<size=56>" + "Time  : " + "</size>" + "<color=#449b9a>" + "<size=56>" + value + "</size>";
+        };
+
+        _proto.registerListeners = function registerListeners() {
+          var _this2 = this;
+
+          SocketConnection.instance.on(SocketListener.READY_GO_COUNT, function (value) {
+            _this2.gameUiController.checkReadyGoTimer(value);
+          }, this);
+          SocketConnection.instance.on(SocketListener.SERVER_GAME_TIME, function (value) {
+            _this2.updateServerGameTime(value);
+          }, this);
+          SocketConnection.instance.on(SocketListener.ON_POWERUP_CHANGE, function (powerup) {
+            _this2.powerupController.onChangeListener(powerup);
+
+            console.log('On change received');
+          }, this);
+        };
+
+        _proto.onGameOverListener = function onGameOverListener(boardList) {
+          this.playerMap[SocketConnection.instance.sessionId].setSpeed(0);
+          SocketConnection.instance.room.leave();
+          var gameOver = this.gameOver.getComponent("GameOver");
+
+          if (boardList[0].sId = SocketConnection.instance.sessionId) {
+            gameOver.showWinPopup(this);
+          }
+
+          for (var index = 0; index < boardList.length; index++) {
+            var element = boardList[index];
+            if (element.sId == SocketConnection.instance.sessionId) element.isSelf = true;
+          }
+
+          this.playerBoardData = [];
+
+          for (var i = boardList.length - 1; i >= 0; i--) {
+            this.playerBoardData.push(boardList[i]);
+          }
+
+          gameOver.showGameOverPopupFromServer(this);
+          /*  var boardList = [];
+           for (let index = 0; index < data.length; index++) {
+               const element = data[index];
+               var ob1 = {
+                   "name": element.name,
+                   'time': element.eTime,
+                   'isSelf': element.sId == SocketConnection.instance.sessionId
+               }
+               boardList.push(ob1);
+           } */
+        };
+
+        _proto.playerDeadListener = function playerDeadListener(player) {
+          var ob1 = {
+            "name": player.name,
+            'time': player.endTime,
+            'isSelf': false
+          };
+          this.playerBoardData.push(ob1);
+
+          if (player.sessionId == SocketConnection.instance.sessionId) {
+            ob1.isSelf = true;
+            this.playerMap[player.sessionId].setSpeed(0);
+            SocketConnection.instance.room.leave();
+            var gameOver = this.gameOver.getComponent("GameOver");
+            gameOver.showGameOverPopupFromServer(this);
+          }
+        };
+
+        _proto.getTotalPlayers = function getTotalPlayers() {
+          var count = 0;
+
+          for (var _key3 in this.playerMap) {
+            if (Object.prototype.hasOwnProperty.call(this.playerMap, _key3)) {
+              ++count;
+            }
+          }
+
+          return count;
+        };
+
+        _proto.onCrownActiveListener = function onCrownActiveListener(player) {
+          if (this.playerMap[player.sessionId]) {
+            var element = this.playerMap[player.sessionId];
+            element.node.getChildByName("Penguine_Anim").getChildByName("Head_M Socket").getChildByName("crown_01").active = player.crownActive;
+          }
+        };
+
+        _proto.onScoreChangeListener = function onScoreChangeListener(player) {
+          if (this.playerMap[player.sessionId]) {
+            this.playerMap[player.sessionId].updateScore(player.score);
+          }
+        };
+
+        _proto.playerCountListener = function playerCountListener(count) {
+          this.gameUiController.node.getChildByName("Hud").getChildByName("hudbar").getChildByName("totalPlayer").getChildByName("playerCount").getComponent(RichText).string = "<color=#ffffff>" + "<size=60>" + count + "</size>";
         };
 
         return GameController;
-      }(Component), _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "debugLabel", [_dec2], {
+      }(Component), _temp3), (_descriptor5 = _applyDecoratedDescriptor(_class8.prototype, "botPrefabList", [_dec8], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
-          return null;
+          return [];
         }
-      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "player", [_dec3], {
+      }), _descriptor6 = _applyDecoratedDescriptor(_class8.prototype, "playerPrefabList", [_dec9], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return [];
+        }
+      }), _descriptor7 = _applyDecoratedDescriptor(_class8.prototype, "foodPrefabList", [_dec10], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return [];
+        }
+      }), _descriptor8 = _applyDecoratedDescriptor(_class8.prototype, "bagAcceesories", [_dec11], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return [];
+        }
+      }), _descriptor9 = _applyDecoratedDescriptor(_class8.prototype, "headPhoneAcceesories", [_dec12], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return [];
+        }
+      }), _descriptor10 = _applyDecoratedDescriptor(_class8.prototype, "gogglesAcceesories", [_dec13], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return [];
+        }
+      }), _descriptor11 = _applyDecoratedDescriptor(_class8.prototype, "targetAcceesories", [_dec14], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return [];
+        }
+      }), _descriptor12 = _applyDecoratedDescriptor(_class8.prototype, "directionalLight", [_dec15], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: null
-      }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "bot", [_dec4], {
+      }), _descriptor13 = _applyDecoratedDescriptor(_class8.prototype, "player", [_dec16], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: null
-      }), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "gummyBear", [_dec5], {
+      }), _descriptor14 = _applyDecoratedDescriptor(_class8.prototype, "bot", [_dec17], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: null
+      }), _descriptor15 = _applyDecoratedDescriptor(_class8.prototype, "gummyBear", [_dec18], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return null;
         }
-      }), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "namePrefab", [_dec6], {
+      }), _descriptor16 = _applyDecoratedDescriptor(_class8.prototype, "PoisionSize", [_dec19], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return null;
         }
-      }), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "playerCamera", [_dec7], {
+      }), _descriptor17 = _applyDecoratedDescriptor(_class8.prototype, "PoisionSpeed", [_dec20], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return null;
         }
-      }), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "platform", [_dec8], {
+      }), _descriptor18 = _applyDecoratedDescriptor(_class8.prototype, "GainSpeed", [_dec21], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor19 = _applyDecoratedDescriptor(_class8.prototype, "Sheild", [_dec22], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor20 = _applyDecoratedDescriptor(_class8.prototype, "characterHud", [_dec23], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor21 = _applyDecoratedDescriptor(_class8.prototype, "playerCamera", [_dec24], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor22 = _applyDecoratedDescriptor(_class8.prototype, "TrianglePlatform", [_dec25], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor23 = _applyDecoratedDescriptor(_class8.prototype, "CircularPlatform", [_dec26], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor24 = _applyDecoratedDescriptor(_class8.prototype, "InfinePlatform", [_dec27], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor25 = _applyDecoratedDescriptor(_class8.prototype, "StarPlatform", [_dec28], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor26 = _applyDecoratedDescriptor(_class8.prototype, "SquarelPatform", [_dec29], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor27 = _applyDecoratedDescriptor(_class8.prototype, "gameTimer", [_dec30], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor28 = _applyDecoratedDescriptor(_class8.prototype, "gameScore", [_dec31], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor29 = _applyDecoratedDescriptor(_class8.prototype, "gameOver", [_dec32], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor30 = _applyDecoratedDescriptor(_class8.prototype, "powerUpProgress", [_dec33], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: null
+      }), _descriptor31 = _applyDecoratedDescriptor(_class8.prototype, "SheildImg", [_dec34], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: null
+      }), _descriptor32 = _applyDecoratedDescriptor(_class8.prototype, "GainSpeedImg", [_dec35], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: null
+      }), _descriptor33 = _applyDecoratedDescriptor(_class8.prototype, "PoisionSpeedImg", [_dec36], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: null
+      })), _class8)) || _class7));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/characterSkins.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc', './constant.ts', './audioManager.ts'], function (exports) {
+  'use strict';
+
+  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, _defineProperty, cclegacy, _decorator, SpriteFrame, Sprite, Label, instantiate, Vec3, MeshRenderer, tween, SkeletalAnimationComponent, Component, constant, audioManager;
+
+  return {
+    setters: [function (module) {
+      _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
+      _inheritsLoose = module.inheritsLoose;
+      _initializerDefineProperty = module.initializerDefineProperty;
+      _assertThisInitialized = module.assertThisInitialized;
+      _defineProperty = module.defineProperty;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      SpriteFrame = module.SpriteFrame;
+      Sprite = module.Sprite;
+      Label = module.Label;
+      instantiate = module.instantiate;
+      Vec3 = module.Vec3;
+      MeshRenderer = module.MeshRenderer;
+      tween = module.tween;
+      SkeletalAnimationComponent = module.SkeletalAnimationComponent;
+      Component = module.Component;
+    }, function (module) {
+      constant = module.constant;
+    }, function (module) {
+      audioManager = module.audioManager;
+    }],
+    execute: function () {
+      var _dec, _dec2, _dec3, _class, _class2, _descriptor, _descriptor2, _temp;
+
+      cclegacy._RF.push({}, "4a1da0Kc4RA/7TNtW1pXQcd", "characterSkins", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      /**
+       * Predefined variables
+       * Name = CharacterSkins
+       * DateTime = Fri Jan 21 2022 23:12:19 GMT+0530 (India Standard Time)
+       * Author = sushant
+       * FileBasename = characterSkins.ts
+       * FileBasenameNoExtension = characterSkins
+       * URL = db://assets/Script/menuScene/shop/characterSkins.ts
+       * ManualUrl = https://docs.cocos.com/creator/3.3/manual/en/
+       *
+       */
+
+      var CharacterSkins = exports('CharacterSkins', (_dec = ccclass('CharacterSkins'), _dec2 = property({
+        type: SpriteFrame
+      }), _dec3 = property({
+        type: SpriteFrame
+      }), _dec(_class = (_class2 = (_temp = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(CharacterSkins, _Component);
+
+        function CharacterSkins() {
+          var _this;
+
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+
+          _this = _Component.call.apply(_Component, [this].concat(args)) || this;
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "defaultFrame", _descriptor, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "normalFrame", _descriptor2, _assertThisInitialized(_this));
+
+          _defineProperty(_assertThisInitialized(_this), "skinName", null);
+
+          _defineProperty(_assertThisInitialized(_this), "count", null);
+
+          _defineProperty(_assertThisInitialized(_this), "isActive", true);
+
+          _defineProperty(_assertThisInitialized(_this), "isEquipped", false);
+
+          _defineProperty(_assertThisInitialized(_this), "shopController", null);
+
+          _defineProperty(_assertThisInitialized(_this), "type", null);
+
+          _defineProperty(_assertThisInitialized(_this), "currentIndex", 0);
+
+          return _this;
+        }
+
+        var _proto = CharacterSkins.prototype;
+
+        _proto.start = function start() {};
+
+        _proto.initialiseData = function initialiseData(obj, index, shopLayer) {
+          this.shopController = shopLayer;
+          var plyData = this.shopController.menuController.playerData;
+          this.currentIndex = index;
+          this.type = constant.ACCESSORIESTYPE.SKIN;
+          var accessoriesSkin = constant.getSkin();
+
+          if (index == accessoriesSkin.length) {
+            this.isActive = false;
+            this.count = index;
+            this.node.getChildByName("image").getComponent(Sprite).spriteFrame = this.defaultFrame;
+            this.node.getChildByName("commingSoon").active = true;
+            return;
+          }
+
+          this.isEquipped = false;
+          this.isActive = obj.unlocked;
+          this.count = index;
+          this.skinName = obj.name;
+
+          if (plyData.character == -1 && this.count == 0) {
+            this.isEquipped = true;
+          }
+
+          if (!obj.unlocked) this.node.getChildByName("lockIcon").active = true;
+          this.node.getChildByName("name").getComponent(Label).string = this.skinName;
+          var player = instantiate(this.shopController.menuController.characterNode);
+          this.node.getChildByName("Plane").getChildByName("characterNode").addChild(player);
+          player.setPosition(new Vec3(0, 0, 0));
+          player.getChildByName("Penguine_Anim").getChildByName("Chest_M Socket").getChildByName("accessories_schoolbag_01").active = false;
+          player.getChildByName("Penguine_Anim").getChildByName("Head_M Socket").getChildByName("accessories_headset01").active = false;
+          player.getChildByName("Penguine_Anim").getChildByName("Head_M Socket").getChildByName("accessories_glasses_01").active = false;
+          player.getChildByName("Penguine_Anim").getChildByName("accessories_target_01").active = false; // player.getChildByName("bag").active = false;
+          // player.getChildByName("headset").active = false;
+          // player.getChildByName("glasses").active = false;
+          // player.getChildByName("target").active = false;
+
+          player.getChildByName("Penguine_Anim").getChildByName("penguin_body01").getComponent(MeshRenderer).setMaterial(this.shopController.menuController.character[this.count].characterMaterial, 0); // player.getChildByName("penguin_01").getChildByName("penguin_body01").getComponent(MeshRenderer).setMaterial(this.shopController.menuController.character[this.count].characterMaterial,0);
+
+          if (plyData.character == this.count) this.isEquipped = true;
+          this.node.getChildByName("equipped").active = this.isEquipped;
+        };
+
+        _proto.onEquipClicked = function onEquipClicked() {
+          var _this2 = this;
+
+          if (this.shopController.buttonBlocked) return;
+
+          if (this.isActive) {
+            if (this.isEquipped) {
+              return;
+            } else {
+              audioManager.instance.playSound(constant.AUDIO_SOUND.buttonClick);
+              this.shopController.buttonBlocked = true;
+              this.shopController.updatePlayerAccessoriesData(0, this.count);
+              this.node.getChildByName("equipped").active = true;
+              this.shopController.node.getChildByName("disableLayer").active = true;
+              this.shopController.menuController.sumo.setRotationFromEuler(this.shopController.menuController.sumo.eulerAngles.x, 0, this.shopController.menuController.sumo.eulerAngles.z);
+              var currentPosition = new Vec3(this.shopController.menuController.playerNode.position);
+              var bumpTween = tween(this.shopController.menuController.playerNode).to(0.35, {
+                eulerAngles: new Vec3(0, -90, 0)
+              }).to(1, {
+                position: new Vec3(currentPosition.x - 600, currentPosition.y, currentPosition.z)
+              }).call(function () {
+                _this2.updateCharacter(currentPosition);
+              }).start();
+              var skeletalAnimation = this.shopController.menuController.sumo.getChildByName("Penguine_Anim").getComponent(SkeletalAnimationComponent);
+              skeletalAnimation.play('walk');
+
+              for (var i = 0; i < this.shopController.characterSkinArray.length; i++) {
+                var skinData = this.shopController.characterSkinArray[i].getComponent("CharacterSkins");
+
+                if (this.shopController.characterSkinArray[i] != this.node) {
+                  skinData.isEquipped = false;
+                  this.shopController.characterSkinArray[i].getChildByName("equipped").active = false;
+                }
+              }
+            }
+
+            this.isEquipped = !this.isEquipped;
+          } else {
+            this.shopController.onShowBuyPopup(this);
+          }
+        };
+
+        _proto.updateCharacter = function updateCharacter(currentPosition) {
+          var _this3 = this;
+
+          this.shopController.menuController.sumo.getChildByName("Penguine_Anim").getChildByName("penguin_body01").getComponent(MeshRenderer).setMaterial(this.shopController.menuController.character[this.count].characterMaterial, 0); // this.shopController.menuController.sumo.getChildByName("penguin_01").getChildByName("penguin_body01").getComponent(MeshRenderer).setMaterial(this.shopController.menuController.character[this.count].characterMaterial,0);
+
+          var bumpTween = tween(this.shopController.menuController.playerNode).to(0.01, {
+            eulerAngles: new Vec3(0, 90, 0)
+          }).to(1.5, {
+            position: currentPosition
+          }).to(0.25, {
+            eulerAngles: new Vec3(0, 0, 0)
+          }).call(function () {
+            _this3.shopController.buttonBlocked = false;
+            _this3.shopController.node.getChildByName("disableLayer").active = false;
+
+            _this3.shopController.menuController.startAnimation();
+          }).start();
+        };
+
+        return CharacterSkins;
+      }(Component), _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "defaultFrame", [_dec2], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "normalFrame", [_dec3], {
         configurable: true,
         enumerable: true,
         writable: true,
@@ -745,16 +3696,292 @@ System.register("chunks:///_virtual/GameController.ts", ['./_rollupPluginModLoBa
           return null;
         }
       })), _class2)) || _class));
+      /**
+       * [1] Class member could be defined like this.
+       * [2] Use `property` decorator if your want the member to be serializable.
+       * [3] Your initialization goes here.
+       * [4] Your update function goes here.
+       *
+       * Learn more about scripting: https://docs.cocos.com/creator/3.3/manual/en/scripting/
+       * Learn more about CCClass: https://docs.cocos.com/creator/3.3/manual/en/scripting/ccclass.html
+       * Learn more about life-cycle callbacks: https://docs.cocos.com/creator/3.3/manual/en/scripting/life-cycle-callbacks.html
+       */
 
       cclegacy._RF.pop();
     }
   };
 });
 
-System.register("chunks:///_virtual/GameUIController.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
+System.register("chunks:///_virtual/gameOver.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc', './constant.ts', './audioManager.ts', './commonFun.ts'], function (exports) {
   'use strict';
 
-  var _applyDecoratedDescriptor, _inheritsLoose, _defineProperty, _assertThisInitialized, _initializerDefineProperty, cclegacy, _decorator, EventHandler, Label, Node, Vec3, macro, director, Component;
+  var _applyDecoratedDescriptor, _inheritsLoose, _defineProperty, _assertThisInitialized, _initializerDefineProperty, cclegacy, _decorator, SpriteFrame, Prefab, Vec3, tween, ScrollViewComponent, instantiate, UITransform, director, Sprite, Component, constant, audioManager, CommonFun;
+
+  return {
+    setters: [function (module) {
+      _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
+      _inheritsLoose = module.inheritsLoose;
+      _defineProperty = module.defineProperty;
+      _assertThisInitialized = module.assertThisInitialized;
+      _initializerDefineProperty = module.initializerDefineProperty;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      SpriteFrame = module.SpriteFrame;
+      Prefab = module.Prefab;
+      Vec3 = module.Vec3;
+      tween = module.tween;
+      ScrollViewComponent = module.ScrollViewComponent;
+      instantiate = module.instantiate;
+      UITransform = module.UITransform;
+      director = module.director;
+      Sprite = module.Sprite;
+      Component = module.Component;
+    }, function (module) {
+      constant = module.constant;
+    }, function (module) {
+      audioManager = module.audioManager;
+    }, function (module) {
+      CommonFun = module.CommonFun;
+    }],
+    execute: function () {
+      var _dec, _dec2, _dec3, _dec4, _class, _class2, _descriptor, _descriptor2, _descriptor3, _temp;
+
+      cclegacy._RF.push({}, "607a6e7tMFM2o0KKgjUTxNF", "gameOver", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      /**
+       * Predefined variables
+       * Name = GameOver
+       * DateTime = Mon Jan 24 2022 21:09:01 GMT+0530 (India Standard Time)
+       * Author = sushant
+       * FileBasename = gameOver.ts
+       * FileBasenameNoExtension = gameOver
+       * URL = db://assets/Script/gameScene/gameOver/gameOver.ts
+       * ManualUrl = https://docs.cocos.com/creator/3.3/manual/en/
+       *
+       */
+
+      var GameOver = exports('GameOver', (_dec = ccclass('GameOver'), _dec2 = property({
+        type: SpriteFrame
+      }), _dec3 = property({
+        type: SpriteFrame
+      }), _dec4 = property({
+        type: Prefab
+      }), _dec(_class = (_class2 = (_temp = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(GameOver, _Component);
+
+        function GameOver() {
+          var _this;
+
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+
+          _this = _Component.call.apply(_Component, [this].concat(args)) || this;
+
+          _defineProperty(_assertThisInitialized(_this), "gameController", null);
+
+          _defineProperty(_assertThisInitialized(_this), "commonFun", null);
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "goldenTrophy", _descriptor, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "normalTrophy", _descriptor2, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "banner", _descriptor3, _assertThisInitialized(_this));
+
+          _defineProperty(_assertThisInitialized(_this), "scrollView", null);
+
+          _defineProperty(_assertThisInitialized(_this), "scrollViewContent", null);
+
+          return _this;
+        }
+
+        var _proto = GameOver.prototype;
+
+        _proto.start = function start() {
+          this.commonFun = new CommonFun();
+        };
+
+        _proto.showWinPopup = function showWinPopup(reference) {
+          if (this.commonFun == null) this.commonFun = new CommonFun();
+          this.gameController = reference;
+          this.gameController.playerClass.node.eulerAngles = new Vec3(0, this.gameController.playerClass.playerCamera.eulerAngles.y, 0);
+          var cameraNode = this.gameController.playerClass.playerCamera.getChildByName('playerCamera');
+          tween(cameraNode).to(1, {
+            position: new Vec3(cameraNode.position.x, cameraNode.position.y - 11, cameraNode.position.z),
+            eulerAngles: new Vec3(1, cameraNode.eulerAngles.y, cameraNode.eulerAngles.z)
+          }).start();
+          this.commonFun.setWinStateAnimation(this.gameController.playerClass);
+        };
+
+        _proto.showGameOverPopup = function showGameOverPopup(reference) {
+          if (this.commonFun == null) this.commonFun = new CommonFun();
+          audioManager.instance.playSound(constant.AUDIO_SOUND.win);
+          this.scrollView = this.node.getChildByName("leaderBoard").getComponent(ScrollViewComponent);
+          this.scrollViewContent = this.scrollView.content;
+          this.gameController = reference;
+          this.gameController.unscheduleAllCallbacks();
+          this.gameController.powerupController.unscheduleAllCallbacks();
+          var comp = this.gameController.gameUiController;
+          comp.disableTouches();
+          this.node.active = true;
+          this.scrollViewContent.removeAllChildren();
+          var currentList = [];
+          var ob1 = {
+            "name": "-----",
+            "isSelf": false
+          };
+
+          for (var _i = 0; _i <= this.gameController.totalPlayers - 1; _i++) {
+            currentList.push(ob1);
+          }
+
+          var index = 0;
+
+          for (var _i2 = this.gameController.totalPlayers - 1; _i2 >= 0; _i2--) {
+            if (index < this.gameController.playerBoardData.length) currentList[_i2] = this.gameController.playerBoardData[index];
+            index++;
+          }
+
+          for (var i = 0; i < this.gameController.totalPlayers; i++) {
+            var banner = instantiate(this.banner);
+            this.scrollViewContent.addChild(banner);
+            var bannerComponent = banner.getComponent("LeaderBoardBanner");
+            bannerComponent.initialiseData(i, (this.gameController.totalPlayers - i) / this.gameController.totalPlayers, currentList[i], this);
+          }
+
+          var skin1 = instantiate(this.banner);
+          var heiight = skin1.getComponent(UITransform).height * this.gameController.totalPlayers + this.gameController.totalPlayers * 10;
+          this.scrollViewContent.getComponent(UITransform).height = heiight; //check my rank 
+
+          for (var _i3 = 0; _i3 < currentList.length; _i3++) {
+            var element = currentList[_i3];
+            if (element.isSelf) ;
+          } // if(currentRank == 1)
+          //     this.node.getChildByName("hud").getChildByName("trophy").getComponent(Sprite).spriteFrame = this.goldenTrophy;
+          // else
+          //     this.node.getChildByName("hud").getChildByName("trophy").getComponent(Sprite).spriteFrame = this.normalTrophy;
+
+        };
+
+        _proto.onHomeClicked = function onHomeClicked() {
+          this.gameController.powerupController.unscheduleAllCallbacks();
+
+          while (this.gameController.botController._totalPlayerArrayList.length > 0) {
+            var node = this.gameController.botController._totalPlayerArrayList[0];
+            this.gameController.getWorld().removeChild(node);
+            this.commonFun.removeObjectFromArray(this.gameController.botController._totalPlayerArrayList, node);
+          }
+
+          while (this.gameController.gameOverList.length > 0) {
+            var node = this.gameController.gameOverList[0];
+            this.gameController.getWorld().removeChild(node);
+            this.commonFun.removeObjectFromArray(this.gameController.gameOverList, node);
+          }
+
+          director.loadScene('MenuScene');
+        } // Milo work
+        ;
+
+        _proto.showGameOverPopupFromServer = function showGameOverPopupFromServer(reference) {
+          if (this.commonFun == null) this.commonFun = new CommonFun();
+          audioManager.instance.playSound(constant.AUDIO_SOUND.win);
+          this.scrollView = this.node.getChildByName("leaderBoard").getComponent(ScrollViewComponent);
+          this.scrollViewContent = this.scrollView.content;
+          this.gameController = reference;
+          this.gameController.unscheduleAllCallbacks();
+          var comp = this.gameController.gameUiController;
+          comp.disableTouches();
+          this.node.active = true;
+          this.scrollViewContent.removeAllChildren();
+          var currentList = [];
+          var ob1 = {
+            "name": "-----",
+            "isSelf": false
+          };
+          this.gameController.totalPlayers = this.gameController.getTotalPlayers();
+
+          for (var _i4 = 0; _i4 <= this.gameController.totalPlayers - 1; _i4++) {
+            currentList.push(ob1);
+          } // sorting in ascending order
+
+
+          this.gameController.playerBoardData = this.gameController.playerBoardData.sort(function (first, second) {
+            return first.time - second.time;
+          });
+          var index = 0;
+
+          for (var _i5 = this.gameController.totalPlayers - 1; _i5 >= 0; _i5--) {
+            if (index < this.gameController.playerBoardData.length) currentList[_i5] = this.gameController.playerBoardData[index];
+            index++;
+          }
+
+          for (var i = 0; i < this.gameController.totalPlayers; i++) {
+            var banner = instantiate(this.banner);
+            this.scrollViewContent.addChild(banner);
+            var bannerComponent = banner.getComponent("LeaderBoardBanner");
+            bannerComponent.initialiseData(i, (this.gameController.totalPlayers - i) / this.gameController.totalPlayers, currentList[i], this);
+          }
+
+          var skin1 = instantiate(this.banner);
+          var heiight = skin1.getComponent(UITransform).height * this.gameController.totalPlayers + this.gameController.totalPlayers * 10;
+          this.scrollViewContent.getComponent(UITransform).height = heiight; //check my rank 
+
+          var currentRank = 0;
+
+          for (var _i6 = 0; _i6 < currentList.length; _i6++) {
+            var element = currentList[_i6];
+            if (element.isSelf) currentRank = _i6 + 1;
+          }
+
+          if (currentRank == 1) this.node.getChildByName("hud").getChildByName("trophy").getComponent(Sprite).spriteFrame = this.goldenTrophy;else this.node.getChildByName("hud").getChildByName("trophy").getComponent(Sprite).spriteFrame = this.normalTrophy;
+        };
+
+        return GameOver;
+      }(Component), _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "goldenTrophy", [_dec2], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "normalTrophy", [_dec3], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "banner", [_dec4], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      })), _class2)) || _class));
+      /**
+       * [1] Class member could be defined like this.
+       * [2] Use `property` decorator if your want the member to be serializable.
+       * [3] Your initialization goes here.
+       * [4] Your update function goes here.
+       *
+       * Learn more about scripting: https://docs.cocos.com/creator/3.3/manual/en/scripting/
+       * Learn more about CCClass: https://docs.cocos.com/creator/3.3/manual/en/scripting/ccclass.html
+       * Learn more about life-cycle callbacks: https://docs.cocos.com/creator/3.3/manual/en/scripting/life-cycle-callbacks.html
+       */
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/GameUIController.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc', './mxManager.ts', './constant.ts', './audioManager.ts', './GameConfig.ts'], function (exports) {
+  'use strict';
+
+  var _applyDecoratedDescriptor, _inheritsLoose, _defineProperty, _assertThisInitialized, _initializerDefineProperty, cclegacy, _decorator, EventHandler, Node, Slider, SpriteFrame, LabelComponent, Animation, Vec3, macro, director, Sprite, Component, MxManager, constant, audioManager, GameConfig;
 
   return {
     setters: [function (module) {
@@ -767,39 +3994,63 @@ System.register("chunks:///_virtual/GameUIController.ts", ['./_rollupPluginModLo
       cclegacy = module.cclegacy;
       _decorator = module._decorator;
       EventHandler = module.EventHandler;
-      Label = module.Label;
       Node = module.Node;
+      Slider = module.Slider;
+      SpriteFrame = module.SpriteFrame;
+      LabelComponent = module.LabelComponent;
+      Animation = module.Animation;
       Vec3 = module.Vec3;
       macro = module.macro;
       director = module.director;
+      Sprite = module.Sprite;
       Component = module.Component;
+    }, function (module) {
+      MxManager = module.MxManager;
+    }, function (module) {
+      constant = module.constant;
+    }, function (module) {
+      audioManager = module.audioManager;
+    }, function (module) {
+      GameConfig = module.GameConfig;
     }],
     execute: function () {
-      var _dec, _dec2, _dec3, _dec4, _class, _class2, _descriptor, _descriptor2, _descriptor3, _temp;
+      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _temp;
 
       cclegacy._RF.push({}, "62ee6KEwbpJNKAJo5TmXRgo", "GameUIController", undefined);
 
       var ccclass = _decorator.ccclass,
           property = _decorator.property;
-      /**
-       * Predefined variables
-       * Name = GameUIController
-       * DateTime = Tue Sep 28 2021 19:04:24 GMT+0530 (India Standard Time)
-       * Author = shashankA
-       * FileBasename = GameUIController.ts
-       * FileBasenameNoExtension = GameUIController
-       * URL = db://assets/Script/GameUIController.ts
-       * ManualUrl = https://docs.cocos.com/creator/3.3/manual/en/
-       *
-       */
-
       var GameUIController = exports('GameUIController', (_dec = ccclass('GameUIController'), _dec2 = property({
         type: [EventHandler],
         tooltip: 'Touch Drag'
       }), _dec3 = property({
-        type: Label
+        type: [EventHandler],
+        tooltip: 'Slider Drag'
       }), _dec4 = property({
-        type: Label
+        type: [EventHandler],
+        tooltip: 'gameStart'
+      }), _dec5 = property({
+        type: Node
+      }), _dec6 = property({
+        type: Slider
+      }), _dec7 = property({
+        type: Slider
+      }), _dec8 = property({
+        type: Slider
+      }), _dec9 = property({
+        type: Slider
+      }), _dec10 = property({
+        type: Slider
+      }), _dec11 = property({
+        type: Slider
+      }), _dec12 = property({
+        type: Node
+      }), _dec13 = property({
+        type: Node
+      }), _dec14 = property({
+        type: SpriteFrame
+      }), _dec15 = property({
+        type: SpriteFrame
       }), _dec(_class = (_class2 = (_temp = /*#__PURE__*/function (_Component) {
         _inheritsLoose(GameUIController, _Component);
 
@@ -816,13 +4067,37 @@ System.register("chunks:///_virtual/GameUIController.ts", ['./_rollupPluginModLo
 
           _initializerDefineProperty(_assertThisInitialized(_this), "touchEventCallBack", _descriptor, _assertThisInitialized(_this));
 
-          _defineProperty(_assertThisInitialized(_this), "socketConnection", void 0);
+          _initializerDefineProperty(_assertThisInitialized(_this), "sliderEventCallBack", _descriptor2, _assertThisInitialized(_this));
 
-          _initializerDefineProperty(_assertThisInitialized(_this), "pauseLabel", _descriptor2, _assertThisInitialized(_this));
+          _initializerDefineProperty(_assertThisInitialized(_this), "gameStartEventCallBack", _descriptor3, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "cameraDebug", _descriptor4, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "Yslider", _descriptor5, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "Zslider", _descriptor6, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "Xslider", _descriptor7, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "RYslider", _descriptor8, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "RXslider", _descriptor9, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "RZslider", _descriptor10, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "initialLayer", _descriptor11, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "soundNode", _descriptor12, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "soundOff", _descriptor13, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "soundOn", _descriptor14, _assertThisInitialized(_this));
+
+          _defineProperty(_assertThisInitialized(_this), "animationTimer", 0);
 
           _defineProperty(_assertThisInitialized(_this), "isPaused", void 0);
 
-          _initializerDefineProperty(_assertThisInitialized(_this), "botLabel", _descriptor3, _assertThisInitialized(_this));
+          _defineProperty(_assertThisInitialized(_this), "exitPopupShown", false);
 
           return _this;
         }
@@ -834,18 +4109,126 @@ System.register("chunks:///_virtual/GameUIController.ts", ['./_rollupPluginModLo
           this.node.on(Node.EventType.TOUCH_START, this.touchStart, this);
           this.node.on(Node.EventType.TOUCH_END, this.touchEnded, this);
           window.localStorage.setItem("isStopped", "1");
+          this.checkSounds();
+          if (GameConfig.debug.camera.isdebugEnabled) this.cameraDebug.active = true;
+          this.Yslider.node.on('slide', this.onslide, this);
+          this.Yslider.progress = this.getSliderVal(GameConfig.debug.camera.YAxis, 0, 1, 0, 100);
+          this.Yslider.node.getChildByName(this.Yslider.node.name).getComponent(LabelComponent).string = GameConfig.debug.camera.YAxis.toString();
+          this.sliderEventCallBack.forEach(function (c) {
+            return c.emit(["YSlider", GameConfig.debug.camera.YAxis]);
+          });
+          this.Zslider.node.on('slide', this.onslide, this);
+          this.Zslider.progress = this.getSliderVal(GameConfig.debug.camera.ZAxis, 0, 1, 0, 100);
+          this.Zslider.node.getChildByName(this.Zslider.node.name).getComponent(LabelComponent).string = GameConfig.debug.camera.ZAxis.toString();
+          this.sliderEventCallBack.forEach(function (c) {
+            return c.emit(["ZSlider", GameConfig.debug.camera.ZAxis]);
+          });
+          this.Xslider.node.on('slide', this.onslide, this);
+          this.Xslider.progress = this.getSliderVal(GameConfig.debug.camera.XAxis, 0, 1, -100, 100);
+          this.Xslider.node.getChildByName(this.Xslider.node.name).getComponent(LabelComponent).string = GameConfig.debug.camera.XAxis.toString();
+          this.sliderEventCallBack.forEach(function (c) {
+            return c.emit(["XSlider", GameConfig.debug.camera.XAxis]);
+          });
+          this.RYslider.node.on('slide', this.onslide, this);
+          this.RYslider.progress = this.getSliderVal(GameConfig.debug.camera.Yangle, 0, 1, -360, 360);
+          this.RYslider.node.getChildByName(this.RYslider.node.name).getComponent(LabelComponent).string = GameConfig.debug.camera.Yangle.toString();
+          this.sliderEventCallBack.forEach(function (c) {
+            return c.emit(["RYSlider", GameConfig.debug.camera.Yangle]);
+          });
+          this.RXslider.node.on('slide', this.onslide, this);
+          this.RXslider.progress = this.getSliderVal(GameConfig.debug.camera.Xangle, 0, 1, -360, 360);
+          this.RXslider.node.getChildByName(this.RXslider.node.name).getComponent(LabelComponent).string = GameConfig.debug.camera.Xangle.toString();
+          this.sliderEventCallBack.forEach(function (c) {
+            return c.emit(["RXSlider", GameConfig.debug.camera.Xangle]);
+          });
+          this.RZslider.node.on('slide', this.onslide, this);
+          this.RZslider.progress = this.getSliderVal(GameConfig.debug.camera.Zangle, 0, 1, -360, 360);
+          this.RZslider.node.getChildByName(this.RZslider.node.name).getComponent(LabelComponent).string = GameConfig.debug.camera.Zangle.toString();
+          this.sliderEventCallBack.forEach(function (c) {
+            return c.emit(["RZSlider", GameConfig.debug.camera.Zangle]);
+          }); //stop all players
+
+          window.localStorage.setItem("isStopped", "1");
+
+          if (!MxManager.instance.isMiloApp) {
+            this.animationTimer = 5;
+            this.schedule(this.updateStartTimer, 1);
+          }
+        };
+
+        _proto.checkReadyGoTimer = function checkReadyGoTimer(value) {
+          var _this2 = this;
+
+          switch (value) {
+            case 4:
+              {
+                audioManager.instance.playSound(constant.AUDIO_SOUND.countDown);
+                this.initialLayer.getChildByName("countDown").getChildByName("3").active = true;
+              }
+              break;
+
+            case 3:
+              {
+                this.initialLayer.getChildByName("countDown").getChildByName("3").active = false;
+                this.initialLayer.getChildByName("countDown").getChildByName("2").active = true;
+              }
+              break;
+
+            case 2:
+              {
+                this.initialLayer.getChildByName("countDown").getChildByName("2").active = false;
+                this.initialLayer.getChildByName("countDown").getChildByName("1").active = true;
+              }
+              break;
+
+            case 1:
+              {
+                this.initialLayer.getChildByName("countDown").getChildByName("1").active = false;
+                this.initialLayer.getChildByName("countDown").getChildByName("go").active = true;
+              }
+              break;
+
+            case 0:
+              {
+                this.initialLayer.getChildByName("countDown").getChildByName("go").active = false;
+                if (!MxManager.instance.isMiloApp) this.unschedule(this.updateStartTimer);
+                var anim = this.initialLayer.getComponent(Animation);
+                anim.stop();
+                this.initialLayer.active = false;
+                this.gameStartEventCallBack.forEach(function (c) {
+                  return c.emit([_this2.node]);
+                });
+              }
+              break;
+          }
+        };
+
+        _proto.updateStartTimer = function updateStartTimer() {
+          this.animationTimer--;
+          this.checkReadyGoTimer(this.animationTimer);
+        };
+
+        _proto.onslide = function onslide(Slider) {
+          var val = 0;
+          if (Slider.node.name == "YSlider" || Slider.node.name == "ZSlider") val = this.getSliderVal(Slider.progress, 0, 100, 0, 1);else if (Slider.node.name == "XSlider") val = this.getSliderVal(Slider.progress, -100, 100, 0, 1);else if (Slider.node.name == "RZSlider") val = this.getSliderVal(Slider.progress, -360, 360, 0, 1);else if (Slider.node.name == "RXSlider") val = this.getSliderVal(Slider.progress, -360, 360, 0, 1);else val = this.getSliderVal(Slider.progress, -360, 360, 0, 1);
+          Slider.node.getChildByName(Slider.node.name).getComponent(LabelComponent).string = val;
+          this.sliderEventCallBack.forEach(function (c) {
+            return c.emit([Slider.node.name, val]);
+          });
+        };
+
+        _proto.getSliderVal = function getSliderVal(percentage, minValue, maxValue, minPercentage, maxPercentage) {
+          var minPercentage = minPercentage;
+          var maxPercentage = maxPercentage;
+          var minValue = minValue;
+          var maxValue = maxValue;
+          return (percentage - minPercentage) / (maxPercentage - minPercentage) * (maxValue - minValue) + minValue;
         };
 
         _proto.onConnect = function onConnect() {};
 
         _proto.touchMove = function touchMove(touch) {
-          /*  
-          ***** Do not delete this commented code
-           let loc = touch.getUILocation();
-          let pos = this.node.getComponent(UITransform).convertToNodeSpaceAR(new Vec3(loc.x, loc.y));
-          let angle = Math.atan2(pos.y, pos.x);
-          this.touchEventCallBack.forEach(c => c.emit([pos, angle * macro.DEG])); 
-          */
+          if (this.exitPopupShown) return;
           var loc = touch.getLocation();
           var pos = new Vec3(loc.x - this.startLoc.x, loc.y - this.startLoc.y);
           var mag = Math.sqrt(pos.x * pos.x + pos.y * pos.y);
@@ -862,12 +4245,14 @@ System.register("chunks:///_virtual/GameUIController.ts", ['./_rollupPluginModLo
         };
 
         _proto.touchEnded = function touchEnded(touch) {
+          if (this.exitPopupShown) return;
           this.touchEventCallBack.forEach(function (c) {
             return c.emit([new Vec3(0, 0, 0)]);
           });
         };
 
         _proto.touchStart = function touchStart(touch) {
+          if (this.exitPopupShown) return;
           this.startLoc = touch.getLocation();
           this.touchMove(touch);
         };
@@ -886,10 +4271,8 @@ System.register("chunks:///_virtual/GameUIController.ts", ['./_rollupPluginModLo
 
         _proto.pauseScreen = function pauseScreen() {
           if (this.isPaused) {
-            this.pauseLabel.string = "Paused";
             director.resume();
           } else {
-            this.pauseLabel.string = "Resume";
             director.pause();
           }
 
@@ -898,12 +4281,48 @@ System.register("chunks:///_virtual/GameUIController.ts", ['./_rollupPluginModLo
 
         _proto.stopBotScreen = function stopBotScreen() {
           if (parseInt(window.localStorage.getItem("isStopped"))) {
-            this.botLabel.string = "bot Resumed";
             window.localStorage.setItem("isStopped", "0");
           } else {
-            this.botLabel.string = "bot Paused";
             window.localStorage.setItem("isStopped", "1");
           }
+        };
+
+        _proto.disableTouches = function disableTouches() {
+          this.exitPopupShown = true;
+        };
+
+        _proto.onCloseClicked = function onCloseClicked() {
+          if (this.exitPopupShown) return;
+          audioManager.instance.playSound(constant.AUDIO_SOUND.buttonClick);
+          this.exitPopupShown = true;
+          this.showExitPopup();
+        };
+
+        _proto.checkSounds = function checkSounds() {
+          if (constant.CheckSoundEnabled()) this.soundNode.getComponent(Sprite).spriteFrame = this.soundOn;else this.soundNode.getComponent(Sprite).spriteFrame = this.soundOff;
+        };
+
+        _proto.onSoundClicked = function onSoundClicked() {
+          if (audioManager.instance.toggleGameSound()) {
+            this.soundNode.getComponent(Sprite).spriteFrame = this.soundOn;
+            audioManager.instance.playSound(constant.AUDIO_SOUND.buttonClick);
+          } else this.soundNode.getComponent(Sprite).spriteFrame = this.soundOff;
+        };
+
+        _proto.showExitPopup = function showExitPopup() {
+          var anim = this.node.getChildByName("exitPopup").getComponent(Animation);
+          anim.play('showExit');
+        };
+
+        _proto.hideExitPopup = function hideExitPopup() {
+          audioManager.instance.playSound(constant.AUDIO_SOUND.buttonClick);
+          this.exitPopupShown = false;
+          var anim = this.node.getChildByName("exitPopup").getComponent(Animation);
+          anim.play('hideExit');
+        };
+
+        _proto.onExitYesClicked = function onExitYesClicked() {
+          audioManager.instance.playSound(constant.AUDIO_SOUND.buttonClick);
         };
 
         return GameUIController;
@@ -914,16 +4333,83 @@ System.register("chunks:///_virtual/GameUIController.ts", ['./_rollupPluginModLo
         initializer: function initializer() {
           return [];
         }
-      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "pauseLabel", [_dec3], {
+      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "sliderEventCallBack", [_dec3], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return [];
+        }
+      }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "gameStartEventCallBack", [_dec4], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return [];
+        }
+      }), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "cameraDebug", [_dec5], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: null
-      }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "botLabel", [_dec4], {
+      }), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "Yslider", [_dec6], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: null
+      }), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "Zslider", [_dec7], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: null
+      }), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "Xslider", [_dec8], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: null
+      }), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "RYslider", [_dec9], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: null
+      }), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "RXslider", [_dec10], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: null
+      }), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "RZslider", [_dec11], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: null
+      }), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "initialLayer", [_dec12], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "soundNode", [_dec13], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "soundOff", [_dec14], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "soundOn", [_dec15], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
       })), _class2)) || _class));
 
       cclegacy._RF.pop();
@@ -931,10 +4417,10 @@ System.register("chunks:///_virtual/GameUIController.ts", ['./_rollupPluginModLo
   };
 });
 
-System.register("chunks:///_virtual/Bot.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc', './GameConfig.ts'], function (exports) {
+System.register("chunks:///_virtual/skin.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc', './constant.ts', './audioManager.ts'], function (exports) {
   'use strict';
 
-  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, _defineProperty, cclegacy, _decorator, geometry, Prefab, Vec3, instantiate, Label, SkeletalAnimationComponent, RigidBody, CapsuleCollider, RigidBodyComponent, tween, randomRange, Vec2, PhysicsSystem, Component, GameConfig;
+  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, _defineProperty, cclegacy, _decorator, SpriteFrame, Sprite, Label, instantiate, Vec3, MeshRenderer, SkeletalAnimationComponent, Component, constant, audioManager;
 
   return {
     setters: [function (module) {
@@ -946,25 +4432,894 @@ System.register("chunks:///_virtual/Bot.ts", ['./_rollupPluginModLoBabelHelpers.
     }, function (module) {
       cclegacy = module.cclegacy;
       _decorator = module._decorator;
-      geometry = module.geometry;
+      SpriteFrame = module.SpriteFrame;
+      Sprite = module.Sprite;
+      Label = module.Label;
+      instantiate = module.instantiate;
+      Vec3 = module.Vec3;
+      MeshRenderer = module.MeshRenderer;
+      SkeletalAnimationComponent = module.SkeletalAnimationComponent;
+      Component = module.Component;
+    }, function (module) {
+      constant = module.constant;
+    }, function (module) {
+      audioManager = module.audioManager;
+    }],
+    execute: function () {
+      var _dec, _dec2, _dec3, _class, _class2, _descriptor, _descriptor2, _temp;
+
+      cclegacy._RF.push({}, "6600e5OvP9NWrjDLoyv1uoe", "skin", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      /**
+       * Predefined variables
+       * Name = Skin
+       * DateTime = Fri Jan 21 2022 13:29:51 GMT+0530 (India Standard Time)
+       * Author = sushant
+       * FileBasename = skin.ts
+       * FileBasenameNoExtension = skin
+       * URL = db://assets/Script/menuScene/shop/skin.ts
+       * ManualUrl = https://docs.cocos.com/creator/3.3/manual/en/
+       *
+       */
+
+      var Skin = exports('Skin', (_dec = ccclass('Skin'), _dec2 = property({
+        type: SpriteFrame
+      }), _dec3 = property({
+        type: SpriteFrame
+      }), _dec(_class = (_class2 = (_temp = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(Skin, _Component);
+
+        function Skin() {
+          var _this;
+
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+
+          _this = _Component.call.apply(_Component, [this].concat(args)) || this;
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "defaultFrame", _descriptor, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "accessoriesFrame", _descriptor2, _assertThisInitialized(_this));
+
+          _defineProperty(_assertThisInitialized(_this), "skinName", null);
+
+          _defineProperty(_assertThisInitialized(_this), "skinType", null);
+
+          _defineProperty(_assertThisInitialized(_this), "count", null);
+
+          _defineProperty(_assertThisInitialized(_this), "isActive", true);
+
+          _defineProperty(_assertThisInitialized(_this), "isEquipped", false);
+
+          _defineProperty(_assertThisInitialized(_this), "shopController", null);
+
+          _defineProperty(_assertThisInitialized(_this), "type", null);
+
+          _defineProperty(_assertThisInitialized(_this), "currentIndex", 0);
+
+          return _this;
+        }
+
+        var _proto = Skin.prototype;
+
+        _proto.start = function start() {};
+
+        _proto.initialiseData = function initialiseData(obj, index, shopLayer) {
+          this.shopController = shopLayer;
+          var plyData = this.shopController.menuController.playerData;
+          this.currentIndex = index;
+          this.type = constant.ACCESSORIESTYPE.OTHER;
+          var accessories = constant.getAccessories();
+
+          if (index == accessories.length) {
+            this.isActive = false;
+            this.count = index;
+            this.node.getChildByName("image").getComponent(Sprite).spriteFrame = this.defaultFrame;
+            this.node.getChildByName("commingSoon").active = true;
+            return;
+          }
+
+          this.isEquipped = false;
+          this.isActive = obj.unlocked;
+          this.skinType = obj.type;
+          this.count = obj.count;
+          this.skinName = obj.name;
+
+          if (plyData.bag == -1 && plyData.headPhone == -1 && plyData.goggles == -1 && plyData.target == -1 && obj.type == 0) {
+            this.isEquipped = true;
+          }
+
+          this.node.getChildByName("name").getComponent(Label).string = this.skinName;
+
+          switch (obj.type) {
+            case 0:
+              {
+                this.node.getChildByName("image").getComponent(Sprite).spriteFrame = this.defaultFrame;
+                this.node.getChildByName("disableIcon").active = true;
+              }
+              break;
+
+            default:
+              this.node.getChildByName("image").getComponent(Sprite).spriteFrame = this.accessoriesFrame;
+              break;
+          }
+
+          if (!obj.unlocked) this.node.getChildByName("lockIcon").active = true;
+
+          switch (obj.type) {
+            case 1:
+              {
+                // this.node.getChildByName("costumes").getComponent(Sprite).spriteFrame = this.shopController.bagAcceesories[obj.count].frame;
+                var data = instantiate(this.shopController.bagAcceesories[obj.count].model);
+                this.node.getChildByName("Plane").getChildByName("characterNode").addChild(data);
+                data.setPosition(new Vec3(0, 0, 0));
+                if (plyData.bag == obj.count) this.isEquipped = true;
+              }
+              break;
+
+            case 2:
+              {
+                // this.node.getChildByName("costumes").getComponent(Sprite).spriteFrame = this.shopController.headPhoneAcceesories[obj.count].frame;
+                var _data = instantiate(this.shopController.headPhoneAcceesories[obj.count].model);
+
+                this.node.getChildByName("Plane").getChildByName("characterNode").addChild(_data);
+
+                _data.setPosition(new Vec3(0, 0, 0));
+
+                if (plyData.headPhone == obj.count) this.isEquipped = true;
+              }
+              break;
+
+            case 3:
+              {
+                // this.node.getChildByName("costumes").getComponent(Sprite).spriteFrame = this.shopController.gogglesAcceesories[obj.count].frame;
+                var _data2 = instantiate(this.shopController.gogglesAcceesories[obj.count].model);
+
+                this.node.getChildByName("Plane").getChildByName("characterNode").addChild(_data2);
+
+                _data2.setPosition(new Vec3(0, 0, 0));
+
+                if (plyData.goggles == obj.count) this.isEquipped = true;
+              }
+              break;
+
+            case 4:
+              {
+                // this.node.getChildByName("costumes").getComponent(Sprite).spriteFrame = this.shopController.targetAcceesories[obj.count].frame;
+                var _data3 = instantiate(this.shopController.targetAcceesories[obj.count].model);
+
+                this.node.getChildByName("Plane").getChildByName("characterNode").addChild(_data3);
+
+                _data3.setPosition(new Vec3(0, 0, 0));
+
+                if (plyData.target == obj.count) this.isEquipped = true;
+              }
+              break;
+
+            default:
+              this.node.getChildByName("costumes").getComponent(Sprite).spriteFrame;
+              break;
+          }
+
+          this.node.getChildByName("equipped").active = this.isEquipped;
+        };
+
+        _proto.onEquipClicked = function onEquipClicked() {
+          if (this.isActive) {
+            audioManager.instance.playSound(constant.AUDIO_SOUND.buttonClick);
+
+            if (this.skinType == 0) {
+              this.shopController.menuController.sumo.getChildByName("Penguine_Anim").getChildByName("Chest_M Socket").getChildByName("accessories_schoolbag_01").active = false;
+              this.shopController.menuController.sumo.getChildByName("Penguine_Anim").getChildByName("Head_M Socket").getChildByName("accessories_headset01").active = false;
+              this.shopController.menuController.sumo.getChildByName("Penguine_Anim").getChildByName("Head_M Socket").getChildByName("accessories_glasses_01").active = false;
+              this.shopController.menuController.sumo.getChildByName("Penguine_Anim").getChildByName("accessories_target_01").active = false; // this.shopController.menuController.sumo.getChildByName("bag").getChildByName("accessories_schoolbag_01").active = false;
+              // this.shopController.menuController.sumo.getChildByName("headset").getChildByName("accessories_headset01").active = false;
+              // this.shopController.menuController.sumo.getChildByName("glasses").getChildByName("accessories_glasses_01").active = false;
+              // this.shopController.menuController.sumo.getChildByName("target").getChildByName("accessories_target_01").active = false;
+
+              for (i = 1; i < 5; i++) {
+                this.shopController.updatePlayerAccessoriesData(i, -1);
+              }
+
+              for (var i = 0; i < this.shopController.accessoriesArray.length; i++) {
+                if (this.shopController.accessoriesArray[i] != this.node) {
+                  var skinData = this.shopController.accessoriesArray[i].getComponent("Skin");
+                  skinData.isEquipped = false;
+                  this.shopController.accessoriesArray[i].getChildByName("equipped").active = false;
+                }
+              }
+
+              return;
+            }
+
+            var currentData = null;
+            var sumoNode = null;
+
+            switch (this.skinType) {
+              case 1:
+                {
+                  currentData = this.shopController.bagAcceesories[this.count];
+                  sumoNode = this.shopController.menuController.sumo.getChildByName("Penguine_Anim").getChildByName("Chest_M Socket").getChildByName("accessories_schoolbag_01"); // sumoNode = this.shopController.menuController.sumo.getChildByName("bag").getChildByName("accessories_schoolbag_01");
+                }
+                break;
+
+              case 2:
+                {
+                  currentData = this.shopController.headPhoneAcceesories[this.count];
+                  sumoNode = this.shopController.menuController.sumo.getChildByName("Penguine_Anim").getChildByName("Head_M Socket").getChildByName("accessories_headset01"); // sumoNode = this.shopController.menuController.sumo.getChildByName("headset").getChildByName("accessories_headset01");
+                }
+                break;
+
+              case 3:
+                {
+                  currentData = this.shopController.gogglesAcceesories[this.count];
+                  sumoNode = this.shopController.menuController.sumo.getChildByName("Penguine_Anim").getChildByName("Head_M Socket").getChildByName("accessories_glasses_01"); // sumoNode = this.shopController.menuController.sumo.getChildByName("glasses").getChildByName("accessories_glasses_01");
+                }
+                break;
+
+              case 4:
+                {
+                  currentData = this.shopController.targetAcceesories[this.count];
+                  sumoNode = this.shopController.menuController.sumo.getChildByName("Penguine_Anim").getChildByName("accessories_target_01"); // sumoNode = this.shopController.menuController.sumo.getChildByName("target").getChildByName("accessories_target_01");
+                }
+                break;
+            }
+
+            if (this.isEquipped) {
+              this.shopController.updatePlayerAccessoriesData(this.skinType, -1);
+              sumoNode.active = false;
+              this.node.getChildByName("equipped").active = false;
+            } else {
+              this.shopController.updatePlayerAccessoriesData(this.skinType, this.count);
+              sumoNode.getComponent(MeshRenderer).setMaterial(currentData.material, 0); // sumoNode.getComponent(MeshRenderer).mesh = currentData.mesh;
+
+              sumoNode.active = true;
+              this.node.getChildByName("equipped").active = true;
+
+              for (var i = 0; i < this.shopController.accessoriesArray.length; i++) {
+                var skinData = this.shopController.accessoriesArray[i].getComponent("Skin");
+
+                if (skinData.skinType == this.skinType || skinData.skinType == 0) {
+                  if (this.shopController.accessoriesArray[i] != this.node) {
+                    skinData.isEquipped = false;
+                    this.shopController.accessoriesArray[i].getChildByName("equipped").active = false;
+                  }
+                }
+              }
+
+              var skeletalAnimation = this.shopController.menuController.sumo.getChildByName("Penguine_Anim").getComponent(SkeletalAnimationComponent);
+              skeletalAnimation.play('push');
+              setTimeout(function () {
+                skeletalAnimation.play('idle');
+              }, skeletalAnimation.getState('push').duration * 1000);
+            }
+
+            this.isEquipped = !this.isEquipped;
+          } else {
+            this.shopController.onShowBuyPopup(this);
+          }
+        };
+
+        return Skin;
+      }(Component), _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "defaultFrame", [_dec2], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "accessoriesFrame", [_dec3], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      })), _class2)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/resourceUtil.ts", ['cc'], function (exports) {
+  'use strict';
+
+  var cclegacy, _decorator, resources, error, Prefab, instantiate, find, SpriteFrame, isValid, assetManager, Texture2D;
+
+  return {
+    setters: [function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      resources = module.resources;
+      error = module.error;
       Prefab = module.Prefab;
+      instantiate = module.instantiate;
+      find = module.find;
+      SpriteFrame = module.SpriteFrame;
+      isValid = module.isValid;
+      assetManager = module.assetManager;
+      Texture2D = module.Texture2D;
+    }],
+    execute: function () {
+      var _dec, _class;
+
+      cclegacy._RF.push({}, "72d81EUKidGMoH83ElFuppM", "resourceUtil", undefined);
+
+      var ccclass = _decorator.ccclass;
+      var resourceUtil = exports('resourceUtil', (_dec = ccclass("resourceUtil"), _dec(_class = /*#__PURE__*/function () {
+        function resourceUtil() {}
+
+        resourceUtil.loadRes = function loadRes(url, type, cb) {
+          if (type) {
+            resources.load(url, type, function (err, res) {
+              if (err) {
+                error(err.message || err);
+
+                if (cb) {
+                  cb(err, res);
+                }
+
+                return;
+              }
+
+              if (cb) {
+                cb(err, res);
+              }
+            });
+          } else {
+            resources.load(url, function (err, res) {
+              if (err) {
+                error(err.message || err);
+
+                if (cb) {
+                  cb(err, res);
+                }
+
+                return;
+              }
+
+              if (cb) {
+                cb(err, res);
+              }
+            });
+          }
+        };
+
+        resourceUtil.getMap = function getMap(level, cb) {
+          var levelStr = 'map'; //前面补0
+
+          if (level >= 100) {
+            levelStr += level;
+          } else if (level >= 10) {
+            levelStr += '0' + level;
+          } else {
+            levelStr += '00' + level;
+          }
+
+          this.loadRes("gamePackage/map/config/" + levelStr, null, function (err, txtAsset) {
+            if (err) {
+              cb(err, txtAsset);
+              return;
+            }
+
+            var txt = txtAsset;
+            var content = '';
+
+            if (txt._file) {
+              if (window['LZString']) {
+                content = window['LZString'].decompressFromEncodedURIComponent(txt._file);
+              }
+
+              var objJson = JSON.parse(content);
+              cb(null, objJson);
+            } else if (txt.text) {
+              if (window['LZString']) {
+                content = window['LZString'].decompressFromEncodedURIComponent(txt.text);
+              }
+
+              var _objJson = JSON.parse(content);
+
+              cb(null, _objJson);
+            } else if (txt.json) {
+              cb(null, txt.json);
+            } else {
+              var errObj = new Error('failed');
+              cb(errObj, null);
+            }
+          });
+        };
+
+        resourceUtil.getMapObjs = function getMapObjs(type, arrName, progressCb, completeCb) {
+          var arrUrls = [];
+
+          for (var idx = 0; idx < arrName.length; idx++) {
+            arrUrls.push("gamePackage/map/" + type + "/" + arrName[idx]);
+          }
+
+          resources.load(arrUrls, Prefab, progressCb, completeCb);
+        };
+
+        resourceUtil.getUIPrefabRes = function getUIPrefabRes(prefabPath, cb) {
+          this.loadRes("prefab/ui/" + prefabPath, Prefab, cb);
+        };
+
+        resourceUtil.createUI = function createUI(path, cb, parent) {
+          this.getUIPrefabRes(path, function (err, prefab) {
+            if (err) return;
+            var node = instantiate(prefab);
+            node.setPosition(0, 0, 0);
+
+            if (!parent) {
+              parent = find("Canvas");
+            }
+
+            parent.addChild(node);
+
+            if (cb) {
+              cb(null, node);
+            }
+          });
+        };
+
+        resourceUtil.getCarsBatch = function getCarsBatch(arrName, progressCb, completeCb) {
+          var arrUrls = [];
+
+          for (var idx = 0; idx < arrName.length; idx++) {
+            arrUrls.push("prefab/car/car" + arrName[idx]);
+          }
+
+          for (var i = 0; i < arrUrls.length; i++) {
+            var url = arrUrls[i];
+
+            if (!progressCb) {
+              resources.load(url, Prefab, completeCb);
+            } else {
+              resources.load(url, Prefab, progressCb, completeCb);
+            }
+          }
+        };
+
+        resourceUtil.getUICar = function getUICar(name, cb) {
+          this.loadRes("prefab/ui/car/uiCar" + name, Prefab, cb);
+        };
+
+        resourceUtil.getCar = function getCar(name, cb) {
+          this.loadRes("prefab/car/car" + name, Prefab, cb);
+        };
+
+        resourceUtil.setCarIcon = function setCarIcon(name, sprite, isBlack, cb) {
+          var path = "gamePackage/texture/car/car" + name;
+
+          if (isBlack) {
+            path += 'Black';
+          }
+
+          this.setSpriteFrame(path, sprite, cb);
+        };
+
+        resourceUtil.getJsonData = function getJsonData(fileName, cb) {
+          resources.load("datas/" + fileName, function (err, content) {
+            if (err) {
+              error(err.message || err);
+              return;
+            }
+
+            var txt = content;
+
+            if (txt.json) {
+              cb(err, txt.json);
+            } else {
+              var errObj = new Error('failed!!!');
+              cb(errObj, null);
+            }
+          });
+        };
+
+        resourceUtil.getData = function getData(fileName, cb) {
+          resources.load("datas/" + fileName, function (err, content) {
+            if (err) {
+              error(err.message || err);
+              return;
+            }
+
+            var txt = content;
+            var text = txt.text;
+
+            if (!text) {
+              resources.load(content.nativeUrl, function (err, content) {
+                text = content;
+                cb(err, text);
+              });
+              return;
+            }
+
+            cb(err, text);
+          });
+        };
+
+        resourceUtil.setSpriteFrame = function setSpriteFrame(path, sprite, cb) {
+          this.loadRes(path + '/spriteFrame', SpriteFrame, function (err, spriteFrame) {
+            if (err) {
+              console.error('set sprite frame failed! err:', path, err);
+              cb(err, spriteFrame);
+              return;
+            }
+
+            if (sprite && isValid(sprite)) {
+              sprite.spriteFrame = spriteFrame;
+              cb(null, spriteFrame);
+            }
+          });
+        }
+        /**
+         * 根据英雄的文件名获取头像
+         */
+        ;
+
+        resourceUtil.setRemoteImage = function setRemoteImage(url, sprite, cb) {
+          if (!url || !url.startsWith('http')) {
+            return;
+          }
+
+          var suffix = "png";
+          assetManager.loadAny([{
+            url: url,
+            type: suffix
+          }], null, function (err, image) {
+            if (err) {
+              console.error('set avatar failed! err:', url, err);
+              cb(err, image);
+              return;
+            }
+
+            var texture = new Texture2D();
+            texture.image = image;
+            var spriteFrame = new SpriteFrame();
+            spriteFrame.texture = texture;
+            cb && cb(null, spriteFrame);
+          });
+        }
+        /**
+         * 设置更多游戏的游戏图标
+         */
+        ;
+
+        resourceUtil.setGameIcon = function setGameIcon(game, sprite, cb) {
+          if (game.startsWith('http')) {
+            this.setRemoteImage(game, sprite, cb);
+          } else {
+            this.setSpriteFrame('gamePackage/textures/icons/games/' + game, sprite, cb);
+          }
+        }
+        /**
+         * 获取顾客预制体
+         *
+         * @static
+         * @param {string} name
+         * @param {Function} cb
+         * @memberof resourceUtil
+         */
+        ;
+
+        resourceUtil.getCustomer = function getCustomer(name, cb) {
+          this.loadRes("gamePackage/map/customer/customer" + name, Prefab, cb);
+        };
+
+        resourceUtil.setCustomerIcon = function setCustomerIcon(name, sprite, cb) {
+          var path = "gamePackage/texture/head/head" + name;
+          this.setSpriteFrame(path, sprite, cb);
+        };
+
+        resourceUtil.getEffect = function getEffect(name, cb) {
+          this.loadRes("prefab/effect/" + name, Prefab, cb);
+        };
+
+        return resourceUtil;
+      }()) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/oneToMultiListener.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
+  'use strict';
+
+  var _defineProperty, cclegacy, _decorator, error;
+
+  return {
+    setters: [function (module) {
+      _defineProperty = module.defineProperty;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      error = module.error;
+    }],
+    execute: function () {
+      var _dec, _class, _class2, _temp;
+
+      cclegacy._RF.push({}, "74771reetNC7orLrC+JqiYw", "oneToMultiListener", undefined);
+
+      var ccclass = _decorator.ccclass;
+      var oneToMultiListener = exports('oneToMultiListener', (_dec = ccclass("oneToMultiListener"), _dec(_class = (_temp = _class2 = /*#__PURE__*/function () {
+        function oneToMultiListener() {}
+
+        oneToMultiListener.on = function on(eventName, handler, target) {
+          var objHandler = {
+            handler: handler,
+            target: target
+          };
+          var handlerList = this.handlers[eventName];
+
+          if (!handlerList) {
+            handlerList = [];
+            this.handlers[eventName] = handlerList;
+          }
+
+          for (var i = 0; i < handlerList.length; i++) {
+            if (!handlerList[i]) {
+              handlerList[i] = objHandler;
+              return i;
+            }
+          }
+
+          handlerList.push(objHandler);
+          return handlerList.length;
+        };
+
+        oneToMultiListener.off = function off(eventName, handler, target) {
+          var handlerList = this.handlers[eventName];
+
+          if (!handlerList) {
+            return;
+          }
+
+          for (var i = 0; i < handlerList.length; i++) {
+            var oldObj = handlerList[i];
+
+            if (oldObj.handler === handler && (!target || target === oldObj.target)) {
+              handlerList.splice(i, 1);
+              break;
+            }
+          }
+        };
+
+        oneToMultiListener.dispatchEvent = function dispatchEvent(eventName) {
+          for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+            args[_key - 1] = arguments[_key];
+          } // if (this.supportEvent !== null && !this.supportEvent.hasOwnProperty(eventName)) {
+          //     cc.error("please add the event into clientEvent.js");
+          //     return;
+          // }
+
+
+          var handlerList = this.handlers[eventName];
+          var i;
+
+          for (i = 1; i < arguments.length; i++) {}
+
+          if (!handlerList) {
+            return;
+          }
+
+          for (i = 0; i < handlerList.length; i++) {
+            var objHandler = handlerList[i];
+
+            if (objHandler.handler) {
+              objHandler.handler.apply(objHandler.target, args);
+            }
+          }
+        };
+
+        oneToMultiListener.setSupportEventList = function setSupportEventList(arrSupportEvent) {
+          if (!(arrSupportEvent instanceof Array)) {
+            error("supportEvent was not array");
+            return false;
+          }
+
+          this.supportEvent = {};
+
+          for (var i in arrSupportEvent) {
+            var eventName = arrSupportEvent[i];
+            this.supportEvent[eventName] = i;
+          }
+
+          return true;
+        };
+
+        return oneToMultiListener;
+      }(), _defineProperty(_class2, "handlers", void 0), _defineProperty(_class2, "supportEvent", void 0), _temp)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/constant.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc', './mxManager.ts'], function (exports) {
+  'use strict';
+
+  var _defineProperty, cclegacy, MxManager;
+
+  return {
+    setters: [function (module) {
+      _defineProperty = module.defineProperty;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+    }, function (module) {
+      MxManager = module.MxManager;
+    }],
+    execute: function () {
+      cclegacy._RF.push({}, "75aa7MrT7lGP5RLq0y7jGcP", "constant", undefined);
+
+      var accessories = [{
+        "type": 0,
+        "unlocked": true,
+        "name": "none",
+        "count": -1
+      }, {
+        "type": 1,
+        "unlocked": false,
+        "name": "Bee Pack",
+        "count": 0
+      }, {
+        "type": 2,
+        "unlocked": false,
+        "name": "Groover",
+        "count": 0
+      }, {
+        "type": 3,
+        "unlocked": false,
+        "name": "Shades",
+        "count": 0
+      }, {
+        "type": 4,
+        "unlocked": true,
+        "name": "Aim Pack",
+        "count": 0
+      } // {
+      //     "type":4,
+      //     "unlocked":false,
+      //     "name":"bag",
+      //     "count":1
+      // },
+      ];
+      var accessoriesSkin = [{
+        "unlocked": true,
+        "name": "penguin"
+      }, {
+        "unlocked": false,
+        "name": "The Butler"
+      }, {
+        "unlocked": false,
+        "name": "Mr Clean"
+      }];
+      var accessoriesfoodSkin = [{
+        "unlocked": true,
+        "name": "Snapper"
+      }, {
+        "unlocked": false,
+        "name": "Shrooms"
+      }];
+      var constant = exports('constant', /*#__PURE__*/function () {
+        function constant() {}
+
+        constant.getAccessories = function getAccessories() {
+          return accessories;
+        };
+
+        constant.getSkin = function getSkin() {
+          return accessoriesSkin;
+        };
+
+        constant.getFood = function getFood() {
+          return accessoriesfoodSkin;
+        };
+
+        constant.updateAccessories = function updateAccessories(type, index) {
+          if (type == this.ACCESSORIESTYPE.OTHER) accessories[index].unlocked = true;
+          if (type == this.ACCESSORIESTYPE.SKIN) accessoriesSkin[index].unlocked = true;
+          if (type == this.ACCESSORIESTYPE.FOOD) accessoriesfoodSkin[index].unlocked = true;
+        };
+
+        constant.isMiloEnabled = function isMiloEnabled() {
+          return MxManager.instance.isMiloApp;
+        };
+
+        constant.setCoinBalance = function setCoinBalance(balance) {
+          window.localStorage.setItem("coinBalance", balance);
+        };
+
+        constant.getCoinBalance = function getCoinBalance() {
+          if (window.localStorage.getItem("coinBalance") == null || window.localStorage.getItem("coinBalance") == undefined) window.localStorage.setItem("coinBalance", "0");
+          return parseInt(window.localStorage.getItem("coinBalance"));
+        };
+
+        constant.CheckSoundEnabled = function CheckSoundEnabled() {
+          if (window.localStorage.getItem("soundEnabled") == null || window.localStorage.getItem("soundEnabled") == undefined) window.localStorage.setItem("soundEnabled", "1");
+          return parseInt(window.localStorage.getItem("soundEnabled"));
+        };
+
+        constant.ToggleSound = function ToggleSound() {
+          if (parseInt(window.localStorage.getItem("soundEnabled"))) window.localStorage.setItem("soundEnabled", "0");else window.localStorage.setItem("soundEnabled", "1");
+          return this.CheckSoundEnabled();
+        };
+
+        return constant;
+      }());
+
+      _defineProperty(constant, "ACCESSORIESTYPE", {
+        FOOD: 'food',
+        SKIN: 'skin',
+        OTHER: 'other'
+      });
+
+      _defineProperty(constant, "AUDIO_SOUND", {
+        BACKGROUND: 'background',
+        //背景音乐
+        buttonClick: "click",
+        countDown: "countDown",
+        gainPowerUp: "gainPowerUp",
+        poisonPowerUp: "poisonPowerUp",
+        speedPowerUp: "speedPowerUp",
+        slowPowerUp: "slowPowerUp",
+        sheildPowerUp: "sheildPowerUp",
+        myDeath: "myDeath",
+        otherDeath: "otherDeath",
+        foodEat: "foodEat",
+        push: "push",
+        win: "win"
+      });
+
+      _defineProperty(constant, "TEXT", {
+        WATCHAD: 'Watch ad to unlock @ for next Play?',
+        BUYCOIN: 'Use # coins to unlock @ for next Play?'
+      });
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/Bot.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc', './constant.ts', './audioManager.ts', './GameConfig.ts', './Helper.ts', './commonFun.ts'], function (exports) {
+  'use strict';
+
+  var _inheritsLoose, _defineProperty, _assertThisInitialized, cclegacy, _decorator, geometry, Vec3, instantiate, SkeletalAnimationComponent, CapsuleCollider, RigidBodyComponent, tween, randomRange, Vec2, Component, constant, audioManager, GameConfig, STATE, CommonFun;
+
+  return {
+    setters: [function (module) {
+      _inheritsLoose = module.inheritsLoose;
+      _defineProperty = module.defineProperty;
+      _assertThisInitialized = module.assertThisInitialized;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      geometry = module.geometry;
       Vec3 = module.Vec3;
       instantiate = module.instantiate;
-      Label = module.Label;
       SkeletalAnimationComponent = module.SkeletalAnimationComponent;
-      RigidBody = module.RigidBody;
       CapsuleCollider = module.CapsuleCollider;
       RigidBodyComponent = module.RigidBodyComponent;
       tween = module.tween;
       randomRange = module.randomRange;
       Vec2 = module.Vec2;
-      PhysicsSystem = module.PhysicsSystem;
       Component = module.Component;
     }, function (module) {
+      constant = module.constant;
+    }, function (module) {
+      audioManager = module.audioManager;
+    }, function (module) {
       GameConfig = module.GameConfig;
+    }, function (module) {
+      STATE = module.STATE;
+    }, function (module) {
+      CommonFun = module.CommonFun;
     }],
     execute: function () {
-      var _dec, _dec2, _class, _class2, _descriptor, _temp;
+      var _dec, _class, _temp;
 
       cclegacy._RF.push({}, "77e533EezxA/6Pf2Q54j4sW", "Bot", undefined);
 
@@ -972,15 +5327,8 @@ System.register("chunks:///_virtual/Bot.ts", ['./_rollupPluginModLoBabelHelpers.
           property = _decorator.property;
       var CELL_TIME = 0.016;
       var MAXDISTANCE = 0;
-      var STATE = {
-        IDLE: 0,
-        WALK: 1,
-        BUMP: 2
-      };
       var Ray = geometry.Ray;
-      var Bot = exports('Bot', (_dec = ccclass('Bot'), _dec2 = property({
-        type: Prefab
-      }), _dec(_class = (_class2 = (_temp = /*#__PURE__*/function (_Component) {
+      var Bot = exports('Bot', (_dec = ccclass('Bot'), _dec(_class = (_temp = /*#__PURE__*/function (_Component) {
         _inheritsLoose(Bot, _Component);
 
         function Bot() {
@@ -992,9 +5340,9 @@ System.register("chunks:///_virtual/Bot.ts", ['./_rollupPluginModLoBabelHelpers.
 
           _this = _Component.call.apply(_Component, [this].concat(args)) || this;
 
-          _initializerDefineProperty(_assertThisInitialized(_this), "prefabPoint", _descriptor, _assertThisInitialized(_this));
+          _defineProperty(_assertThisInitialized(_this), "_charName", "sush");
 
-          _defineProperty(_assertThisInitialized(_this), "_charName", "Sam");
+          _defineProperty(_assertThisInitialized(_this), "_isPlayer", false);
 
           _defineProperty(_assertThisInitialized(_this), "_now_time", 0);
 
@@ -1004,31 +5352,13 @@ System.register("chunks:///_virtual/Bot.ts", ['./_rollupPluginModLoBabelHelpers.
 
           _defineProperty(_assertThisInitialized(_this), "_currentState", STATE.IDLE);
 
-          _defineProperty(_assertThisInitialized(_this), "_ray", new geometry.Ray());
-
-          _defineProperty(_assertThisInitialized(_this), "_maxDistance", 1000);
-
-          _defineProperty(_assertThisInitialized(_this), "_mask", 0xffffffff);
-
           _defineProperty(_assertThisInitialized(_this), "player", null);
-
-          _defineProperty(_assertThisInitialized(_this), "_posArray", []);
-
-          _defineProperty(_assertThisInitialized(_this), "_posObstacleArray", []);
-
-          _defineProperty(_assertThisInitialized(_this), "_posPoolObstacleArray", []);
 
           _defineProperty(_assertThisInitialized(_this), "_playerList", []);
 
           _defineProperty(_assertThisInitialized(_this), "playerName", void 0);
 
           _defineProperty(_assertThisInitialized(_this), "playerCamera", void 0);
-
-          _defineProperty(_assertThisInitialized(_this), "lastColliderId", void 0);
-
-          _defineProperty(_assertThisInitialized(_this), "isReady", false);
-
-          _defineProperty(_assertThisInitialized(_this), "mass", 1);
 
           _defineProperty(_assertThisInitialized(_this), "_vector", Vec3.ZERO);
 
@@ -1038,21 +5368,39 @@ System.register("chunks:///_virtual/Bot.ts", ['./_rollupPluginModLoBabelHelpers.
 
           _defineProperty(_assertThisInitialized(_this), "eatTimeout", null);
 
-          _defineProperty(_assertThisInitialized(_this), "currentDistance", null);
+          _defineProperty(_assertThisInitialized(_this), "currentDistance", 0);
 
-          _defineProperty(_assertThisInitialized(_this), "_maxWallDistance", 20);
+          _defineProperty(_assertThisInitialized(_this), "_maxWallDistance", 3);
 
-          _defineProperty(_assertThisInitialized(_this), "_curentFollowingNode", null);
+          _defineProperty(_assertThisInitialized(_this), "_currentFollowingNode", null);
+
+          _defineProperty(_assertThisInitialized(_this), "_isPoisionSpeedActive", false);
+
+          _defineProperty(_assertThisInitialized(_this), "_isGainSpeedActive", false);
+
+          _defineProperty(_assertThisInitialized(_this), "_isSheildActive", false);
+
+          _defineProperty(_assertThisInitialized(_this), "_poisionSpeedActiveCount", 0);
+
+          _defineProperty(_assertThisInitialized(_this), "_gainSpeedActiveCount", 0);
+
+          _defineProperty(_assertThisInitialized(_this), "_sheildActiveCount", 0);
+
+          _defineProperty(_assertThisInitialized(_this), "_poisionSpeedActivePercentage", 0);
+
+          _defineProperty(_assertThisInitialized(_this), "_gainSpeedActivePercentage", 0);
 
           _defineProperty(_assertThisInitialized(_this), "botType", "");
 
           _defineProperty(_assertThisInitialized(_this), "initialSize", 0);
 
-          _defineProperty(_assertThisInitialized(_this), "botMaxSize", 0);
+          _defineProperty(_assertThisInitialized(_this), "maxSize", 0);
 
-          _defineProperty(_assertThisInitialized(_this), "botStartSpeed", 0);
+          _defineProperty(_assertThisInitialized(_this), "startSpeed", 0);
 
-          _defineProperty(_assertThisInitialized(_this), "botEndSpeed", 0);
+          _defineProperty(_assertThisInitialized(_this), "endspeed", 0);
+
+          _defineProperty(_assertThisInitialized(_this), "criticalMass", 0);
 
           _defineProperty(_assertThisInitialized(_this), "maxScale", 0);
 
@@ -1060,51 +5408,67 @@ System.register("chunks:///_virtual/Bot.ts", ['./_rollupPluginModLoBabelHelpers.
 
           _defineProperty(_assertThisInitialized(_this), "speed", 0);
 
+          _defineProperty(_assertThisInitialized(_this), "bumpTween", null);
+
+          _defineProperty(_assertThisInitialized(_this), "bumptimeTween", null);
+
+          _defineProperty(_assertThisInitialized(_this), "characterHud", null);
+
+          _defineProperty(_assertThisInitialized(_this), "_collidedOpponentPlayer", null);
+
+          _defineProperty(_assertThisInitialized(_this), "_score", 0);
+
+          _defineProperty(_assertThisInitialized(_this), "_totalSumoPushed", 0);
+
+          _defineProperty(_assertThisInitialized(_this), "commonFun", null);
+
+          _defineProperty(_assertThisInitialized(_this), "_currentAngle", 0);
+
           return _this;
         }
 
         var _proto = Bot.prototype;
 
         _proto.addName = function addName(namePrefab, world, gameController) {
+          this.commonFun = new CommonFun();
           this.playerName = instantiate(namePrefab);
-          this.playerName.getComponent(Label).string = this._charName;
           world.addChild(this.playerName);
           this.gameController = gameController;
-        };
-
-        _proto.updateNameData = function updateNameData() {
-          this._charName = "bottype " + this.botType + " \n botMaxSize " + this.maxScale.toFixed(2) + " \n botEndSpeed " + this.botEndSpeed.toFixed(2) + " \n currentScale " + this.currentScale.toFixed(2) + " \n speed " + this.speed.toFixed(2);
-          this.playerName.getComponent(Label).string = this._charName;
+          this._charName = this.commonFun.getNames();
+          this.characterHud = this.playerName.getComponent("CharacterHud");
+          this.characterHud.updateNameData(this._charName);
+          this.schedule(this.powerUpUpdates, 1);
         };
 
         _proto.updateNamePos = function updateNamePos() {
           var namePos = this.node.getPosition();
-          this.playerName.setPosition(new Vec3(namePos.x, this.playerName.position.y, namePos.z));
-          this.playerName.eulerAngles = new Vec3(this.playerCamera.eulerAngles.x, 0, 0);
+          this.characterHud.updateHudPos(namePos, this.playerCamera);
         };
 
         _proto.setProperties = function setProperties(botType) {
+          this._isPlayer = false;
           this.botType = botType;
           this.initialSize = GameConfig.bot.initialSize;
-          this.botMaxSize = GameConfig.bot.botMaxSize;
-          this.botStartSpeed = GameConfig.bot.botConfig[this.botType].botStartSpeed;
-          this.botEndSpeed = GameConfig.bot.botConfig[this.botType].botStartSpeed;
-          this._skeletal = this.node.getComponent(SkeletalAnimationComponent);
-          this.setIdleStateAnimation();
-          this.currentScale = GameConfig.bot.initialSize;
+          this.maxSize = GameConfig.bot.botMaxSize;
+          this.startSpeed = GameConfig.bot.botConfig[this.botType].botStartSpeed;
+          this.endspeed = GameConfig.bot.botConfig[this.botType].botEndSpeed;
+          this.criticalMass = GameConfig.bot.botConfig[this.botType].criticalMass;
+          this._skeletal = this.node.getChildByName("Penguine_Anim").getComponent(SkeletalAnimationComponent);
+          this.commonFun.setIdleStateAnimation(this);
+          this.setCurrentScale(this.initialSize);
           this.node.scale.set(this.currentScale, this.currentScale, this.currentScale);
-          this.maxScale = GameConfig.bot.botMaxSize;
-          this.mass = this.node.getComponent(RigidBody).mass;
+          this.maxScale = this.maxSize;
           this.updateSpeed();
-          this.updateNameData();
           this.updateNamePos();
         };
 
         _proto.updateSpeed = function updateSpeed() {
-          this.speed = this.getNewModifiedSpeed(this.currentScale);
-          console.log("bot speed    " + this.speed);
-          this.changeWalkAnimationSpeed(this.speed);
-          this.updateNameData();
+          this.speed = this.commonFun.getNewModifiedSpeed(this.getCurrentScale(), this);
+          this.commonFun.changeWalkAnimationSpeed(this.speed, this);
+        };
+
+        _proto.getSpeed = function getSpeed() {
+          return this.speed;
         };
 
         _proto.start = function start() {
@@ -1117,68 +5481,305 @@ System.register("chunks:///_virtual/Bot.ts", ['./_rollupPluginModLoBabelHelpers.
         };
 
         _proto._onCollisionEnter = function _onCollisionEnter(event) {
+          var _this2 = this;
+
           var otherCollider = event.otherCollider;
 
-          if (otherCollider.node.name == 'Platform') {
+          if (otherCollider.node.name == 'platform') {
             return;
           }
 
           if (otherCollider.node.name == 'deathPlatform') {
-            // console.log(this._playerList.length);
-            var oppScript = event.selfCollider.node.getComponent("Bot") == null ? event.selfCollider.node.getComponent("Player") : event.selfCollider.node.getComponent("Bot");
-            oppScript.removeAllHud();
-            this.removeObjectFromArray(this._playerList, event.selfCollider.node); // console.log(this._playerList.length);
+            audioManager.instance.playSound(constant.AUDIO_SOUND.otherDeath);
+            var currentScript = event.selfCollider.node.getComponent("Bot") == null ? event.selfCollider.node.getComponent("Player") : event.selfCollider.node.getComponent("Bot");
 
+            if (this._collidedOpponentPlayer != null) {
+              var oppScript = this._collidedOpponentPlayer.getComponent("Bot") == null ? this._collidedOpponentPlayer.getComponent("Player") : this._collidedOpponentPlayer.getComponent("Bot");
+              var currentPlayerScale = currentScript.getCurrentScale();
+              var opponentPlayerScale = oppScript.getCurrentScale();
+              var gainValue = opponentPlayerScale;
+              if (currentPlayerScale < opponentPlayerScale) //bigger pushed
+                gainValue = this.commonFun.harmonicMean([currentPlayerScale, opponentPlayerScale]) - currentPlayerScale + opponentPlayerScale;else if (currentPlayerScale > opponentPlayerScale) //smaller pushed
+                gainValue = this.commonFun.harmonicMean([currentPlayerScale, opponentPlayerScale]);else //same size
+                {
+                  gainValue = 0;
+                  var gainValue1 = GameConfig.powerup["GummyBear"].gainPercentage;
+                  oppScript.resize(gainValue1, true);
+                }
+              if (gainValue > 0) oppScript.increasePlayerScaleOnOpponentDeath(gainValue);
+              oppScript.updateScore(GameConfig.commonData.deathScore);
+              oppScript._totalSumoPushed++;
+            }
+
+            currentScript.removeAllHud();
+            this.commonFun.removeObjectFromArray(this._playerList, event.selfCollider.node);
+            this.commonFun.removeObjectFromArray(this.gameController.botController._totalPlayerArrayList, event.selfCollider.node);
             this.gameController.getWorld().removeChild(event.selfCollider.node);
+            var d = new Date();
+            var ob1 = {
+              "name": this._charName,
+              "time": d.getTime(),
+              "isSelf": false
+            };
+            this.gameController.playerBoardData.push(ob1);
             return;
           }
 
-          if (otherCollider.node.name == 'GummyBear') {
-            // if (this.lastColliderId != otherCollider.uuid) {
-            this.gameController.powerupController.removeGummy(otherCollider);
-            var gainValue = GameConfig.powerup[otherCollider.node.name].gain;
-            this.resize(gainValue); // this.lastColliderId = otherCollider.uuid;
-            // }
-          } else if (otherCollider.node.name == 'Player' || otherCollider.node.name == 'Bot') {
-            this.setBumpStateAnimation();
-            this.getComponent(RigidBodyComponent).clearVelocity();
-            var pos = new Vec3(this.node.getPosition().x - otherCollider.node.getPosition().x, this.node.getPosition().z - otherCollider.node.getPosition().z);
+          for (var i = 0; i < 10; i++) {
+            var playerName = 'Player';
+            var BotName = 'Bot';
 
-            var _vector = pos.normalize();
+            if (i > 0) {
+              playerName = playerName + i;
+              BotName = BotName + i;
+            }
+
+            if (otherCollider.node.name == playerName) {
+              break;
+            }
+
+            if (otherCollider.node.name == BotName) {
+              break;
+            }
+          }
+
+          if (otherCollider.node.name == 'Player' || otherCollider.node.name == 'Bot') {
+            this.commonFun.setBumpStateAnimation(this);
+            this._collidedOpponentPlayer = otherCollider.node;
+            this.getComponent(RigidBodyComponent).clearVelocity();
+            var pos1 = new Vec3(this.node.getPosition().x - otherCollider.node.getPosition().x, 0, this.node.getPosition().z - otherCollider.node.getPosition().z);
+
+            var _vector = pos1.normalize();
 
             var bumpValue = this.getBumpValue(otherCollider.node);
-            var isBumpedOnBack = this.checkDidBumpedOnBck(otherCollider.node);
-            console.log("bot     " + this._charName + "     " + isBumpedOnBack);
-            this.getComponent(RigidBodyComponent).applyImpulse(new Vec3(_vector.x * bumpValue, 0, _vector.y * bumpValue));
+            var pos = new Vec3(this.node.getPosition().x + bumpValue * _vector.x, this.node.getPosition().z + bumpValue * _vector.z); // console.log("bumpValueBot     "+bumpValue+"     bumpTime      "+GameConfig.commonData.bumpTime);
+
+            if (this.bumpTween != null) {
+              this.bumpTween.stop();
+              clearTimeout(this.bumptimeTween);
+            }
+
+            this.bumpTween = tween(this.node).to(GameConfig.commonData.bumpTime, {
+              position: new Vec3(pos.x, this.node.getPosition().y, pos.y)
+            }).start();
+            this.bumptimeTween = setTimeout(function () {
+              _this2.getComponent(RigidBodyComponent).clearVelocity();
+
+              _this2.commonFun.setWalkStateAnimation(_this2);
+
+              _this2.bumptimeTween = null;
+              _this2.bumptimeTween = setTimeout(function () {
+                _this2._collidedOpponentPlayer = null;
+              }, GameConfig.commonData.bumpTime * 1000);
+            }, GameConfig.commonData.bumpTime * 1000);
+          }
+
+          if (otherCollider.node.name == 'GummyBear') {
+            this.gameController.powerupController.removeGummy(otherCollider);
+            var _gainValue = GameConfig.powerup[otherCollider.node.name].gainPercentage;
+            this.resize(_gainValue, true);
+            this.updateScore(GameConfig.powerup[otherCollider.node.name].score);
+          }
+
+          if (this.checkSheildActive() || this.checkGainSpeedActive() || this.checkPoisionSpeedActive()) return;
+
+          if (otherCollider.node.name == 'PoisionSize') {
+            this.gameController.powerupController.removeGummy(otherCollider);
+            var lossValue = GameConfig.powerup[otherCollider.node.name].lossPercentage;
+            this.resize(lossValue, false);
+            this.updateScore(GameConfig.powerup[otherCollider.node.name].score);
+          }
+
+          if (otherCollider.node.name == 'PoisionSpeed') {
+            this.gameController.powerupController.removeGummy(otherCollider);
+            var _lossValue = GameConfig.powerup[otherCollider.node.name].lossSpeedPercentage;
+            var duration = GameConfig.powerup[otherCollider.node.name].duration;
+            this.reEvaluateSpeed(_lossValue, duration, false);
+            this.updateScore(GameConfig.powerup[otherCollider.node.name].score);
+          }
+
+          if (otherCollider.node.name == 'GainSpeed') {
+            this.gameController.powerupController.removeGummy(otherCollider);
+            var _lossValue2 = GameConfig.powerup[otherCollider.node.name].increaseSpeedPercentage;
+            var _duration = GameConfig.powerup[otherCollider.node.name].duration;
+            this.reEvaluateSpeed(_lossValue2, _duration, true);
+            this.updateScore(GameConfig.powerup[otherCollider.node.name].score);
+          }
+
+          if (otherCollider.node.name == 'Sheild') {
+            this.gameController.powerupController.removeGummy(otherCollider);
+            var _duration2 = GameConfig.powerup[otherCollider.node.name].duration;
+            this.startSheild(_duration2);
+            this.updateScore(GameConfig.powerup[otherCollider.node.name].score);
           }
         };
 
-        _proto.resize = function resize(gain) {
-          var _this2 = this;
+        _proto.updateScore = function updateScore(score) {
+          this._score = this._score + score;
+          if (this._score < 0) this._score = 0;
+        };
 
-          this.setEatbleAnimation();
+        _proto.increasePlayerScaleOnOpponentDeath = function increasePlayerScaleOnOpponentDeath(size) {
+          var _this3 = this;
 
-          if (this.currentScale <= this.maxScale) {
-            this.currentScale += gain;
-            this.node.getComponent(RigidBody).mass += 0.5;
+          if (this.getCurrentScale() <= this.maxScale) {
+            this.setCurrentScale(this.getCurrentScale() + size);
+            if (this.getCurrentScale() > this.maxScale) this.setCurrentScale(this.maxScale);
             tween(this.node.scale).to(1, new Vec3(this.currentScale, this.currentScale, this.currentScale)).call(function () {
-              _this2.updateSpeed();
+              _this3.updateSpeed();
             }).start();
-            tween(this.playerName.position).to(1, {
-              y: this.playerName.position.y + 0.5
-            }).start();
+            this.characterHud.tweenPosition(this.getCurrentScale());
+          }
+        };
+
+        _proto.startSheild = function startSheild(duration) {
+          this.commonFun.setPowerGainAnimation(this);
+          this._sheildActiveCount += duration;
+          this._isSheildActive = true;
+        };
+
+        _proto.checkGainSpeedActive = function checkGainSpeedActive() {
+          return this._isGainSpeedActive;
+        };
+
+        _proto.checkPoisionSpeedActive = function checkPoisionSpeedActive() {
+          return this._isPoisionSpeedActive;
+        };
+
+        _proto.checkSheildActive = function checkSheildActive() {
+          return this._isSheildActive;
+        };
+
+        _proto.reEvaluateSpeed = function reEvaluateSpeed(gain, duration, isgain) {
+          if (isgain) {
+            if (this._isGainSpeedActive) {
+              this._isPoisionSpeedActive = false;
+              this._isGainSpeedActive = false;
+              this._poisionSpeedActiveCount = 0;
+              this._gainSpeedActiveCount = 0;
+              return;
+            }
+
+            this._poisionSpeedActivePercentage = gain;
+            this._poisionSpeedActiveCount += duration;
+            this._isPoisionSpeedActive = true;
+            this.speed = this.speed + this.commonFun.getPercentage(gain * 100, this.speed);
+            this.commonFun.setPowerGainAnimation(this);
+            this.commonFun.changeWalkAnimationSpeed(this.speed, this);
+          } else {
+            if (this._isPoisionSpeedActive) {
+              this._isPoisionSpeedActive = false;
+              this._isGainSpeedActive = false;
+              this._poisionSpeedActiveCount = 0;
+              this._gainSpeedActiveCount = 0;
+              return;
+            }
+
+            this._gainSpeedActivePercentage = gain;
+            this._gainSpeedActiveCount += duration;
+            this._isGainSpeedActive = true;
+            this.speed = this.speed - this.commonFun.getPercentage(gain * 100, this.speed);
+            this.commonFun.setPowerLoseAnimation(this);
+            this.commonFun.changeWalkAnimationSpeed(this.speed, this);
+          }
+        };
+
+        _proto.powerUpUpdates = function powerUpUpdates() {
+          if (this._isPoisionSpeedActive && this._poisionSpeedActiveCount > 0) {
+            this._poisionSpeedActiveCount--;
+
+            if (this._poisionSpeedActiveCount <= 0) {
+              this._poisionSpeedActiveCount = 0;
+              this._isPoisionSpeedActive = false;
+            }
+          }
+
+          if (this._isGainSpeedActive && this._gainSpeedActiveCount > 0) {
+            this._gainSpeedActiveCount--;
+
+            if (this._gainSpeedActiveCount <= 0) {
+              this._gainSpeedActiveCount = 0;
+              this._isGainSpeedActive = false;
+            }
+          }
+
+          if (this._isSheildActive && this._sheildActiveCount > 0) {
+            this._sheildActiveCount--;
+
+            if (this._sheildActiveCount <= 0) {
+              this._sheildActiveCount = 0;
+              this._isSheildActive = false;
+            }
+          }
+        };
+
+        _proto.resize = function resize(gain, isgain) {
+          var _this4 = this;
+
+          if (isgain) {
+            if (this.getCurrentScale() <= this.maxScale) {
+              this.setCurrentScale(this.getCurrentScale() + this.commonFun.getPercentage(gain * 100, this.currentScale));
+              if (this.getCurrentScale() > this.maxScale) this.setCurrentScale(this.maxScale);
+              tween(this.node.scale).to(1, new Vec3(this.currentScale, this.currentScale, this.currentScale)).call(function () {
+                _this4.updateSpeed();
+              }).start();
+              this.characterHud.tweenPosition(this.getCurrentScale());
+              this.commonFun.setPowerGainAnimation(this);
+            }
+          } else {
+            if (this.getCurrentScale() > this.initialSize) {
+              this.setCurrentScale(this.getCurrentScale() - this.commonFun.getPercentage(gain * 100, this.currentScale));
+              if (this.getCurrentScale() < this.initialSize) this.setCurrentScale(this.initialSize);
+              tween(this.node.scale).to(1, new Vec3(this.currentScale, this.currentScale, this.currentScale)).call(function () {
+                _this4.updateSpeed();
+              }).start();
+              this.characterHud.tweenPosition(this.getCurrentScale());
+              this.commonFun.setPowerLoseAnimation(this);
+            }
           }
         };
 
         _proto.getBumpValue = function getBumpValue(opponentPlayer) {
+          var _this5 = this;
+
+          if (this.checkSheildActive()) return 0;
           var oppScript = opponentPlayer.getComponent("Bot") == null ? opponentPlayer.getComponent("Player") : opponentPlayer.getComponent("Bot");
-          var opponentSize = oppScript.getCurrentScale();
-          var playerSize = this.currentScale;
-          return opponentSize * 12;
+          var updatedSize = this.getCurrentScale();
+          updatedSize = this.getBumpSize();
+
+          if (this.getCurrentScale() > this.initialSize) {
+            this.setCurrentScale(this.getCurrentScale() - updatedSize);
+            if (this.getCurrentScale() < this.initialSize) this.setCurrentScale(this.initialSize);
+            tween(this.node.scale).to(1, new Vec3(this.currentScale, this.currentScale, this.currentScale)).call(function () {
+              _this5.updateSpeed();
+            }).start();
+            this.characterHud.tweenPosition(this.getCurrentScale());
+          }
+
+          this.updateSpeed();
+          var dist = this.getSpeed() * oppScript.getCurrentScale();
+          var isBumpedOnBack = this.checkDidBumpedOnBck(opponentPlayer);
+          if (isBumpedOnBack) dist = dist * 2;
+          var isPlayerBumpedOnOtherBack = this.isPlayerBumpedOnOtherBack(opponentPlayer);
+
+          if (isPlayerBumpedOnOtherBack) {
+            dist = this.getSpeed() * oppScript.getCurrentScale();
+            dist = dist / 2;
+          }
+
+          return dist;
+        };
+
+        _proto.getBumpSize = function getBumpSize() {
+          return this.commonFun.getPercentage(GameConfig.commonData.bumpSizeDecreasePercentage, this.getCurrentScale());
         };
 
         _proto.getCurrentScale = function getCurrentScale() {
           return this.currentScale;
+        };
+
+        _proto.setCurrentScale = function setCurrentScale(scale) {
+          this.currentScale = scale;
         };
 
         _proto.getMaxScale = function getMaxScale() {
@@ -1186,6 +5787,7 @@ System.register("chunks:///_virtual/Bot.ts", ['./_rollupPluginModLoBabelHelpers.
         };
 
         _proto.update = function update(deltaTime) {
+          // return;
           if (parseInt(window.localStorage.getItem("isStopped"))) return;
           this._now_time += deltaTime;
 
@@ -1205,14 +5807,7 @@ System.register("chunks:///_virtual/Bot.ts", ['./_rollupPluginModLoBabelHelpers.
           this.updateNamePos();
 
           if (this._currentState == STATE.BUMP) {
-            var vec = new Vec3();
-            this.node.getComponent(RigidBody).getLinearVelocity(vec);
-            var mag = Math.sqrt(vec.x * vec.x + vec.z * vec.z);
-
-            if (mag <= 0.2) {
-              this.getComponent(RigidBodyComponent).clearVelocity();
-              this.setIdleStateAnimation();
-            } else return;
+            return;
           } // point
 
 
@@ -1228,94 +5823,118 @@ System.register("chunks:///_virtual/Bot.ts", ['./_rollupPluginModLoBabelHelpers.
             this._movement = direction;
 
             if (this._currentState == STATE.IDLE) {
-              this.setWalkStateAnimation();
+              this.commonFun.setWalkStateAnimation(this);
             }
           } else {
             this._movement = Vec3.ZERO;
 
             if (this._currentState == STATE.WALK) {
-              this.setIdleStateAnimation();
+              this.commonFun.setIdleStateAnimation(this);
             }
           }
 
-          this.node.setPosition(this.node.position.add3f(this._movement.x * this.speed * dt, 0, this._movement.z * this.speed * dt));
+          var currentSpeed = this.getSpeed();
+
+          if (this._isPoisionSpeedActive && this._poisionSpeedActiveCount > 0) {
+            currentSpeed = currentSpeed + this.commonFun.getPercentage(this._poisionSpeedActivePercentage * 100, this.speed);
+          }
+
+          if (this._isGainSpeedActive && this._gainSpeedActiveCount > 0) {
+            currentSpeed = currentSpeed + this.commonFun.getPercentage(this._gainSpeedActivePercentage * 100, this.speed);
+          }
+
+          this.node.setPosition(this.node.position.add3f(this._movement.x * currentSpeed * dt, 0, this._movement.z * currentSpeed * dt));
         };
 
         _proto.checkBotLogic = function checkBotLogic() {
-          if (this._curentFollowingNode != null) //is following something
+          if (this._currentFollowingNode != null) //is following something
             {
-              if (this._curentFollowingNode.getComponent("Bot") || this._curentFollowingNode.getComponent("Player")) //is following other bot or player
+              if (this._currentFollowingNode.getComponent("Bot") || this._currentFollowingNode.getComponent("Player")) //is following other bot or player
                 {
-                  var opponentPresent = false;
+                  if (this.getCurrentScale() > this.criticalMass) {
+                    var opponentPresent = false;
 
-                  for (var i = 0; i < this._playerList.length; i++) {
-                    if (this._playerList[i] == this._curentFollowingNode) opponentPresent = true;
-                  }
+                    for (var i = 0; i < this._playerList.length; i++) {
+                      if (this._playerList[i] == this._currentFollowingNode) opponentPresent = true;
+                    }
 
-                  if (opponentPresent) {
-                    var oppScript = this._curentFollowingNode.getComponent("Bot") == null ? this._curentFollowingNode.getComponent("Player") : this._curentFollowingNode.getComponent("Bot");
-                    var oppCurrentScale = oppScript.getCurrentScale();
-                    if (this.currentScale >= oppCurrentScale) return this._curentFollowingNode.getPosition();
+                    if (opponentPresent) {
+                      var oppScript = this._currentFollowingNode.getComponent("Bot") == null ? this._currentFollowingNode.getComponent("Player") : this._currentFollowingNode.getComponent("Bot");
+                      var oppCurrentScale = oppScript.getCurrentScale();
+                      if (this.getCurrentScale() >= oppCurrentScale) return this._currentFollowingNode.getPosition();
+                    }
                   }
                 }
 
-              if (this._curentFollowingNode.name == 'GummyBear') {
-                if (this._curentFollowingNode.active) return this._curentFollowingNode.getPosition();
+              if (this._currentFollowingNode.name == 'GummyBear') {
+                if (this._currentFollowingNode.active) return this._currentFollowingNode.getPosition();
               }
             }
 
-          var gummyBear = this.checkPowerUpDistance();
-          var opponent = this.checkOtherPlayerPosition();
+          var gummyBear = this.checkPowerUpDistance('GummyBear');
+          var poisionSize = this.checkPowerUpDistance('PoisionSize');
+          var poisionSpeed = this.checkPowerUpDistance('PoisionSpeed');
+          var gainSpeed = this.checkPowerUpDistance('GainSpeed'); //after critical mass
+
+          var sheild = this.checkPowerUpDistance('Sheild'); //dont take other power up
+
+          var opponent = this.checkOtherPlayerPosition(); //easy medium hard bot 
+
+          if (sheild != null && this.botType == "hard") {
+            this._currentFollowingNode = sheild;
+            return sheild.getPosition();
+          }
 
           if (gummyBear != null && opponent == null) {
-            this._curentFollowingNode = gummyBear;
+            this._currentFollowingNode = gummyBear;
             return gummyBear.getPosition();
-          } else if (gummyBear == null && opponent != null) {
-            this._curentFollowingNode = opponent;
+          } else if (gummyBear == null && opponent != null && this.botType != "easy") {
+            this._currentFollowingNode = opponent;
             return opponent.getPosition();
-          } else if (gummyBear != null && opponent != null) {
+          } else if (gainSpeed != null && this.getCurrentScale() >= this.criticalMass && this.botType != "easy") {
+            this._currentFollowingNode = gainSpeed;
+            return gainSpeed.getPosition();
+          } else if (gummyBear != null && opponent != null && this.botType != "easy") {
             var gummyDistance = this.getDistance(gummyBear.getPosition().x, gummyBear.getPosition().z, this.node.getPosition().x, this.node.getPosition().z);
             var opponentDistance = this.getDistance(opponent.getPosition().x, opponent.getPosition().z, this.node.getPosition().x, this.node.getPosition().z);
 
             var _oppScript = opponent.getComponent("Bot") == null ? opponent.getComponent("Player") : opponent.getComponent("Bot");
 
-            if (_oppScript.getCurrentScale() >= this.getCurrentScale()) {
-              if (this.getCurrentScale() < this.getMaxScale()) {
-                this._curentFollowingNode = gummyBear;
-                return gummyBear.getPosition();
-              } else {
-                var range = randomRange(0, 10);
-
-                if (range < 5) {
-                  this._curentFollowingNode = gummyBear;
+            if (this.getCurrentScale() <= this.criticalMass) {
+              this._currentFollowingNode = gummyBear;
+              return gummyBear.getPosition();
+            } else if (this.getCurrentScale() >= this.maxScale) {
+              this._currentFollowingNode = opponent;
+              return opponent.getPosition();
+            } else {
+              if (_oppScript.getCurrentScale() >= this.getCurrentScale()) {
+                if (this.getCurrentScale() < this.getMaxScale()) {
+                  this._currentFollowingNode = gummyBear;
                   return gummyBear.getPosition();
                 } else {
-                  this._curentFollowingNode = opponent;
-                  return opponent.getPosition();
+                  var range = randomRange(0, 10);
+
+                  if (range < 5) {
+                    this._currentFollowingNode = gummyBear;
+                    return gummyBear.getPosition();
+                  } else {
+                    this._currentFollowingNode = opponent;
+                    return opponent.getPosition();
+                  }
                 }
+              } else {
+                this._currentFollowingNode = gummyDistance > opponentDistance ? opponent : gummyBear;
+                return this._currentFollowingNode.getPosition();
               }
-            } else {
-              this._curentFollowingNode = gummyDistance > opponentDistance ? opponent : gummyBear;
-              return this._curentFollowingNode.getPosition();
             }
           } else {
-            this._curentFollowingNode = null;
+            this._currentFollowingNode = null;
             this.check();
-            return this._vector; // var opponentArray = [];
-            // for (let i = 0; i < this._playerList.length; i++) {
-            //     if (this._playerList[i] != this.node)
-            //         opponentArray.push(this._playerList[i]);
-            // }
-            // if (opponentArray.length == 1) { // todo
-            //     var pos = new Vec3(opponentArray[0].getPosition().x * 2, opponentArray[0].getPosition().y * 2, opponentArray[0].getPosition().z * 2);
-            //     return pos;
-            // }
-            // else if (opponentArray.length > 1)
-            //     return opponentArray[Math.floor(Math.random() * opponentArray.length)].getPosition();
+            return this._vector;
           }
         };
 
-        _proto.checkPowerUpDistance = function checkPowerUpDistance() {
+        _proto.checkPowerUpDistance = function checkPowerUpDistance(powerUpName) {
           if (this.gameController.powerupController == undefined) return null;
           var powerupArrayList = this.gameController.powerupController.getPowerUpArrayList();
           var shortetDistance = 0;
@@ -1323,7 +5942,7 @@ System.register("chunks:///_virtual/Bot.ts", ['./_rollupPluginModLoBabelHelpers.
           var initalData = true;
 
           for (var i = 0; i < powerupArrayList.length; i++) {
-            if (powerupArrayList[i].active) {
+            if (powerupArrayList[i].active && powerupArrayList[i].name == powerUpName) {
               var distance = this.getDistance(powerupArrayList[i].getPosition().x, powerupArrayList[i].getPosition().z, this.node.getPosition().x, this.node.getPosition().z);
 
               if (initalData) {
@@ -1355,13 +5974,13 @@ System.register("chunks:///_virtual/Bot.ts", ['./_rollupPluginModLoBabelHelpers.
             var oppScript = opponentArray[_i].getComponent("Bot") == null ? opponentArray[_i].getComponent("Player") : opponentArray[_i].getComponent("Bot");
             var oppCurrentScale = oppScript.getCurrentScale();
 
-            if (this.currentScale >= oppCurrentScale) {
+            if (this.getCurrentScale() >= oppCurrentScale) {
               beatableOpponentArray.push(opponentArray[_i]);
             }
           } //shuffle array
 
 
-          beatableOpponentArray = this.shuffleArr(beatableOpponentArray);
+          beatableOpponentArray = this.commonFun.shuffleArr(beatableOpponentArray);
           beatableOpponentArray.sort(function (x, y) {
             var oppScript1 = x.getComponent("Bot") == null ? x.getComponent("Player") : x.getComponent("Bot");
             var oppCurrentScale1 = oppScript1.getCurrentScale();
@@ -1369,7 +5988,7 @@ System.register("chunks:///_virtual/Bot.ts", ['./_rollupPluginModLoBabelHelpers.
             var oppCurrentScale2 = oppScript2.getCurrentScale();
             return oppCurrentScale1 - oppCurrentScale2;
           });
-          var shortetDistance = 999999;
+          var shortestDistance = 999999;
           var index = -1;
 
           if (Math.floor(Math.random() * 10) > 5) {
@@ -1380,8 +5999,8 @@ System.register("chunks:///_virtual/Bot.ts", ['./_rollupPluginModLoBabelHelpers.
 
               var distance = this.getDistance(beatableOpponentArray[_i2].getPosition().x, beatableOpponentArray[_i2].getPosition().z, this.node.getPosition().x, this.node.getPosition().z);
 
-              if (distance < shortetDistance) {
-                shortetDistance = distance;
+              if (distance < shortestDistance) {
+                shortestDistance = distance;
                 index = _i2;
               }
             }
@@ -1397,9 +6016,11 @@ System.register("chunks:///_virtual/Bot.ts", ['./_rollupPluginModLoBabelHelpers.
         };
 
         _proto.checkRandomPoints = function checkRandomPoints() {
-          var radius = 5;
+          var radius = 500;
           var center = new Vec2(this.node.getPosition().x, this.node.getPosition().z);
-          var range = Math.floor(randomRange(0, 360));
+          var range = Math.floor(randomRange(0, 360)); // this._currentAngle = this._currentAngle + 1;
+          // range = this._currentAngle;
+
           var currentAngle = Math.ceil(range);
           currentAngle = 90 - currentAngle;
           var newangle = currentAngle * (Math.PI / 180);
@@ -1410,25 +6031,9 @@ System.register("chunks:///_virtual/Bot.ts", ['./_rollupPluginModLoBabelHelpers.
         };
 
         _proto.check = function check() {
-          this._posPoolObstacleArray = [];
-          this._posPoolObstacleArray = this._posObstacleArray;
-          this._posObstacleArray = [];
-          var k = this.getSemiCirclePoint(0, 5, new Vec2(this.node.getPosition().x, this.node.getPosition().z), 30, this.node.eulerAngles.y);
+          var k = this.getSemiCirclePoint(0, 500, new Vec2(this.node.getPosition().x, this.node.getPosition().z), 30, this.node.eulerAngles.y);
 
           for (var i = 0; i < k.length; i++) {
-            // let obstacle;
-            // if(this._posPoolObstacleArray.length > 0)
-            // {
-            //     obstacle = this._posPoolObstacleArray[0];
-            //     this.removeObjectFromArray(this._posPoolObstacleArray,obstacle);
-            // }
-            // else
-            // {
-            //     obstacle =  instantiate(this.prefabPoint);
-            //     this.node.getParent().addChild(obstacle);
-            // }
-            // obstacle.setPosition(new Vec3(k[i].x,1, k[i].y));
-            // this._posObstacleArray.push(obstacle);
             this.sendRayCast(new Vec3(k[i].x, 1, k[i].y));
           }
         };
@@ -1500,64 +6105,46 @@ System.register("chunks:///_virtual/Bot.ts", ['./_rollupPluginModLoBabelHelpers.
         };
 
         _proto.sendRayCast = function sendRayCast(pos) {
-          // this._ray = new geometry.Ray();
-          geometry.Ray.fromPoints(this._ray, this.node.getPosition(), pos);
           var randomPointsCalled = false;
+          var loopWorked = false;
 
-          if (PhysicsSystem.instance.raycast(this._ray, this._mask, this._maxDistance)) {
-            var r = PhysicsSystem.instance.raycastResults;
+          for (var i = 0; i < this.gameController.platformVertices.length; i++) {
+            var p1x = this.gameController.platformVertices[i].x;
+            var p1y = this.gameController.platformVertices[i].z;
+            var p2x = this.gameController.platformVertices[i + 1 < this.gameController.platformVertices.length ? i + 1 : 0].x;
+            var p2y = this.gameController.platformVertices[i + 1 < this.gameController.platformVertices.length ? i + 1 : 0].z;
+            var data = this.calculateIntersection(p1x, p1y, p2x, p2y, this.node.getPosition().x, this.node.getPosition().z, pos.x, pos.z);
 
-            for (var i = 0; i < r.length; i++) {
-              var item = r[i]; // if (item.collider.node.name == "bot" || item.collider.node.name == "Player")
-              //     otherPlayerArray.push(item.collider.node);
-
-              if (item.collider.node.name == "block2" || item.collider.node.name == "block3" || item.collider.node.name == "block4" || item.collider.node.name == "block5") {
-                this.currentDistance = item.distance; // console.log("COLLIDED ------- "+item.collider.node.name+"   distance  "+this.currentDistance);
+            if (data.isIntersected) {
+              loopWorked = true;
+              var posX = this.commonFun.getIntValue(this.node.getPosition().x);
+              var posZ = this.commonFun.getIntValue(this.node.getPosition().z);
+              if (p1x == posX || p2x == posX || p1y == posZ || p2y == posZ) ;else {
+                this.currentDistance = this.getDistance(this.node.getPosition().x, this.node.getPosition().z, data.x, data.y);
 
                 if (this.currentDistance < this._maxWallDistance) {
                   randomPointsCalled = true;
+                  this._vector = null;
                   this.checkRandomPoints();
+                  return;
                 }
-              } // const modelCom = item.collider.node.getComponent(ModelComponent)!;
-              // modelCom.material = this.rayMaterial;
 
+                break;
+              }
             }
           }
 
-          if (!randomPointsCalled) this._vector = pos; // let uniqueChars = otherPlayerArray.filter((c, index) => {
-          //     return otherPlayerArray.indexOf(c) === index;
-          // });
-          // // console.log("COLLIDED ------- "+otherPlayerArray.length);
-          // // console.log("uniqueChars ------- "+uniqueChars.length);
-          // if (otherPlayerArray.length > 0) {
-          //     var shortetDistance = 999999;
-          //     var index = -1;
-          //     for (let i = 0; i < otherPlayerArray.length; i++) {
-          //         let playerScript = otherPlayerArray[0].getComponent("Player");
-          //         if (playerScript == null)
-          //             playerScript = otherPlayerArray[0].getComponent("Bot");
-          //         // let opponentState = (otherPlayerArray[i].getComponent("Player")as Player)._currentState;
-          //         if (playerScript._currentState == STATE.WALK) {
-          //             let distance = this.getDistance(otherPlayerArray[i].getPosition().x, otherPlayerArray[i].getPosition().z, this.node.getPosition().x, this.node.getPosition().z);
-          //             if (distance < shortetDistance) {
-          //                 distance = shortetDistance;
-          //                 index = i;
-          //             }
-          //         }
-          //     }
-          //     if (index != -1)
-          //         this.player = otherPlayerArray[index];
-          // }
-        };
-
-        _proto.removeObjectFromArray = function removeObjectFromArray(array, value) {
-          var idx = array.indexOf(value);
-
-          if (idx !== -1) {
-            array.splice(idx, 1);
+          if (!loopWorked) {
+            randomPointsCalled = true;
+            this.checkRandomPoints();
+            return;
           }
 
-          return array;
+          if (!randomPointsCalled) {
+            this._vector = pos;
+            this._currentAngle = 0;
+            return;
+          }
         };
 
         _proto.bezier = function bezier(t, p0, p1, p2, p3) {
@@ -1575,47 +6162,30 @@ System.register("chunks:///_virtual/Bot.ts", ['./_rollupPluginModLoBabelHelpers.
           };
         };
 
-        _proto.setIdleStateAnimation = function setIdleStateAnimation() {
-          this._currentState = STATE.IDLE;
+        _proto.isPlayerBumpedOnOtherBack = function isPlayerBumpedOnOtherBack(otherCollider) {
+          var p2 = new Vec2(this.node.getPosition().x, this.node.getPosition().z); // always will be the current node
 
-          this._skeletal.play('Armature|idle');
-        };
+          var p1 = new Vec2(otherCollider.getPosition().x, otherCollider.getPosition().z);
+          var left = Math.round(otherCollider.eulerAngles.y) + 100;
 
-        _proto.setBumpStateAnimation = function setBumpStateAnimation() {
-          this._currentState = STATE.BUMP;
+          if (left > 180) {
+            left -= 360;
+          }
 
-          this._skeletal.play('Armature|damage');
+          var right = Math.round(otherCollider.eulerAngles.y) - 100;
 
-          this._skeletal.getState('Armature|damage').repeatCount = 1;
-        };
+          if (right < -180) {
+            right += 360;
+          }
 
-        _proto.setWalkStateAnimation = function setWalkStateAnimation() {
-          this._currentState = STATE.WALK;
+          var hitAngle = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI;
+          hitAngle = this.commonFun.findGameAngle(hitAngle);
 
-          this._skeletal.play('Armature|walk');
-        };
+          if (this.commonFun.angleBetweenAngle(hitAngle, left, right)) {
+            return true;
+          }
 
-        _proto.setEatbleAnimation = function setEatbleAnimation() {
-          var _this3 = this;
-
-          if (this.eatTimeout != null) clearTimeout(this.eatTimeout);
-
-          this._skeletal.play('Armature|attack');
-
-          this._skeletal.getState('Armature|attack').speed = 2;
-          this._skeletal.getState('Armature|attack').repeatCount = 1;
-
-          var duration = this._skeletal.getState('Armature|attack').duration;
-
-          this.eatTimeout = setTimeout(function () {
-            _this3._skeletal.play('Armature|walk');
-
-            _this3.eatTimeout = null;
-          }, 500 * duration);
-        };
-
-        _proto.changeWalkAnimationSpeed = function changeWalkAnimationSpeed(speed) {
-          this._skeletal.getState('Armature|walk').speed = speed / 2;
+          return false;
         };
 
         _proto.checkDidBumpedOnBck = function checkDidBumpedOnBck(otherCollider) {
@@ -1635,26 +6205,1734 @@ System.register("chunks:///_virtual/Bot.ts", ['./_rollupPluginModLoBabelHelpers.
           }
 
           var hitAngle = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI;
-          hitAngle = this.findGameAngle(hitAngle);
+          hitAngle = this.commonFun.findGameAngle(hitAngle);
 
-          if (this.angleBetweenAngle(hitAngle, left, right)) {
+          if (this.commonFun.angleBetweenAngle(hitAngle, left, right)) {
             return true;
           }
 
           return false;
         };
 
-        _proto.angleTo360 = function angleTo360(angle) {
-          angle = angle % 360 + (angle - Math.trunc(angle));
-          if (angle > 0.0) return angle;else return angle + 360.0;
+        _proto.calculateIntersection = function calculateIntersection(a, b, c, d, p, q, r, s) {
+          var det, gamma, lambda, x, y;
+          det = (c - a) * (s - q) - (r - p) * (d - b);
+
+          if (det === 0) {
+            return {
+              isIntersected: false,
+              x: 0,
+              y: 0
+            };
+          } else {
+            lambda = ((s - q) * (r - a) + (p - r) * (s - b)) / det;
+            gamma = ((b - d) * (r - a) + (c - a) * (s - b)) / det;
+            x = a + lambda * (c - a);
+            y = b + lambda * (d - b);
+            return {
+              isIntersected: 0 < lambda && lambda < 1 && 0 < gamma && gamma < 1,
+              x: x,
+              y: y
+            };
+          }
         };
 
-        _proto.angleBetweenAngle = function angleBetweenAngle(hitAngle, left, right) {
-          hitAngle = this.angleTo360(hitAngle);
-          left = this.angleTo360(left);
-          right = this.angleTo360(right);
-          if (left < right) return left <= hitAngle && hitAngle <= right;
-          return left <= hitAngle || hitAngle <= right;
+        return Bot;
+      }(Component), _temp)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/Helper.ts", ['cc'], function (exports) {
+  'use strict';
+
+  var cclegacy, _decorator;
+
+  return {
+    setters: [function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+    }],
+    execute: function () {
+      var _dec, _class;
+
+      cclegacy._RF.push({}, "870b0Aa1mBDrY0a9De020ZU", "Helper", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var Helper = exports('Helper', (_dec = ccclass('Helper'), _dec(_class = /*#__PURE__*/function () {
+        function Helper() {}
+
+        Helper.setFixedInterval = function setFixedInterval(fn, ms) {
+          var last = new Date().getTime();
+          var fixed = last + ms;
+          var intervalatedFun;
+
+          intervalatedFun = function () {
+            var now = new Date().getTime();
+            var delta = now - last;
+            fn(delta);
+            last = now;
+            fixed += ms;
+            now = new Date().getTime();
+            var next = fixed - now;
+
+            if (next <= 0) {
+              var skipIntervals = 1 + parseInt(String((now - fixed) / ms));
+              next = fixed + skipIntervals * ms - now;
+            }
+
+            clear_id = setTimeout(intervalatedFun, next);
+          }.bind(this);
+
+          var clear_id = setTimeout(intervalatedFun, fixed - new Date().getTime());
+          return function cancelFixedInterval() {
+            clearTimeout(clear_id);
+          };
+        };
+
+        return Helper;
+      }()) || _class));
+      var STATE = exports('STATE', {
+        IDLE: 0,
+        WALK: 1,
+        BUMP: 2,
+        EAT: 3,
+        WIN: 4
+      });
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/leaderBoardBanner.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc', './commonFun.ts'], function (exports) {
+  'use strict';
+
+  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, _defineProperty, cclegacy, _decorator, SpriteFrame, Node, Label, Sprite, tween, Component, CommonFun;
+
+  return {
+    setters: [function (module) {
+      _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
+      _inheritsLoose = module.inheritsLoose;
+      _initializerDefineProperty = module.initializerDefineProperty;
+      _assertThisInitialized = module.assertThisInitialized;
+      _defineProperty = module.defineProperty;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      SpriteFrame = module.SpriteFrame;
+      Node = module.Node;
+      Label = module.Label;
+      Sprite = module.Sprite;
+      tween = module.tween;
+      Component = module.Component;
+    }, function (module) {
+      CommonFun = module.CommonFun;
+    }],
+    execute: function () {
+      var _dec, _dec2, _dec3, _dec4, _class, _class2, _descriptor, _descriptor2, _descriptor3, _temp;
+
+      cclegacy._RF.push({}, "882e8b6yNlDmpl3SZwb5Qhi", "leaderBoardBanner", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var LeaderBoardBanner = exports('LeaderBoardBanner', (_dec = ccclass('LeaderBoardBanner'), _dec2 = property({
+        type: SpriteFrame
+      }), _dec3 = property({
+        type: SpriteFrame
+      }), _dec4 = property({
+        type: Node
+      }), _dec(_class = (_class2 = (_temp = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(LeaderBoardBanner, _Component);
+
+        function LeaderBoardBanner() {
+          var _this;
+
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+
+          _this = _Component.call.apply(_Component, [this].concat(args)) || this;
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "panel", _descriptor, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "trophy", _descriptor2, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "bannr", _descriptor3, _assertThisInitialized(_this));
+
+          _defineProperty(_assertThisInitialized(_this), "commonFun", null);
+
+          _defineProperty(_assertThisInitialized(_this), "tween", null);
+
+          return _this;
+        }
+
+        var _proto = LeaderBoardBanner.prototype;
+
+        _proto.start = function start() {// [3]
+        };
+
+        _proto.initialiseData = function initialiseData(index, currentTimer, currentList, gameOver) {
+          this.commonFun = new CommonFun();
+          this.bannr.getChildByName("rankText").getComponent(Label).string = (index + 1).toString();
+          this.bannr.getChildByName("nameText").getComponent(Label).string = currentList.name;
+
+          switch (index) {
+            case 0:
+              {
+                this.node.getComponent(Sprite).spriteFrame = this.panel[index];
+                this.bannr.getChildByName("medal").getComponent(Sprite).spriteFrame = this.trophy[index];
+              }
+              break;
+
+            case 1:
+              {
+                this.node.getComponent(Sprite).spriteFrame = this.panel[index];
+                this.bannr.getChildByName("medal").getComponent(Sprite).spriteFrame = this.trophy[index];
+              }
+              break;
+
+            case 2:
+              {
+                this.node.getComponent(Sprite).spriteFrame = this.panel[index];
+                this.bannr.getChildByName("medal").getComponent(Sprite).spriteFrame = this.trophy[index];
+              }
+              break;
+          }
+
+          if (currentList.name == "-----") {
+            this.bannr.getChildByName("timer").getComponent(Label).string = "-:--:---";
+          } else {
+            var timeDiff = currentList.time - gameOver.gameController.currentTime;
+            var timer = this.commonFun.millisecondsToTime(timeDiff);
+            this.bannr.getChildByName("timer").getComponent(Label).string = timer;
+          }
+
+          this.deactivateBanner(currentTimer);
+        };
+
+        _proto.deactivateBanner = function deactivateBanner(currentTimer) {
+          var _this2 = this;
+
+          this.bannr.active = false;
+          this.tween = tween(this.node).delay(currentTimer).call(function () {
+            _this2.activateBanner();
+          }).start();
+        };
+
+        _proto.activateBanner = function activateBanner() {
+          this.bannr.active = true;
+        };
+
+        return LeaderBoardBanner;
+      }(Component), _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "panel", [_dec2], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return [];
+        }
+      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "trophy", [_dec3], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return [];
+        }
+      }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "bannr", [_dec4], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      })), _class2)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/audioManager.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc', './constant.ts', './resourceUtil.ts'], function (exports) {
+  'use strict';
+
+  var _createClass, _defineProperty, cclegacy, assert, AudioClip, warn, clamp01, constant, resourceUtil;
+
+  return {
+    setters: [function (module) {
+      _createClass = module.createClass;
+      _defineProperty = module.defineProperty;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      assert = module.assert;
+      AudioClip = module.AudioClip;
+      warn = module.warn;
+      clamp01 = module.clamp01;
+    }, function (module) {
+      constant = module.constant;
+    }, function (module) {
+      resourceUtil = module.resourceUtil;
+    }],
+    execute: function () {
+      cclegacy._RF.push({}, "884daUfIQRNRq4ZxJzJ5kOx", "audioManager", undefined);
+
+      var audioManager = exports('audioManager', /*#__PURE__*/function () {
+        function audioManager() {
+          _defineProperty(this, "soundVolume", 1);
+        }
+
+        var _proto = audioManager.prototype; // init AudioManager in GameRoot.
+
+        _proto.init = function init(audioSource) {
+          this.soundVolume = 0.8; //this.getConfiguration(false) ? 1 : 0;
+
+          audioManager._audioSource = audioSource;
+          this.checkSound();
+        };
+
+        _proto.getConfiguration = function getConfiguration(isMusic) {
+          // let state;
+          // if (isMusic) {
+          //     state = configuration.instance.getGlobalData('music');
+          // } else {
+          //     state = configuration.instance.getGlobalData('sound');
+          // }
+          // // console.log('Config for [' + (isMusic ? 'Music' : 'Sound') + '] is ' + state);
+          // return state === undefined || state === 'true' ? true : false;
+          return constant.CheckSoundEnabled();
+        }
+        /**
+         * 播放音乐
+         * @param {String} name 音乐名称可通过constants.AUDIO_MUSIC 获取
+         * @param {Boolean} loop 是否循环播放
+         */
+        ;
+
+        _proto.playMusic = function playMusic(loop) {
+          var audioSource = audioManager._audioSource;
+          assert(audioSource, 'AudioManager not inited!');
+          audioSource.loop = loop;
+
+          if (!audioSource.playing) {
+            audioSource.play();
+          }
+        }
+        /**
+         * 播放音效
+         * @param {String} name 音效名称可通过constants.AUDIO_SOUND 获取
+         */
+        ;
+
+        _proto.playSound = function playSound(name) {
+          var _this = this;
+
+          var audioSource = audioManager._audioSource;
+          assert(audioSource, 'AudioManager not inited!'); //音效一般是多个的，不会只有一个
+
+          var path = 'gamePackage/audio/sound/'; // if (name !== 'click') {
+          //     path = 'gamePackage/' + path; //微信特殊处理，除一开场的音乐，其余的放在子包里头
+          // }
+
+          resourceUtil.loadRes(path + name, AudioClip, function (err, clip) {
+            if (err) {
+              warn('load audioClip failed: ', err);
+              return;
+            } // NOTE: the second parameter is volume scale.
+
+
+            audioSource.playOneShot(clip, audioSource.volume ? _this.soundVolume / audioSource.volume : 0);
+          });
+        };
+
+        _proto.setMusicVolume = function setMusicVolume(flag) {
+          var audioSource = audioManager._audioSource;
+          assert(audioSource, 'AudioManager not inited!');
+          flag = clamp01(flag);
+          audioSource.volume = flag;
+        };
+
+        _proto.setSoundVolume = function setSoundVolume(flag) {
+          this.soundVolume = flag;
+        };
+
+        _proto.openMusic = function openMusic() {
+          this.setMusicVolume(0.8); // configuration.instance.setGlobalData('music', 'true');
+        };
+
+        _proto.closeMusic = function closeMusic() {
+          this.setMusicVolume(0); // configuration.instance.setGlobalData('music', 'false');
+        };
+
+        _proto.openSound = function openSound() {
+          this.setSoundVolume(1); // configuration.instance.setGlobalData('sound', 'true');
+        };
+
+        _proto.closeSound = function closeSound() {
+          this.setSoundVolume(0); // configuration.instance.setGlobalData('sound', 'false');
+        };
+
+        _proto.checkSound = function checkSound() {
+          if (constant.CheckSoundEnabled()) this.enableSound();else this.disableSound();
+        };
+
+        _proto.toggleGameSound = function toggleGameSound() {
+          if (constant.ToggleSound()) this.enableSound();else this.disableSound();
+          return constant.CheckSoundEnabled();
+        };
+
+        _proto.enableSound = function enableSound() {
+          this.openMusic();
+          this.openSound();
+        };
+
+        _proto.disableSound = function disableSound() {
+          this.closeMusic();
+          this.closeSound();
+        };
+
+        _createClass(audioManager, null, [{
+          key: "instance",
+          get: function get() {
+            if (this._instance) {
+              return this._instance;
+            }
+
+            this._instance = new audioManager();
+            return this._instance;
+          }
+        }]);
+
+        return audioManager;
+      }());
+
+      _defineProperty(audioManager, "_instance", void 0);
+
+      _defineProperty(audioManager, "_audioSource", void 0);
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/InitSceneManager.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc', './SocketConnection.ts'], function (exports) {
+  'use strict';
+
+  var _defineProperty, _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, cclegacy, _decorator, Node, Label, game, director, Component, SocketConnection, SocketListener;
+
+  return {
+    setters: [function (module) {
+      _defineProperty = module.defineProperty;
+      _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
+      _inheritsLoose = module.inheritsLoose;
+      _initializerDefineProperty = module.initializerDefineProperty;
+      _assertThisInitialized = module.assertThisInitialized;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      Node = module.Node;
+      Label = module.Label;
+      game = module.game;
+      director = module.director;
+      Component = module.Component;
+    }, function (module) {
+      SocketConnection = module.SocketConnection;
+      SocketListener = module.SocketListener;
+    }],
+    execute: function () {
+      var _dec, _dec2, _dec3, _dec4, _class, _class2, _descriptor, _descriptor2, _descriptor3, _class3, _temp;
+
+      cclegacy._RF.push({}, "8973frGxu9LmbPkA4WnAOW7", "InitSceneManager", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var InitSceneManager = exports('InitSceneManager', (_dec = ccclass('InitSceneManager'), _dec2 = property(Node), _dec3 = property(Label), _dec4 = property(Node), _dec(_class = (_class2 = (_temp = _class3 = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(InitSceneManager, _Component);
+
+        function InitSceneManager() {
+          var _this;
+
+          _this = _Component.call(this) || this;
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "message", _descriptor, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "ping", _descriptor2, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "bgContainer", _descriptor3, _assertThisInitialized(_this));
+
+          InitSceneManager.instance = _assertThisInitialized(_this);
+          return _this;
+        }
+
+        var _proto = InitSceneManager.prototype;
+
+        _proto.start = function start() {
+          game.addPersistRootNode(this.node);
+          director.preloadScene('MenuScene');
+          SocketConnection.instance.on(SocketListener.ON_CONNECT, this.onConnect, this);
+          SocketConnection.instance.start();
+        };
+
+        _proto.onConnect = function onConnect(room) {
+          console.log("Starting Menu Scene ");
+          this.startMenu();
+        };
+
+        _proto.gameLoaded = function gameLoaded() {
+          this.bgContainer.active = false;
+        };
+
+        _proto.startMenuLoaded = function startMenuLoaded() {
+          this.bgContainer.active = false;
+        };
+
+        _proto.startMenu = function startMenu() {
+          director.loadScene('MenuScene');
+        };
+
+        return InitSceneManager;
+      }(Component), _defineProperty(_class3, "instance", void 0), _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "message", [_dec2], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "ping", [_dec3], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "bgContainer", [_dec4], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      })), _class2)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/mxManager.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
+  'use strict';
+
+  var _createClass, _defineProperty, cclegacy;
+
+  return {
+    setters: [function (module) {
+      _createClass = module.createClass;
+      _defineProperty = module.defineProperty;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+    }],
+    execute: function () {
+      cclegacy._RF.push({}, "8a9ca29cz5PnaCLIhult98e", "mxManager", undefined);
+
+      var MxManager = exports('MxManager', /*#__PURE__*/function () {
+        function MxManager() {
+          _defineProperty(this, "isMiloApp", false);
+
+          _defineProperty(this, "currentManager", void 0);
+        }
+
+        var _proto = MxManager.prototype;
+
+        _proto.init = function init() {
+          if (typeof window['gameManager'] !== 'undefined') {
+            this.isMiloApp = false;
+            this.currentManager = window['gameManager'];
+          } else if (typeof window['mxMiloManager'] !== 'undefined') {
+            this.isMiloApp = true;
+            this.currentManager = window['mxMiloManager'];
+          } else this.currentManager = null;
+        };
+
+        _proto.onGameStart = function onGameStart() {
+          if (this.currentManager != null && typeof this.currentManager.onGameStart === 'function') {
+            try {
+              this.currentManager.onGameStart();
+            } catch (err) {
+              this.currentManager.onError(err.stack.toString());
+            }
+          }
+        };
+
+        _proto.onGameInit = function onGameInit() {
+          if (this.currentManager != null && typeof this.currentManager.onGameInit === 'function') {
+            try {
+              var gameInit = JSON.parse(this.currentManager.onGameInit());
+
+              if (this.isMiloApp) {
+                var replaceConfig = function replaceConfig(config, replacableConfig) {
+                  if (replacableConfig === null || replacableConfig === undefined) return;
+                  Object.keys(replacableConfig).forEach(function (key) {
+                    var value = replacableConfig[key];
+                    loopObject(config, key, value);
+                  });
+                };
+
+                var loopObject = function loopObject(obj, searchKey, newvalue) {
+                  if (typeof obj === 'object' && obj !== null) {
+                    Object.keys(obj).forEach(function (key) {
+                      if (obj.hasOwnProperty(searchKey)) {
+                        if (typeof obj[searchKey] != 'object' && searchKey == key) {
+                          console.log("key " + key + " with previous value " + obj[searchKey] + " replaced with new value " + newvalue);
+                          obj[searchKey] = newvalue;
+                        }
+                      }
+
+                      if (typeof obj[key] == 'object') {
+                        loopObject(obj[key], searchKey, newvalue);
+                      }
+                    });
+                  }
+                };
+
+                gameInit = gameInit.initInfo;
+                this.saveUserIdData(gameInit);
+                var config = gameInit.gameConfig;
+                config = JSON.parse(config);
+                config.purchases = gameInit.purchases; //replace
+
+                replaceConfig(config, gameInit.userSelectedGameConfiguration);
+                return config;
+              } else {
+                this.saveUserIdData(gameInit);
+                window.localStorage.setItem("SumohighScore", gameInit.highestScore);
+
+                if (typeof this.currentManager.getGameSettings === 'function') {
+                  try {
+                    var gameSettingString = this.currentManager.getGameSettings();
+                    var config = JSON.parse(gameSettingString);
+                    return config;
+                  } catch (e) {
+                    return null;
+                  }
+                } else {
+                  return null;
+                }
+              }
+            } catch (e) {
+              return null;
+            }
+          }
+
+          return null;
+        } //coin
+        ;
+
+        _proto.deductCoins = function deductCoins(eventName, data, currentScene) {
+          if (this.currentManager != null && typeof this.currentManager.deductCoins === 'function') {
+            var stringdata = JSON.stringify(data);
+            this.currentManager.deductCoins(eventName, stringdata);
+          } else {
+            currentScene.coinDeductAccessories('{"success":1,"balance":100}');
+          }
+        } //video
+        ;
+
+        _proto.onCheckRewardedVideoAds = function onCheckRewardedVideoAds(eventName, currentScene) {
+          if (this.currentManager != null && typeof this.currentManager.onCheckRewardedVideoAds === 'function') {
+            this.currentManager.onCheckRewardedVideoAds(eventName);
+          } else {
+            currentScene[eventName]({
+              status: 0
+            });
+          }
+        };
+
+        _proto.onShowRewardedVideoAds = function onShowRewardedVideoAds(eventName, currentScene) {
+          if (this.currentManager != null && typeof this.currentManager.onShowRewardedVideoAds === 'function') {
+            this.currentManager.onShowRewardedVideoAds(eventName, null);
+          } else {
+            currentScene[eventName]({
+              status: 0
+            });
+          }
+        } //mic event
+        ;
+
+        _proto.onEnableMic = function onEnableMic(eventName, currentScene) {
+          if (this.currentManager != null && typeof this.currentManager.onEnableMic === 'function') {
+            this.currentManager.onEnableMic(eventName);
+          } else {
+            currentScene[eventName]({
+              status: 0
+            });
+          }
+        };
+
+        _proto.onDisableMic = function onDisableMic() {
+          if (this.currentManager != null && typeof this.currentManager.onDisableMic === 'function') {
+            this.currentManager.onDisableMic();
+          }
+        } //xp lvl
+        ;
+
+        _proto.onAvatarClick = function onAvatarClick(userID) {
+          if (this.currentManager != null && this.currentManager.onAvatarClick === 'function') {
+            this.currentManager.onAvatarClick(userID);
+          }
+        };
+
+        _proto.pushFromGameToAndroid = function pushFromGameToAndroid(userID) {
+          if (this.currentManager != null && typeof this.currentManager.pushFromGameToAndroid === 'function') {
+            var payload = {
+              eventType: "XPEvent",
+              payload: {
+                userId: userID
+              }
+            };
+            var stringifiedPayload = JSON.stringify(payload);
+            this.currentManager.pushFromGameToAndroid(stringifiedPayload);
+          }
+        } //gameover
+        ;
+
+        _proto.onGameOver = function onGameOver(data) {
+          data = this.appendCommomData(data);
+          var stringifiedJson = JSON.stringify(data);
+
+          if (this.currentManager != null && typeof this.currentManager.onGameOver === 'function') {
+            try {
+              this.currentManager.onGameOver(stringifiedJson);
+            } catch (err) {
+              this.currentManager.onError(err.stack.toString());
+            }
+          }
+        } //analytics
+        ;
+
+        _proto.onTrack = function onTrack(data, eventName) {
+          data = this.appendCommomData(data);
+          var stringifiedJson = JSON.stringify(data);
+
+          if (this.currentManager != null && typeof this.currentManager.onTrack === 'function') {
+            try {
+              this.currentManager.onTrack(eventName, stringifiedJson);
+            } catch (err) {
+              this.currentManager.onError(err.stack.toString());
+            }
+          }
+        };
+
+        _proto.saveUserIdData = function saveUserIdData(data) {
+          window.localStorage.setItem("SumoroomId", data.roomId);
+          window.localStorage.setItem("SumouserId", data.userId);
+          window.localStorage.setItem("SumogameId", data.gameId);
+        };
+
+        _proto.appendCommomData = function appendCommomData(jsonFile) {
+          var ob1 = {
+            gameId: String(window.localStorage.getItem("SumogameId")),
+            roomID: String(window.localStorage.getItem("SumoroomId")),
+            userID: String(window.localStorage.getItem("SumouserId"))
+          };
+          var ob = Object.assign({}, ob1);
+
+          for (var key in jsonFile) {
+            ob[key] = jsonFile[key];
+          }
+
+          console.log(ob);
+          return ob;
+        };
+
+        _createClass(MxManager, null, [{
+          key: "instance",
+          get: function get() {
+            if (this._instance) {
+              return this._instance;
+            }
+
+            this._instance = new MxManager();
+            return this._instance;
+          }
+        }]);
+
+        return MxManager;
+      }());
+
+      _defineProperty(MxManager, "_instance", void 0);
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/PowerUpController.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc', './SocketConnection.ts'], function (exports) {
+  'use strict';
+
+  var _inheritsLoose, _defineProperty, _assertThisInitialized, cclegacy, _decorator, randomRange, Vec2, Vec3, instantiate, Component, SocketConnection;
+
+  return {
+    setters: [function (module) {
+      _inheritsLoose = module.inheritsLoose;
+      _defineProperty = module.defineProperty;
+      _assertThisInitialized = module.assertThisInitialized;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      randomRange = module.randomRange;
+      Vec2 = module.Vec2;
+      Vec3 = module.Vec3;
+      instantiate = module.instantiate;
+      Component = module.Component;
+    }, function (module) {
+      SocketConnection = module.SocketConnection;
+    }],
+    execute: function () {
+      var _dec, _class, _temp;
+
+      cclegacy._RF.push({}, "8bf73q3+cdE0rnIIGpvubbX", "PowerUpController", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var SAFEAREA = 18;
+      var PowerUpController = exports('PowerUpController', (_dec = ccclass('PowerUpController'), _dec(_class = (_temp = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(PowerUpController, _Component);
+
+        function PowerUpController(gameController) {
+          var _this;
+
+          _this = _Component.call(this) || this;
+
+          _defineProperty(_assertThisInitialized(_this), "gameController", void 0);
+
+          _defineProperty(_assertThisInitialized(_this), "eatablesMap", {});
+
+          _defineProperty(_assertThisInitialized(_this), "powerupArray", []);
+
+          _defineProperty(_assertThisInitialized(_this), "gummySpawnInterval", void 0);
+
+          _defineProperty(_assertThisInitialized(_this), "totalGummyToPresent", void 0);
+
+          _defineProperty(_assertThisInitialized(_this), "powerUpMap", {});
+
+          _this.gameController = gameController;
+
+          _this.loadPowerUps();
+
+          return _this;
+        }
+
+        var _proto = PowerUpController.prototype;
+
+        _proto.setEatables = function setEatables(powerupArray) {
+          var _this2 = this;
+
+          powerupArray.forEach(function (element) {
+            _this2.eatablesMap[element.data.name] = element;
+          });
+        };
+
+        _proto.spawnPowerup = function spawnPowerup(powerUpType) {
+          var totalPlayer = this.gameController.gameData.actualPlayerCount + this.gameController.gameData.totalBotPresent;
+          this.checkTotalPowerUpSpawn(totalPlayer);
+          var initialTotalPowerup = this.totalGummyToPresent;
+
+          for (var i = 0; i < initialTotalPowerup; i++) {
+            this.respawnGummys();
+          }
+        };
+
+        _proto.startSpawningNewPowerups = function startSpawningNewPowerups() {
+          this.schedule(this.spawnAnyPowerup, this.gameController.gameData.levelDetail.powerUp.spawnDuration);
+        };
+
+        _proto.spawnAnyPowerup = function spawnAnyPowerup() {
+          var PoisionSize = this.gameController.gameData.levelDetail.powerUp.spawnProbability.PoisionSize ? this.gameController.gameData.levelDetail.powerUp.spawnProbability.PoisionSize : 0;
+          var PoisionSpeed = this.gameController.gameData.levelDetail.powerUp.spawnProbability.PoisionSpeed ? this.gameController.gameData.levelDetail.powerUp.spawnProbability.PoisionSpeed : 0;
+          var GainSpeed = this.gameController.gameData.levelDetail.powerUp.spawnProbability.GainSpeed ? this.gameController.gameData.levelDetail.powerUp.spawnProbability.GainSpeed : 0;
+          var Sheild = this.gameController.gameData.levelDetail.powerUp.spawnProbability.Sheild ? this.gameController.gameData.levelDetail.powerUp.spawnProbability.Sheild : 0;
+          var totalCount = PoisionSize + PoisionSpeed + GainSpeed + Sheild;
+          var range = Math.floor(randomRange(1, totalCount));
+          var PoisionSizeRange = PoisionSize != 0 ? [0 + 1, PoisionSize] : [0, 0];
+          var PoisionSpeedRange = PoisionSpeed != 0 ? [PoisionSize + 1, PoisionSpeed + PoisionSize] : [0, 0];
+          var GainSpeedRange = GainSpeed != 0 ? [PoisionSize + PoisionSpeed + 1, GainSpeed + PoisionSize + PoisionSpeed] : [0, 0];
+          var SheildRange = Sheild != 0 ? [PoisionSize + PoisionSpeed + GainSpeed + 1, Sheild + PoisionSize + PoisionSpeed + GainSpeed] : [0, 0];
+          var val = 0;
+          if (range >= PoisionSizeRange[0] && range <= PoisionSizeRange[1]) val = 0;
+          if (range >= PoisionSpeedRange[0] && range <= PoisionSpeedRange[1]) val = 1;
+          if (range >= GainSpeedRange[0] && range <= GainSpeedRange[1]) val = 2;
+          if (range >= SheildRange[0] && range <= SheildRange[1]) val = 3;
+
+          switch (val) {
+            case 0:
+              this.spawnGummy(this.eatablesMap['PoisionSize']);
+              break;
+
+            case 1:
+              this.spawnGummy(this.eatablesMap['PoisionSpeed']);
+              break;
+
+            case 2:
+              this.spawnGummy(this.eatablesMap['GainSpeed']);
+              break;
+
+            case 3:
+              this.spawnGummy(this.eatablesMap['Sheild']);
+              break;
+          }
+        };
+
+        _proto.getGummyNumber = function getGummyNumber() {
+          var currentGummy = 0;
+
+          for (var i = 0; i < this.powerupArray.length; i++) {
+            if (this.powerupArray[i].active && this.powerupArray[i].name == 'GummyBear') currentGummy++;
+          }
+
+          return currentGummy;
+        };
+
+        _proto.getSpawnLocation = function getSpawnLocation() {
+          var platformXRange = this.gameController.platform.getScale().x + SAFEAREA;
+          var platformYRange = this.gameController.platform.getScale().z + SAFEAREA;
+          var platformXRandomRange = randomRange(-platformXRange, platformXRange);
+          var platformYRandomRange = randomRange(-platformYRange, platformYRange);
+
+          while (!this.inside(new Vec2(platformXRandomRange, platformYRandomRange), this.gameController.platformVertices)) {
+            platformXRandomRange = randomRange(-platformXRange, platformXRange);
+            platformYRandomRange = randomRange(-platformYRange, platformYRange);
+          }
+
+          return new Vec3(platformXRandomRange, 2, platformYRandomRange);
+        };
+
+        _proto.inside = function inside(point, vs) {
+          // ray-casting algorithm based on
+          // https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html/pnpoly.html
+          var x = point.x,
+              y = point.y;
+          var inside = false;
+
+          for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+            var xi = vs[i].x,
+                yi = vs[i].z;
+            var xj = vs[j].x,
+                yj = vs[j].z;
+            var intersect = yi > y != yj > y && x < (xj - xi) * (y - yi) / (yj - yi) + xi;
+            if (intersect) inside = !inside;
+          }
+
+          return inside;
+        };
+
+        _proto.spawnGummy = function spawnGummy(gummy) {
+          var loc = this.getSpawnLocation();
+          var newGummyNeeded = true;
+
+          for (var i = 0; i < this.powerupArray.length; i++) {
+            if (!this.powerupArray[i].active && gummy.data.name == this.powerupArray[i].name) {
+              this.powerupArray[i].setPosition(loc);
+              this.powerupArray[i].active = true;
+              newGummyNeeded = false;
+              break;
+            }
+          }
+
+          if (newGummyNeeded) {
+            var gummyBear = instantiate(gummy);
+            gummyBear.setPosition(loc);
+            this.powerupArray.push(gummyBear);
+            this.gameController.addToWorld(gummyBear);
+            var strngData = window.localStorage.getItem("playerData");
+            var playerData = JSON.parse(strngData);
+            var characterIndex = playerData.food == -1 ? 0 : playerData.food;
+            var food = instantiate(this.gameController.foodPrefabList[characterIndex]);
+            gummyBear.getChildByName("foodNode").addChild(food);
+          }
+        };
+
+        _proto.getPowerUpArrayList = function getPowerUpArrayList() {
+          return this.powerupArray;
+        };
+
+        _proto.removeGummy = function removeGummy(collider) {
+          collider.node.active = false;
+
+          for (var i = 0; i < this.gameController.botController._totalPlayerArrayList.length; i++) {
+            var data = this.gameController.botController._totalPlayerArrayList[i];
+            var oppScript = data.getComponent("Bot") == null ? data.getComponent("Player") : data.getComponent("Bot");
+
+            if (!oppScript._isPlayer) {
+              if (collider.node == oppScript._currentFollowingNode) oppScript._currentFollowingNode = null;
+            }
+          }
+
+          this.checkTotalPowerUpSpawn(this.gameController.botController._totalPlayerArrayList.length);
+          var currentGummy = this.getGummyNumber();
+          if (currentGummy < this.totalGummyToPresent) this.respawnGummys();
+        };
+
+        _proto.removeObjectFromArray = function removeObjectFromArray(array, value) {
+          var idx = array.indexOf(value);
+
+          if (idx !== -1) {
+            array.splice(idx, 1);
+          }
+
+          return array;
+        };
+
+        _proto.respawnGummys = function respawnGummys() {
+          this.spawnGummy(this.eatablesMap['GummyBear']);
+        };
+
+        _proto.getPercentage = function getPercentage(percentToGet, number) {
+          return Math.ceil(percentToGet / 100 * number);
+        };
+
+        _proto.checkTotalPowerUpSpawn = function checkTotalPowerUpSpawn(totalPlayer) {
+          this.totalGummyToPresent = this.getPercentage(this.gameController.gameData.levelDetail.powerUp.totalSpawn * 100, totalPlayer);
+        } // MILO
+        ;
+
+        _proto.createServerPowerUp = function createServerPowerUp(powerUp) {
+          var gummyPrefab = this.getPowerUpPrefab(powerUp.name);
+          var gummyBear = instantiate(gummyPrefab);
+          gummyBear.setPosition(new Vec3(powerUp.x, powerUp.y, powerUp.z));
+          this.powerUpMap[powerUp.id] = gummyBear;
+          this.gameController.addToWorld(gummyBear);
+          var strngData = window.localStorage.getItem("playerData");
+          var playerData = JSON.parse(strngData);
+          var characterIndex = playerData.food == -1 ? 0 : playerData.food;
+          var food = instantiate(this.gameController.foodPrefabList[characterIndex]);
+          gummyBear.getChildByName("foodNode").addChild(food);
+        };
+
+        _proto.activateOrDeactivatePowerUps = function activateOrDeactivatePowerUps(powerUp) {
+          var currentPowerup = this.powerUpMap[powerUp.id];
+          currentPowerup.active = powerUp.active;
+          currentPowerup.setPosition(new Vec3(powerUp.x, powerUp.y, powerUp.z));
+        } // powerup call is in param
+        ;
+
+        _proto.onChangeListener = function onChangeListener(powerUp) {
+          if (!this.powerUpMap[powerUp.id]) {
+            this.createServerPowerUp(powerUp);
+          } else {
+            this.activateOrDeactivatePowerUps(powerUp);
+          }
+        };
+
+        _proto.loadPowerUps = function loadPowerUps() {
+          for (var index = 0; index < SocketConnection.instance.powerUpsArr.length; index++) {
+            var element = SocketConnection.instance.powerUpsArr[index];
+
+            if (!this.powerUpMap[element.id] && element.name != null) {
+              this.createServerPowerUp(element);
+            }
+          }
+        };
+
+        _proto.getPowerUpPrefab = function getPowerUpPrefab(name) {
+          console.log(' powerup requested', name);
+          return this.eatablesMap[name];
+        };
+
+        return PowerUpController;
+      }(Component), _temp)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/CharacterHud.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
+  'use strict';
+
+  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, _defineProperty, cclegacy, _decorator, Label, Node, Vec3, tween, Animation, ProgressBar, Component;
+
+  return {
+    setters: [function (module) {
+      _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
+      _inheritsLoose = module.inheritsLoose;
+      _initializerDefineProperty = module.initializerDefineProperty;
+      _assertThisInitialized = module.assertThisInitialized;
+      _defineProperty = module.defineProperty;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      Label = module.Label;
+      Node = module.Node;
+      Vec3 = module.Vec3;
+      tween = module.tween;
+      Animation = module.Animation;
+      ProgressBar = module.ProgressBar;
+      Component = module.Component;
+    }],
+    execute: function () {
+      var _dec, _dec2, _dec3, _class, _class2, _descriptor, _descriptor2, _temp;
+
+      cclegacy._RF.push({}, "8d0a7RNVcpBfqZHaK6QYt4a", "CharacterHud", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var CharacterHud = exports('CharacterHud', (_dec = ccclass('CharacterHud'), _dec2 = property({
+        type: Label
+      }), _dec3 = property({
+        type: Node
+      }), _dec(_class = (_class2 = (_temp = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(CharacterHud, _Component);
+
+        function CharacterHud() {
+          var _this;
+
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+
+          _this = _Component.call.apply(_Component, [this].concat(args)) || this;
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "nameLabel", _descriptor, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "powerwProgress", _descriptor2, _assertThisInitialized(_this));
+
+          _defineProperty(_assertThisInitialized(_this), "_currentDuration", null);
+
+          _defineProperty(_assertThisInitialized(_this), "_playerAngle", new Vec3(0, 0, 0));
+
+          return _this;
+        }
+
+        var _proto = CharacterHud.prototype;
+
+        _proto.start = function start() {// [3]
+        };
+
+        _proto.updateNameData = function updateNameData(name) {
+          this.nameLabel.string = name;
+        };
+
+        _proto.updateHudPos = function updateHudPos(parentPos, camera) {
+          this.node.setPosition(new Vec3(parentPos.x, this.node.position.y, parentPos.z));
+          this.node.eulerAngles = new Vec3(camera.eulerAngles.x, camera.eulerAngles.y, camera.eulerAngles.z);
+        };
+
+        _proto.tweenPosition = function tweenPosition(characterScale) {
+          var value = this.getRangeVal(characterScale, 0, 0.5, 0.5, 3.5);
+          tween(this.node.position).to(1, {
+            y: value
+          }).start();
+        };
+
+        _proto.showScore = function showScore(score) {
+          if (score >= 0) this.node.getChildByName("score").getComponent(Label).string = "+" + score;else this.node.getChildByName("score").getComponent(Label).string = score;
+          var anim = this.node.getComponent(Animation);
+          anim.play('showScore');
+        };
+
+        _proto.getRangeVal = function getRangeVal(percentage, minPercentage, maxPercentage, minValue, maxValue) {
+          var minPercentage = minPercentage;
+          var maxPercentage = maxPercentage;
+          var minValue = minValue;
+          var maxValue = maxValue;
+          return (percentage - minPercentage) / (maxPercentage - minPercentage) * (maxValue - minValue) + minValue;
+        };
+
+        _proto.startPowerupProgress = function startPowerupProgress(time) {
+          this.powerwProgress.active = true;
+          this._currentDuration = time;
+          var value = this.getRangeVal(time, 0, this._currentDuration, 0, 1);
+          this.powerwProgress.getChildByName("progress").getComponent(ProgressBar).progress = value;
+          var value1 = this.getRangeVal(time - 1, 0, this._currentDuration, 0, 1);
+          tween(this.powerwProgress.getChildByName("progress").getComponent(ProgressBar)).to(1, {
+            progress: value1
+          }).start();
+          this.powerwProgress.getChildByName("counterBg").getChildByName("counter").getComponent(Label).string = time;
+        };
+
+        _proto.updatePowerProgress = function updatePowerProgress(value) {
+          var progressValue = this.getRangeVal(value - 1, 0, this._currentDuration, 0, 1);
+          tween(this.powerwProgress.getChildByName("progress").getComponent(ProgressBar)).to(1, {
+            progress: progressValue
+          }).start();
+          this.powerwProgress.getChildByName("counterBg").getChildByName("counter").getComponent(Label).string = value;
+          if (value == 0) this.powerwProgress.active = false;
+        } // update (deltaTime: number) {
+        //     // [4]
+        // }
+        ;
+
+        return CharacterHud;
+      }(Component), _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "nameLabel", [_dec2], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "powerwProgress", [_dec3], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      })), _class2)) || _class));
+      /**
+       * [1] Class member could be defined like this.
+       * [2] Use `property` decorator if your want the member to be serializable.
+       * [3] Your initialization goes here.
+       * [4] Your update function goes here.
+       *
+       * Learn more about scripting: https://docs.cocos.com/creator/3.3/manual/en/scripting/
+       * Learn more about CCClass: https://docs.cocos.com/creator/3.3/manual/en/scripting/ccclass.html
+       * Learn more about life-cycle callbacks: https://docs.cocos.com/creator/3.3/manual/en/scripting/life-cycle-callbacks.html
+       */
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/SocketConnection.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc', './colyseus.js', './colyseus.mjs_cjs=&original=.js', './GameConfig.ts', './EventManager.ts', './MiloManager.ts', './InitSceneManager.ts'], function (exports) {
+  'use strict';
+
+  var _defineProperty, _createClass, _asyncToGenerator, cclegacy, _decorator, log, _cjsExports, GameConfig, EventManager, MiloManager, InitSceneManager;
+
+  return {
+    setters: [function (module) {
+      _defineProperty = module.defineProperty;
+      _createClass = module.createClass;
+      _asyncToGenerator = module.asyncToGenerator;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      log = module.log;
+    }, function (module) {
+      _cjsExports = module.default;
+    }, null, function (module) {
+      GameConfig = module.GameConfig;
+    }, function (module) {
+      EventManager = module.EventManager;
+    }, function (module) {
+      MiloManager = module.MiloManager;
+    }, function (module) {
+      InitSceneManager = module.InitSceneManager;
+    }],
+    execute: function () {
+      exports('SocketListener', void 0);
+
+      var _dec, _class, _class2, _temp;
+
+      cclegacy._RF.push({}, "9113fbeb1RIL5g7gTGC3X/R", "SocketConnection", undefined);
+
+      var ccclass = _decorator.ccclass;
+      var SocketListener;
+
+      (function (SocketListener) {
+        SocketListener["ON_ADD"] = "ON_ADD";
+        SocketListener["ON_CONNECT"] = "ON_CONNECT";
+        SocketListener["ON_PLAYER_CHANGE"] = "ON_PLAYER_CHANGE";
+        SocketListener["ON_POWERUP_ADD"] = "ON_POWERUP_ADD";
+        SocketListener["ON_POWERUP_CHANGE"] = "ON_POWERUP_CHANGE";
+        SocketListener["ON_WAIT_TIME"] = "ON_WAIT_TIME";
+        SocketListener["GAME_STARTED"] = "GAME_STARTED";
+        SocketListener["READY_GO_COUNT"] = "READY_GO_COUNT";
+        SocketListener["SERVER_GAME_TIME"] = "SERVER_GAME_TIME";
+        SocketListener["CURRENT_GAME_MAP"] = "CURRENT_GAME_MAP";
+        SocketListener["ON_BUMP"] = "ON_BUMP";
+        SocketListener["ON_POWERUP_BUMP"] = "ON_POWERUP_BUMP";
+        SocketListener["ON_PLAYER_DEAD"] = "ON_PLAYER_DEAD";
+        SocketListener["ON_GAME_OVER"] = "ON_GAME_OVER";
+        SocketListener["ON_CROWN"] = "ON_CROWN";
+        SocketListener["ON_SCORE_CHANGE"] = "ON_SCORE_CHANGE";
+      })(SocketListener || (SocketListener = exports('SocketListener', {})));
+
+      var SocketConnection = exports('SocketConnection', (_dec = ccclass('SocketConnection'), _dec(_class = (_temp = _class2 = /*#__PURE__*/function () {
+        function SocketConnection() {
+          _defineProperty(this, "playerName", void 0);
+
+          _defineProperty(this, "isConnected", false);
+
+          _defineProperty(this, "isReconected", false);
+
+          _defineProperty(this, "maxRetry", 10);
+
+          _defineProperty(this, "retryCount", 0);
+
+          _defineProperty(this, "lastPingTime", new Date().getTime());
+
+          _defineProperty(this, "initInfo", {});
+
+          _defineProperty(this, "miloManager", null);
+
+          _defineProperty(this, "onlinePlayers", []);
+
+          _defineProperty(this, "powerUpsArr", []);
+
+          _defineProperty(this, "eventManager", void 0);
+
+          _defineProperty(this, "pingInterval", 0);
+
+          this.eventManager = new EventManager();
+        }
+
+        var _proto = SocketConnection.prototype;
+
+        _proto.start = function start() {
+          if ('mxMiloManager' in window == false) {
+            this.miloManager = MiloManager();
+          } else {
+            this.miloManager = window['mxMiloManager'];
+          }
+
+          this.miloManager.onGameStart();
+          this.initInfo = JSON.parse(this.miloManager.onGameInit());
+          var userInfo = this.initInfo;
+          var playerInfo = userInfo['players'].find(function (obj) {
+            return obj.userId == userInfo['initInfo'].userId;
+          });
+          this.playerName = playerInfo.name;
+          playerInfo = Object.assign(playerInfo, {
+            micEnable: userInfo['initInfo']['micEnabled']
+          });
+          var loginDetails = Object.assign(userInfo['initInfo'], {
+            isHost: playerInfo.host,
+            playerInfo: playerInfo,
+            gameConfig: GameConfig,
+            roomName: 'SumoRoom'
+          });
+          var isProd = GameConfig.serverInfo.isProd;
+          var url = "";
+          {
+            var domain = window.location.href.split('/')[2];
+            url = "ws://" + domain.split(':')[0] + ':2567';
+          }
+          this.client = new _cjsExports.Client(url);
+          this.connect(loginDetails);
+          console.log("Connecting server to " + url);
+        };
+
+        _proto.connect = /*#__PURE__*/function () {
+          var _connect = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(options) {
+            var _this = this;
+
+            var roomId;
+            return regeneratorRuntime.wrap(function _callee$(_context) {
+              while (1) {
+                switch (_context.prev = _context.next) {
+                  case 0:
+                    _context.prev = 0;
+                    roomId = options.roomId;
+                    _context.next = 4;
+                    return this.client.joinById(roomId, {
+                      roomType: 'PRIVATE',
+                      roomId: roomId,
+                      playerInfo: options.playerInfo
+                    });
+
+                  case 4:
+                    this.room = _context.sent;
+                    this.isConnected = true;
+                    console.log("Room joined successfully!");
+                    console.log("user's sessionId:", this.room.sessionId);
+                    this.addRoomListeners();
+                    this.addBroadCastListener();
+                    this.startPing();
+                    this.dispatch(SocketListener.ON_CONNECT, this.room);
+                    _context.next = 20;
+                    break;
+
+                  case 14:
+                    _context.prev = 14;
+                    _context.t0 = _context["catch"](0);
+                    log(_context.t0);
+
+                    if (!this.isConnected) {
+                      _context.next = 19;
+                      break;
+                    }
+
+                    return _context.abrupt("return");
+
+                  case 19:
+                    setTimeout(function () {
+                      if (_this.retryCount < _this.maxRetry) {
+                        _this.connect(options);
+                      }
+
+                      ++_this.retryCount;
+                    }, 1000);
+
+                  case 20:
+                  case "end":
+                    return _context.stop();
+                }
+              }
+            }, _callee, this, [[0, 14]]);
+          }));
+
+          function connect(_x) {
+            return _connect.apply(this, arguments);
+          }
+
+          return connect;
+        }();
+
+        _proto.onReconnect = function onReconnect() {
+          this.isReconected = true;
+          this.addRoomListeners();
+          this.addBroadCastListener();
+          this.isReconected = false;
+        };
+
+        _proto.reconnect = function reconnect() {// TODO
+        };
+
+        _proto.startPing = function startPing() {
+          var _this2 = this;
+          /* if (this.lastPingTime != 0) {
+              console.log(`%c Network offline`, 'background: #000; color: #ffffff');
+              this.isConnected = false;
+              // this.reconnect();
+           } else if (!this.isConnected) {
+              this.isConnected = true;
+          } */
+
+
+          this.pingInterval = setInterval(function () {
+            if (_this2.isConnected) {
+              _this2.lastPingTime = new Date().getTime();
+
+              _this2.room.send('action', {
+                command: "PING",
+                data: _this2.lastPingTime
+              });
+            }
+          }, 1000);
+        };
+
+        _proto.countPingTime = function countPingTime() {
+          var now = new Date();
+          var pingTime = now.getTime() - this.lastPingTime;
+          InitSceneManager.instance.ping.string = pingTime.toString();
+        };
+
+        _proto.addRoomListeners = function addRoomListeners() {
+          var _this3 = this;
+
+          var self = this; // this.room.onStateChange((state) => {
+          //     console.log("onStateChange: ", state);
+          // });
+
+          this.room.onMessage("PONG", function (data) {
+            _this3.countPingTime(); // if (this.lastPingTime == data) {
+            // }
+
+          });
+          this.room.onLeave(function (code) {
+            console.log("onLeave:", code);
+            _this3.isConnected = false;
+          });
+          this.room.state.listen("gameStartTime", function (value) {
+            _this3.dispatch(SocketListener.ON_WAIT_TIME, value);
+          });
+          this.room.state.listen("gameStarted", function (value) {
+            _this3.dispatch(SocketListener.GAME_STARTED, value);
+          });
+          this.room.state.listen("serverGameTime", function (value) {
+            _this3.dispatch(SocketListener.SERVER_GAME_TIME, value);
+          });
+          this.room.state.listen("currentMap", function (value) {
+            _this3.dispatch(SocketListener.CURRENT_GAME_MAP, value);
+          });
+          this.room.state.listen("readyGoCount", function (value) {
+            _this3.dispatch(SocketListener.READY_GO_COUNT, value);
+          }); // this.room.state.listen("gameOver", (value) => {
+          //     this.dispatch(SocketListener.ON_GAME_OVER, value);
+          // });
+
+          this.room.onMessage("GAME_OVER", function (data) {
+            _this3.dispatch(SocketListener.ON_GAME_OVER, data);
+          });
+
+          this.room.state.powerUps.onAdd = function (powerUp) {
+            console.log('Powerup added');
+
+            _this3.addPowerUps(powerUp); // this.dispatch(SocketListener.ON_POWERUP_ADD, powerUp);
+
+
+            powerUp.onChange = function (changes) {
+              // console.log('Powerup change', this);
+              self.dispatch(SocketListener.ON_POWERUP_CHANGE, this);
+            };
+          };
+
+          this.room.state.playerMap.onAdd = function (player, key) {
+            console.log(player, "has been added at", key);
+
+            _this3.addPlayerToArray(player);
+
+            _this3.dispatch(SocketListener.ON_ADD);
+
+            player.onChange = function (changes) {
+              self.dispatch(SocketListener.ON_PLAYER_CHANGE, this);
+            };
+
+            player.listen('isDead', function () {
+              self.dispatch(SocketListener.ON_PLAYER_DEAD, player);
+            });
+            player.listen('score', function () {
+              self.dispatch(SocketListener.ON_SCORE_CHANGE, player);
+            });
+            player.listen('crownActive', function (value) {
+              self.dispatch(SocketListener.ON_CROWN, player);
+            }); // force "onChange" to be called immediatelly
+
+            player.triggerAll();
+          };
+        };
+
+        _proto.addBroadCastListener = function addBroadCastListener() {
+          var _this4 = this;
+
+          this.room.onMessage(SocketListener.ON_BUMP, function (data) {
+            _this4.dispatch(SocketListener.ON_BUMP, {
+              ANIM_STATE: data.ANIM_STATE,
+              vector: data.vector,
+              bumpValue: data.bumpValue,
+              bumpPos: data.bumpPos,
+              collider: data.colliderId
+            });
+          });
+          this.room.onMessage(SocketListener.ON_POWERUP_BUMP, function (data) {
+            _this4.dispatch(SocketListener.ON_POWERUP_BUMP, {
+              scale: data.scale,
+              duration: data.duration,
+              gainValue: data.gainValue,
+              isGain: data.isGain,
+              resize: data.resize
+            });
+          });
+        };
+
+        _proto.addPlayerToArray = function addPlayerToArray(player) {
+          var index = this.onlinePlayers.findIndex(function (element) {
+            return element.userId == player.userId;
+          });
+
+          if (index > -1) {
+            this.onlinePlayers.splice(index, 1);
+          }
+
+          this.onlinePlayers.push(player);
+        };
+
+        _proto.addPowerUps = function addPowerUps(powerUp) {
+          this.powerUpsArr.push(powerUp);
+        };
+
+        _proto.send = function send(msg) {
+          this.room.send('action', msg);
+        };
+
+        _proto.on = function on(eventType, callback, context) {
+          this.eventManager.addListener(eventType, callback.bind(context));
+        };
+
+        _proto.remove = function remove(eventType, callback) {
+          this.eventManager.removeListener(eventType, callback);
+        };
+
+        _proto.dispatch = function dispatch(eventType, details) {
+          this.eventManager.dispatch(eventType, details);
+        };
+
+        _createClass(SocketConnection, [{
+          key: "sessionId",
+          get: function get() {
+            return this.room.sessionId;
+          }
+        }], [{
+          key: "instance",
+          get: function get() {
+            if (this._instance) {
+              return this._instance;
+            }
+
+            this._instance = new SocketConnection();
+            return this._instance;
+          }
+        }]);
+
+        return SocketConnection;
+      }(), _defineProperty(_class2, "_instance", void 0), _temp)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/eventListener.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
+  'use strict';
+
+  var _defineProperty, cclegacy, _decorator, error, log;
+
+  return {
+    setters: [function (module) {
+      _defineProperty = module.defineProperty;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      error = module.error;
+      log = module.log;
+    }],
+    execute: function () {
+      var _dec, _class, _temp, _dec2, _class3;
+
+      cclegacy._RF.push({}, "9dccaCF91dApYnQ1vWQIfmq", "eventListener", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var oneToOneListener = (_dec = ccclass("oneToOneListener"), _dec(_class = (_temp = /*#__PURE__*/function () {
+        function oneToOneListener() {
+          _defineProperty(this, "supportEvent", {});
+
+          _defineProperty(this, "handle", {});
+
+          this.supportEvent = null;
+        }
+
+        var _proto = oneToOneListener.prototype;
+
+        _proto.on = function on(eventName, handler, target) {
+          this.handle[eventName] = {
+            handler: handler,
+            target: target
+          };
+        };
+
+        _proto.off = function off(eventName, handler) {
+          var oldObj = this.handle[eventName];
+
+          if (oldObj && oldObj.handler && oldObj.handler === handler) {
+            delete this.handle[eventName];
+          }
+        };
+
+        _proto.dispatchEvent = function dispatchEvent(eventName) {
+          if (this.supportEvent !== null && !this.supportEvent.hasOwnProperty(eventName)) {
+            error("please add the event into clientEvent.js");
+            return;
+          }
+
+          var objHandler = this.handle[eventName];
+          var args = [];
+
+          for (var i = 1; i < arguments.length; i++) {
+            args.push(arguments[i]);
+          }
+
+          if (objHandler.handler) {
+            objHandler.handler.apply(objHandler.target, args);
+          } else {
+            log("not register " + eventName + "    callback func");
+          }
+        };
+
+        _proto.setSupportEventList = function setSupportEventList(arrSupportEvent) {
+          if (!(arrSupportEvent instanceof Array)) {
+            error("supportEvent was not array");
+            return false;
+          }
+
+          this.supportEvent = {};
+
+          for (var i in arrSupportEvent) {
+            var eventName = arrSupportEvent[i];
+            this.supportEvent[eventName] = i;
+          }
+
+          return true;
+        };
+
+        return oneToOneListener;
+      }(), _temp)) || _class);
+      var eventListener = exports('eventListener', (_dec2 = ccclass("eventListener"), _dec2(_class3 = /*#__PURE__*/function () {
+        function eventListener() {}
+
+        eventListener.getBaseClass = function getBaseClass(type) {
+          return oneToOneListener;
+        };
+
+        return eventListener;
+      }()) || _class3));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/commonFun.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc', './constant.ts', './audioManager.ts'], function (exports) {
+  'use strict';
+
+  var _inheritsLoose, cclegacy, _decorator, Component, constant, audioManager;
+
+  return {
+    setters: [function (module) {
+      _inheritsLoose = module.inheritsLoose;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      Component = module.Component;
+    }, function (module) {
+      constant = module.constant;
+    }, function (module) {
+      audioManager = module.audioManager;
+    }],
+    execute: function () {
+      var _dec, _class;
+
+      cclegacy._RF.push({}, "a12d4+l2AhNPJDGsDtZTX1+", "commonFun", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var STATE = {
+        IDLE: 0,
+        WALK: 1,
+        BUMP: 2
+      };
+      var CommonFun = exports('CommonFun', (_dec = ccclass('CommonFun'), _dec(_class = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(CommonFun, _Component);
+
+        function CommonFun() {
+          return _Component.apply(this, arguments) || this;
+        }
+
+        var _proto = CommonFun.prototype;
+
+        _proto.start = function start() {// [3]
+        };
+
+        _proto.getPercentage = function getPercentage(percentToGet, number) {
+          return percentToGet / 100 * number;
+        };
+
+        _proto.shuffleArr = function shuffleArr(array) {
+          for (var i = array.length - 1; i > 0; i--) {
+            var rand = Math.floor(Math.random() * (i + 1));
+            var _ref = [array[rand], array[i]];
+            array[i] = _ref[0];
+            array[rand] = _ref[1];
+          }
+
+          return array;
+        };
+
+        _proto.getNewModifiedSpeed = function getNewModifiedSpeed(botScale, refe) {
+          return (botScale - refe.initialSize) / (refe.maxSize - refe.initialSize) * (refe.endspeed - refe.startSpeed) + refe.startSpeed;
         };
 
         _proto.findGameAngle = function findGameAngle(hitAngle) {
@@ -1686,30 +7964,1012 @@ System.register("chunks:///_virtual/Bot.ts", ['./_rollupPluginModLoBabelHelpers.
           return false;
         };
 
-        _proto.shuffleArr = function shuffleArr(array) {
+        _proto.angleTo360 = function angleTo360(angle) {
+          angle = angle % 360 + (angle - Math.trunc(angle));
+          if (angle > 0.0) return angle;else return angle + 360.0;
+        };
+
+        _proto.angleBetweenAngle = function angleBetweenAngle(hitAngle, left, right) {
+          hitAngle = this.angleTo360(hitAngle);
+          left = this.angleTo360(left);
+          right = this.angleTo360(right);
+          if (left < right) return left <= hitAngle && hitAngle <= right;
+          return left <= hitAngle || hitAngle <= right;
+        };
+
+        _proto.shuffleArray = function shuffleArray(array) {
           for (var i = array.length - 1; i > 0; i--) {
-            var rand = Math.floor(Math.random() * (i + 1));
-            var _ref = [array[rand], array[i]];
-            array[i] = _ref[0];
-            array[rand] = _ref[1];
+            // Generate random number
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+          }
+
+          return array;
+        } //animation
+        ;
+
+        _proto.changeWalkAnimationSpeed = function changeWalkAnimationSpeed(speed, node) {// node._skeletal.getState('walk').speed = speed / 2;
+        };
+
+        _proto.setWalkStateAnimation = function setWalkStateAnimation(node) {
+          node._currentState = STATE.WALK;
+
+          node._skeletal.play('walk');
+        };
+
+        _proto.setBumpStateAnimation = function setBumpStateAnimation(node) {
+          audioManager.instance.playSound(constant.AUDIO_SOUND.push);
+          node._currentState = STATE.BUMP;
+
+          node._skeletal.play('push');
+
+          node._skeletal.getState('push').repeatCount = 1;
+        };
+
+        _proto.setIdleStateAnimation = function setIdleStateAnimation(node) {
+          node._currentState = STATE.IDLE;
+
+          node._skeletal.play('idle');
+        };
+
+        _proto.setPowerGainAnimation = function setPowerGainAnimation(node) {
+          if (node.eatTimeout != null) clearTimeout(node.eatTimeout);
+
+          node._skeletal.play('powerGain');
+
+          var duration = node._skeletal.getState('powerGain').duration;
+
+          node.eatTimeout = setTimeout(function () {
+            node._skeletal.play('walk');
+
+            node.eatTimeout = null;
+          }, 1000 * duration);
+        };
+
+        _proto.setPowerLoseAnimation = function setPowerLoseAnimation(node) {
+          if (node.eatTimeout != null) clearTimeout(node.eatTimeout);
+
+          node._skeletal.play('powerLose');
+
+          var duration = node._skeletal.getState('powerLose').duration;
+
+          node.eatTimeout = setTimeout(function () {
+            node._skeletal.play('walk');
+
+            node.eatTimeout = null;
+          }, 1000 * duration);
+        };
+
+        _proto.setWinStateAnimation = function setWinStateAnimation(node) {
+          node._skeletal.play('win');
+        } //common Names
+        ;
+
+        _proto.getNames = function getNames() {
+          var names = ["Sanjay", "Vinay", "Salman", "Parvez", "Rohan", "Shahzad", "Shantanu", "shenaz", "vivek", "ramesh", "suresh ", "rahul", "arun", "sai", "abhishek", "vikas", "lokesh", "mahesh", "ram", "shyam", "Abhijeet", "Aditya", "Akshat", "Amitava", "Angad", "Aniruddh", "Anubhav", "Arjun", "Armaan", "Ashish", "Anjali", "Antara", "Aparna", "Aruna", "Arunima", "Arzoo", "Ayesha", "Bahaar", "Bhavna", "Bhoomi", "Bipasha", "Chaaya", "Chandrika", "Chhavi", "Deepika", "Devika", "Diya", "Ekta", "Falguni", "Farah", "Fatima", "Garima", "Gauhar", "Gayatri", "Geetha", "Gurleen", "Harini", "Harpreet", "Indrani", "Ira", "Jasleen", "Jayanti", "Jyothsna", "Kalyani", "Kanika", "Jeet", "Junaid", "Kabir", "Kartik", "Karun", "Khalid", "Kshitij", "Lohith", "Madhav", "Mohammed", "Mridul", "Navjot", "Nikhil", "Nimit", "Nishith", "Ojas", "Om", "Onkar", "Paramjit", "Paritosh", "Parth", "Parvez", "Pavan", "Pranav", "Purab", "Rehaan", "Rohan", "Sahil", "Salman", "Samarth", "Samir", "Sanchit", "Sanjay", "Sarabjit", "Shahzad", "Shantanu", "Shishir", "Shray", "Sparsh", "Sumer", "Surjan", "Swapan", "Tarun", "Tejas", "Tushar", "Udit", "Umang", "Umar", "Varun", "Veer", "Vidur", "Vinay", "Yash", "Zeeshan", "Zubin", "Rajesh", "Ramesh", "Sanju", "Manju", "Alfaz", "Bhavesh", "Bipin", "Daljeet", "Fardeen", "Girish"];
+          var randNumber = Math.floor(Math.random() * (names.length - 1 + 1));
+          return names[randNumber];
+        };
+
+        _proto.removeObjectFromArray = function removeObjectFromArray(array, value) {
+          var idx = array.indexOf(value);
+
+          if (idx !== -1) {
+            array.splice(idx, 1);
           }
 
           return array;
         };
 
-        _proto.getNewModifiedSpeed = function getNewModifiedSpeed(botScale) {
-          return (botScale - this.initialSize) / (this.botMaxSize - this.initialSize) * (this.botEndSpeed - this.botStartSpeed) + this.botStartSpeed;
+        _proto.harmonicMean = function harmonicMean(arr) {
+          var n = arr.length; // Declare sum variables and initialize
+          // with zero.
+
+          var sum = 0;
+
+          for (var i = 0; i < n; i++) {
+            sum = sum + 1 / arr[i];
+          }
+
+          return n / sum;
         };
 
-        return Bot;
-      }(Component), _temp), _descriptor = _applyDecoratedDescriptor(_class2.prototype, "prefabPoint", [_dec2], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return null;
+        _proto.millisecondsToTime = function millisecondsToTime(milli) {
+          var milliseconds = milli % 1000;
+          var seconds = Math.floor(milli / 1000 % 60);
+          var minutes = Math.floor(milli / (60 * 1000) % 60);
+          return minutes + ":" + seconds + ":" + milliseconds;
+        };
+
+        _proto.getIntValue = function getIntValue(loc) {
+          return parseInt(loc);
+        };
+
+        return CommonFun;
+      }(Component)) || _class));
+      /**
+       * [1] Class member could be defined like this.
+       * [2] Use `property` decorator if your want the member to be serializable.
+       * [3] Your initialization goes here.
+       * [4] Your update function goes here.
+       *
+       * Learn more about scripting: https://docs.cocos.com/creator/3.3/manual/en/scripting/
+       * Learn more about CCClass: https://docs.cocos.com/creator/3.3/manual/en/scripting/ccclass.html
+       * Learn more about life-cycle callbacks: https://docs.cocos.com/creator/3.3/manual/en/scripting/life-cycle-callbacks.html
+       */
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/Player.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc', './mxManager.ts', './constant.ts', './audioManager.ts', './GameConfig.ts', './SocketConnection.ts', './Helper.ts', './PlayerMovement.ts', './commonFun.ts'], function (exports) {
+  'use strict';
+
+  var _inheritsLoose, _defineProperty, _assertThisInitialized, cclegacy, _decorator, Vec3, SkeletalAnimationComponent, RigidBodyComponent, Vec2, instantiate, tween, macro, MxManager, constant, audioManager, GameConfig, SocketConnection, SocketListener, STATE, PlayerMovement, CommonFun;
+
+  return {
+    setters: [function (module) {
+      _inheritsLoose = module.inheritsLoose;
+      _defineProperty = module.defineProperty;
+      _assertThisInitialized = module.assertThisInitialized;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      Vec3 = module.Vec3;
+      SkeletalAnimationComponent = module.SkeletalAnimationComponent;
+      RigidBodyComponent = module.RigidBodyComponent;
+      Vec2 = module.Vec2;
+      instantiate = module.instantiate;
+      tween = module.tween;
+      macro = module.macro;
+    }, function (module) {
+      MxManager = module.MxManager;
+    }, function (module) {
+      constant = module.constant;
+    }, function (module) {
+      audioManager = module.audioManager;
+    }, function (module) {
+      GameConfig = module.GameConfig;
+    }, function (module) {
+      SocketConnection = module.SocketConnection;
+      SocketListener = module.SocketListener;
+    }, function (module) {
+      STATE = module.STATE;
+    }, function (module) {
+      PlayerMovement = module.PlayerMovement;
+    }, function (module) {
+      CommonFun = module.CommonFun;
+    }],
+    execute: function () {
+      var _dec, _class, _temp;
+
+      cclegacy._RF.push({}, "a3addpkf1lOCoVufXlKk5xR", "Player", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var CELL_TIME = 0.016;
+      var Player = exports('Player', (_dec = ccclass('Player'), _dec(_class = (_temp = /*#__PURE__*/function (_PlayerMovement) {
+        _inheritsLoose(Player, _PlayerMovement);
+
+        function Player() {
+          var _this;
+
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+
+          _this = _PlayerMovement.call.apply(_PlayerMovement, [this].concat(args)) || this;
+
+          _defineProperty(_assertThisInitialized(_this), "playerCamera", null);
+
+          _defineProperty(_assertThisInitialized(_this), "_isPlayer", false);
+
+          _defineProperty(_assertThisInitialized(_this), "playerName", void 0);
+
+          _defineProperty(_assertThisInitialized(_this), "_currentFollowingNode", null);
+
+          _defineProperty(_assertThisInitialized(_this), "_currentPlayerPosition", Vec3.ZERO);
+
+          _defineProperty(_assertThisInitialized(_this), "_vector", Vec3.ZERO);
+
+          _defineProperty(_assertThisInitialized(_this), "_vectorAngle", Vec3.ZERO);
+
+          _defineProperty(_assertThisInitialized(_this), "_now_time", 0);
+
+          _defineProperty(_assertThisInitialized(_this), "_skeletal", void 0);
+
+          _defineProperty(_assertThisInitialized(_this), "_currentState", STATE.IDLE);
+
+          _defineProperty(_assertThisInitialized(_this), "_charName", "LOL");
+
+          _defineProperty(_assertThisInitialized(_this), "eatTimeout", null);
+
+          _defineProperty(_assertThisInitialized(_this), "gameController", null);
+
+          _defineProperty(_assertThisInitialized(_this), "initialSize", 0);
+
+          _defineProperty(_assertThisInitialized(_this), "maxSize", 0);
+
+          _defineProperty(_assertThisInitialized(_this), "startSpeed", 0);
+
+          _defineProperty(_assertThisInitialized(_this), "endspeed", 0);
+
+          _defineProperty(_assertThisInitialized(_this), "maxScale", 0);
+
+          _defineProperty(_assertThisInitialized(_this), "currentScale", 0);
+
+          _defineProperty(_assertThisInitialized(_this), "speed", 0);
+
+          _defineProperty(_assertThisInitialized(_this), "bumpTween", null);
+
+          _defineProperty(_assertThisInitialized(_this), "bumptimeTween", null);
+
+          _defineProperty(_assertThisInitialized(_this), "characterHud", null);
+
+          _defineProperty(_assertThisInitialized(_this), "_isPoisionSpeedActive", false);
+
+          _defineProperty(_assertThisInitialized(_this), "_isGainSpeedActive", false);
+
+          _defineProperty(_assertThisInitialized(_this), "_isSheildActive", false);
+
+          _defineProperty(_assertThisInitialized(_this), "_poisionSpeedActiveCount", 0);
+
+          _defineProperty(_assertThisInitialized(_this), "_gainSpeedActiveCount", 0);
+
+          _defineProperty(_assertThisInitialized(_this), "_sheildActiveCount", 0);
+
+          _defineProperty(_assertThisInitialized(_this), "_sheildCountDown", 0);
+
+          _defineProperty(_assertThisInitialized(_this), "_poisionSpeedActivePercentage", 0);
+
+          _defineProperty(_assertThisInitialized(_this), "_gainSpeedActivePercentage", 0);
+
+          _defineProperty(_assertThisInitialized(_this), "_score", 0);
+
+          _defineProperty(_assertThisInitialized(_this), "_totalSumoPushed", 0);
+
+          _defineProperty(_assertThisInitialized(_this), "_collidedOpponentPlayer", null);
+
+          _defineProperty(_assertThisInitialized(_this), "commonFun", null);
+
+          _defineProperty(_assertThisInitialized(_this), "playerData", null);
+
+          _defineProperty(_assertThisInitialized(_this), "isReady", false);
+
+          return _this;
         }
-      }), _class2)) || _class));
+
+        var _proto = Player.prototype;
+
+        _proto.start = function start() {
+          this.commonFun = new CommonFun();
+          this._skeletal = this.node.getChildByName("Penguine_Anim").getComponent(SkeletalAnimationComponent);
+          this.commonFun.setIdleStateAnimation(this);
+          this.setProperties();
+          this.schedule(this.powerUpUpdates, 1);
+          this.isReady = true;
+        };
+
+        _proto.setProperties = function setProperties() {
+          this._isPlayer = true;
+          this.initialSize = GameConfig.player.initialSize;
+          this.maxSize = GameConfig.player.playerMaxSize;
+          this.startSpeed = GameConfig.player.playerStartSpeed;
+          this.endspeed = GameConfig.player.playerEndSpeed;
+          this.setCurrentScale(this.initialSize);
+          this.node.scale.set(this.currentScale, this.currentScale, this.currentScale);
+          this.maxScale = this.maxSize;
+          if (!MxManager.instance.isMiloApp) this.getComponent(RigidBodyComponent).linearFactor.y = 1;else this.getComponent(RigidBodyComponent).linearFactor.y = 0;
+          this.updateSpeed();
+        };
+
+        _proto.setCamera = function setCamera(camera, gameController, cameraAngle) {
+          this.playerCamera = camera;
+          this.gameController = gameController;
+          if (GameConfig.debug.camera.angleChange) this.playerCamera.eulerAngles = new Vec3(cameraAngle.x, cameraAngle.y + 180, cameraAngle.z); // TODO check lerp code
+
+          var target_position = new Vec2(this.node.getPosition().x, this.node.getPosition().z);
+          target_position.lerp(target_position, 0.1);
+          this.playerCamera.setPosition(new Vec3(target_position.x, this.node.getPosition().y, target_position.y));
+        };
+
+        _proto.addName = function addName(namePrefab, world) {
+          this.playerName = instantiate(namePrefab);
+          world.addChild(this.playerName);
+          this._charName = "you";
+          this.characterHud = this.playerName.getComponent("CharacterHud");
+          this.characterHud.updateNameData(this._charName);
+          this.updateNamePos();
+        };
+
+        _proto.updateSpeed = function updateSpeed() {
+          this.speed = this.commonFun.getNewModifiedSpeed(this.getCurrentScale(), this);
+          this.commonFun.changeWalkAnimationSpeed(this.speed, this);
+        };
+
+        _proto.setSpeed = function setSpeed(value) {
+          this.speed = value;
+        };
+
+        _proto.getSpeed = function getSpeed() {
+          return this.speed;
+        };
+
+        _proto.startSheild = function startSheild(duration) {
+          this.commonFun.setPowerGainAnimation(this);
+          this.characterHud.startPowerupProgress(duration);
+          this.gameController.startPowerupProgress(duration, "sheild");
+          this._sheildActiveCount += duration;
+          this._sheildCountDown = 3;
+          this._isSheildActive = true;
+        };
+
+        _proto.checkGainSpeedActive = function checkGainSpeedActive() {
+          return this._isGainSpeedActive;
+        };
+
+        _proto.checkPoisionSpeedActive = function checkPoisionSpeedActive() {
+          return this._isPoisionSpeedActive;
+        };
+
+        _proto.checkSheildActive = function checkSheildActive() {
+          return this._isSheildActive;
+        };
+
+        _proto.reEvaluateSpeed = function reEvaluateSpeed(gain, duration, isgain) {
+          this.characterHud.startPowerupProgress(duration);
+          this.gameController.startPowerupProgress(duration, isgain ? "GainSpeed" : "PoisionSpeed");
+
+          if (isgain) {
+            if (this._isGainSpeedActive) {
+              this._isPoisionSpeedActive = false;
+              this._isGainSpeedActive = false;
+              this._poisionSpeedActiveCount = 0;
+              this._gainSpeedActiveCount = 0;
+              return;
+            }
+
+            this._poisionSpeedActivePercentage = gain;
+            this._poisionSpeedActiveCount += duration;
+            this._isPoisionSpeedActive = true; // this.speed = this.speed + this.commonFun.getPercentage(gain*100,this.speed);     
+
+            this.commonFun.setPowerGainAnimation(this);
+            this.commonFun.changeWalkAnimationSpeed(this.speed, this);
+          } else {
+            if (this._isPoisionSpeedActive) {
+              this._isPoisionSpeedActive = false;
+              this._isGainSpeedActive = false;
+              this._poisionSpeedActiveCount = 0;
+              this._gainSpeedActiveCount = 0;
+              return;
+            }
+
+            this._gainSpeedActivePercentage = gain;
+            this._gainSpeedActiveCount += duration;
+            this._isGainSpeedActive = true; // this.speed = this.speed - this.commonFun.getPercentage(gain*100,this.speed);       
+
+            this.commonFun.setPowerLoseAnimation(this);
+            this.commonFun.changeWalkAnimationSpeed(this.speed, this);
+          }
+        };
+
+        _proto.powerUpUpdates = function powerUpUpdates() {
+          if (this._isPoisionSpeedActive && this._poisionSpeedActiveCount > 0) {
+            this._poisionSpeedActiveCount--;
+            this.characterHud.updatePowerProgress(this._poisionSpeedActiveCount);
+            this.gameController.updatePowerProgress(this._poisionSpeedActiveCount);
+
+            if (this._poisionSpeedActiveCount <= 0) {
+              this._poisionSpeedActiveCount = 0;
+              this._isPoisionSpeedActive = false;
+            }
+          }
+
+          if (this._isGainSpeedActive && this._gainSpeedActiveCount > 0) {
+            this._gainSpeedActiveCount--;
+            this.characterHud.updatePowerProgress(this._gainSpeedActiveCount);
+            this.gameController.updatePowerProgress(this._gainSpeedActiveCount);
+
+            if (this._gainSpeedActiveCount <= 0) {
+              this._gainSpeedActiveCount = 0;
+              this._isGainSpeedActive = false;
+            }
+          }
+
+          if (this._isSheildActive && this._sheildActiveCount > 0) {
+            if (this._sheildCountDown >= 0) audioManager.instance.playSound(constant.AUDIO_SOUND.sheildPowerUp);
+            this._sheildCountDown--;
+            this._sheildActiveCount--;
+            this.characterHud.updatePowerProgress(this._sheildActiveCount);
+            this.gameController.updatePowerProgress(this._sheildActiveCount);
+
+            if (this._sheildActiveCount <= 0) {
+              this._sheildActiveCount = 0;
+              this._isSheildActive = false;
+            }
+          }
+        };
+
+        _proto.resize = function resize(gain, isgain) {
+          var _this2 = this;
+
+          if (isgain) {
+            if (this.getCurrentScale() <= this.maxScale) {
+              this.setCurrentScale(this.getCurrentScale() + this.commonFun.getPercentage(gain * 100, this.currentScale));
+              if (this.getCurrentScale() > this.maxScale) this.setCurrentScale(this.maxScale);
+              tween(this.node.scale).to(1, new Vec3(this.currentScale, this.currentScale, this.currentScale)).call(function () {
+                _this2.updateSpeed();
+              }).start();
+              this.characterHud.tweenPosition(this.getCurrentScale());
+              this.commonFun.setPowerGainAnimation(this);
+            }
+          } else {
+            if (this.getCurrentScale() > this.initialSize) {
+              this.setCurrentScale(this.getCurrentScale() - this.commonFun.getPercentage(gain * 100, this.currentScale));
+              if (this.getCurrentScale() < this.initialSize) this.setCurrentScale(this.initialSize);
+              tween(this.node.scale).to(1, new Vec3(this.currentScale, this.currentScale, this.currentScale)).call(function () {
+                _this2.updateSpeed();
+              }).start();
+              this.characterHud.tweenPosition(this.getCurrentScale());
+              this.commonFun.setPowerLoseAnimation(this);
+            }
+          }
+        } // moveStationCamera() {
+        //     let cameraNode = this.playerCamera.getChildByName('playerCamera');
+        //     // cameraNode.eulerAngles = cameraNode.eulerAngles.add3f(0, 10, 0);
+        //     tween(cameraNode.position)
+        //         .to(1, new Vec3(0, 8, 8))
+        //         .start();
+        // }
+        // resetStationCamera() {
+        //     let cameraNode = this.playerCamera.getChildByName('playerCamera');
+        //     // cameraNode.eulerAngles = cameraNode.eulerAngles.add3f(0, 10, 0);
+        //     tween(cameraNode.position)
+        //         .to(1, new Vec3(0, 17.788, 25.71))
+        //         .start();
+        // }
+        ;
+
+        _proto.removeAllHud = function removeAllHud() {
+          this.gameController.getWorld().removeChild(this.playerName);
+        };
+
+        _proto._onDeathPlatform = function _onDeathPlatform(event) {
+          audioManager.instance.playSound(constant.AUDIO_SOUND.myDeath);
+          var currentScript = event.selfCollider.node.getComponent("Bot") == null ? event.selfCollider.node.getComponent("Player") : event.selfCollider.node.getComponent("Bot");
+
+          if (this._collidedOpponentPlayer != null) {
+            var oppScript = this._collidedOpponentPlayer.getComponent("Bot") == null ? this._collidedOpponentPlayer.getComponent("Player") : this._collidedOpponentPlayer.getComponent("Bot");
+            var currentPlayerScale = currentScript.getCurrentScale();
+            var opponentPlayerScale = oppScript.getCurrentScale();
+            var gainValue = opponentPlayerScale;
+            if (currentPlayerScale < opponentPlayerScale) //bigger pushed
+              gainValue = this.commonFun.harmonicMean([currentPlayerScale, opponentPlayerScale]) - currentPlayerScale + opponentPlayerScale;else if (currentPlayerScale > opponentPlayerScale) //smaller pushed
+              gainValue = this.commonFun.harmonicMean([currentPlayerScale, opponentPlayerScale]);else //same size
+              {
+                gainValue = 0;
+                var gainValue1 = GameConfig.powerup["GummyBear"].gainPercentage;
+                oppScript.resize(gainValue1, true);
+              }
+            if (gainValue > 0) oppScript.increasePlayerScaleOnOpponentDeath(gainValue);
+            oppScript.updateScore(GameConfig.commonData.deathScore);
+            oppScript._totalSumoPushed++;
+          }
+
+          currentScript.removeAllHud();
+          this.commonFun.removeObjectFromArray(this.gameController.botController._totalPlayerArrayList, event.selfCollider.node);
+          this.gameController.getWorld().removeChild(event.selfCollider.node);
+          var d = new Date();
+          this.gameController.currentTime;
+          var ob1 = {
+            "name": this._charName,
+            "time": d.getTime(),
+            "isSelf": true
+          };
+          this.gameController.playerBoardData.push(ob1);
+
+          if (this.gameController.botController._totalPlayerArrayList.length == 1) {
+            var data = this.gameController.botController._totalPlayerArrayList[0];
+
+            var _currentScript = data.getComponent("Bot") == null ? data.getComponent("Player") : data.getComponent("Bot");
+
+            var ob1 = {
+              "name": _currentScript._charName,
+              "time": d.getTime(),
+              "isSelf": false
+            };
+            this.gameController.playerBoardData.push(ob1);
+          }
+        };
+
+        _proto._onCollisionEnter = function _onCollisionEnter(event) {
+          var _this3 = this;
+
+          var otherCollider = event.otherCollider;
+          this._collidedOpponentPlayer = otherCollider.node;
+          this.commonFun.setBumpStateAnimation(this);
+          this.getComponent(RigidBodyComponent).clearVelocity();
+          var pos1 = new Vec3(this.node.getPosition().x - otherCollider.node.getPosition().x, 0, this.node.getPosition().z - otherCollider.node.getPosition().z);
+
+          var _vector = pos1.normalize();
+
+          var bumpValue = this.getBumpValue(otherCollider.node);
+          var pos = new Vec3(this.node.getPosition().x + bumpValue * _vector.x, this.node.getPosition().z + bumpValue * _vector.z); // console.log("bumpValuePlayer     "+bumpValue+"     bumpTime      "+GameConfig.commonData.bumpTime);
+
+          if (this.bumpTween != null) {
+            this.bumpTween.stop();
+            clearTimeout(this.bumptimeTween);
+          }
+
+          this.bumpTween = tween(this.node).to(GameConfig.commonData.bumpTime, {
+            position: new Vec3(pos.x, this.node.getPosition().y, pos.y)
+          }).start();
+          this.bumptimeTween = setTimeout(function () {
+            _this3.getComponent(RigidBodyComponent).clearVelocity();
+
+            _this3.commonFun.setWalkStateAnimation(_this3);
+
+            _this3.bumptimeTween = null;
+            _this3.bumptimeTween = setTimeout(function () {
+              _this3._collidedOpponentPlayer = null;
+            }, GameConfig.commonData.bumpTime * 1000);
+          }, GameConfig.commonData.bumpTime * 1000);
+        };
+
+        _proto.updateScore = function updateScore(score) {
+          this._score = this._score + score;
+          if (this._score < 0) this._score = 0;
+          this.characterHud.showScore(score);
+          this.gameController.gameScore.string = "<color=#000000>" + "<size=56>" + "Score : " + "</size>" + "<color=#449b9a>" + "<size=56>" + this._score + "</size>";
+        };
+
+        _proto.increasePlayerScaleOnOpponentDeath = function increasePlayerScaleOnOpponentDeath(size) {
+          var _this4 = this;
+
+          if (this.getCurrentScale() <= this.maxScale) {
+            this.setCurrentScale(this.getCurrentScale() + size);
+            if (this.getCurrentScale() > this.maxScale) this.setCurrentScale(this.maxScale);
+            tween(this.node.scale).to(1, new Vec3(this.currentScale, this.currentScale, this.currentScale)).call(function () {
+              _this4.updateSpeed();
+            }).start();
+            this.characterHud.tweenPosition(this.getCurrentScale());
+          }
+        };
+
+        _proto.getBumpValue = function getBumpValue(opponentPlayer) {
+          var _this5 = this;
+
+          if (this.checkSheildActive()) return 0;
+          var oppScript = opponentPlayer.getComponent("Bot") == null ? opponentPlayer.getComponent("Player") : opponentPlayer.getComponent("Bot");
+          var currentSpeed = this.speed;
+          var currentSize = this.getCurrentScale();
+          var updatedSize = this.getCurrentScale();
+          var time = GameConfig.commonData.bumpTime;
+          updatedSize = this.getBumpSize();
+
+          if (this.getCurrentScale() > this.initialSize) {
+            this.setCurrentScale(this.getCurrentScale() - updatedSize);
+            if (this.getCurrentScale() < this.initialSize) this.setCurrentScale(this.initialSize);
+            tween(this.node.scale).to(1, new Vec3(this.currentScale, this.currentScale, this.currentScale)).call(function () {
+              _this5.updateSpeed();
+            }).start();
+            this.characterHud.tweenPosition(this.getCurrentScale());
+          }
+
+          this.updateSpeed();
+          var dist = this.getSpeed() * oppScript.getCurrentScale();
+          var isBumpedOnBack = this.checkDidBumpedOnBck(opponentPlayer);
+          if (isBumpedOnBack) dist = dist * 2;
+          var isPlayerBumpedOnOtherBack = this.isPlayerBumpedOnOtherBack(opponentPlayer);
+
+          if (isPlayerBumpedOnOtherBack) {
+            dist = this.getSpeed() * oppScript.getCurrentScale();
+            dist = dist / 2;
+          }
+
+          return dist;
+        };
+
+        _proto.getBumpSize = function getBumpSize() {
+          return this.commonFun.getPercentage(GameConfig.commonData.bumpSizeDecreasePercentage, this.getCurrentScale());
+        };
+
+        _proto.getCurrentScale = function getCurrentScale() {
+          return this.currentScale;
+        };
+
+        _proto.setCurrentScale = function setCurrentScale(scale) {
+          this.currentScale = scale;
+        };
+
+        _proto.sliderCallBack = function sliderCallBack(name, value) {
+          var cameraNode = this.playerCamera.getChildByName('playerCamera');
+          if (name == "YSlider") cameraNode.setPosition(new Vec3(cameraNode.position.x, value, cameraNode.position.z));else if (name == "ZSlider") cameraNode.setPosition(new Vec3(cameraNode.position.x, cameraNode.position.y, value));else if (name == "XSlider") cameraNode.setPosition(new Vec3(value, cameraNode.position.y, cameraNode.position.z));else if (name == "RYSlider") {
+            cameraNode.eulerAngles = new Vec3(value, cameraNode.eulerAngles.y, cameraNode.eulerAngles.z);
+          } else if (name == "RXSlider") {
+            cameraNode.eulerAngles = new Vec3(cameraNode.eulerAngles.x, value, cameraNode.eulerAngles.z);
+          } else if (name == "RZSlider") {
+            cameraNode.eulerAngles = new Vec3(cameraNode.eulerAngles.x, cameraNode.eulerAngles.y, value);
+          }
+        };
+
+        _proto.touchCallBack = function touchCallBack(vector, angle) {
+          Vec3.rotateZ(vector, vector, Vec3.ZERO, this.playerCamera.eulerAngles.y * macro.RAD);
+          this._vector = vector.normalize();
+
+          if (angle) {
+            this.node.eulerAngles = new Vec3(0, angle + 90 + this.playerCamera.eulerAngles.y, 0);
+          }
+        };
+
+        _proto.touchAngleCallBack = function touchAngleCallBack(vector, angle) {
+          this._vectorAngle = vector.normalize();
+        };
+
+        _proto.updateNamePos = function updateNamePos() {
+          var namePos = this.node.getPosition();
+          this.characterHud.updateHudPos(namePos, this.playerCamera);
+        };
+
+        _proto.fix_update = function fix_update(dt) {
+          if (this._currentState == STATE.BUMP) {
+            return;
+          }
+
+          var currentSpeed = this.getSpeed();
+
+          if (this._isPoisionSpeedActive && this._poisionSpeedActiveCount > 0) {
+            currentSpeed = currentSpeed + this.commonFun.getPercentage(this._poisionSpeedActivePercentage * 100, this.speed);
+          }
+
+          if (this._isGainSpeedActive && this._gainSpeedActiveCount > 0) {
+            currentSpeed = currentSpeed + this.commonFun.getPercentage(this._gainSpeedActivePercentage * 100, this.speed);
+          }
+
+          if (this._vector.lengthSqr() > 0) {
+            if (this._currentState == STATE.IDLE) {
+              this.commonFun.setWalkStateAnimation(this);
+            }
+
+            this.node.setPosition(this.node.position.add3f(this._vector.x * currentSpeed * dt, 0, -this._vector.y * currentSpeed * dt));
+            this._currentPlayerPosition = new Vec3(this._vector.x, 0, this._vector.y); // this.playerCamera.setPosition(this.playerCamera.position.add3f(this._vector.x * currentSpeed * dt, 0, 0));
+            // this.updateNamePos();
+          } else {
+            if (this._currentState == STATE.WALK) {
+              this.commonFun.setIdleStateAnimation(this);
+            } // this.node.setPosition(this.node.position.add3f(this._currentPlayerPosition.x * this.speed * dt, 0, -this._currentPlayerPosition.z * this.speed * dt));
+
+          } // if (this._vectorAngle.lengthSqr() > 0) {
+          //     this.playerCamera.eulerAngles = this.playerCamera.eulerAngles.add3f(0, -this._vectorAngle.x, 0);
+          // } 
+
+        };
+
+        _proto.updateCamera = function updateCamera() {
+          // let cameraNode = this.playerCamera.getChildByName('playerCamera');
+          var target_position = new Vec2(this.node.getPosition().x, this.node.getPosition().z);
+          target_position.lerp(target_position, 0.1);
+          this.playerCamera.setPosition(new Vec3(target_position.x, this.node.getPosition().y, target_position.y));
+        };
+
+        _proto.update = function update(deltaTime) {
+          if (parseInt(window.localStorage.getItem("isStopped"))) return;
+          if (!this.isReady) return;
+          this._now_time += deltaTime;
+
+          while (this._now_time >= CELL_TIME) {
+            this.updateNamePos();
+
+            if (MxManager.instance.isMiloApp) {
+              if (this.isSelfUpdateAllowed) {
+                this.fix_update(CELL_TIME);
+                this.updateCamera();
+              }
+            } else {
+              this.fix_update(CELL_TIME);
+              this.updateCamera();
+            }
+
+            this._now_time -= CELL_TIME;
+          }
+        };
+
+        _proto.isPlayerBumpedOnOtherBack = function isPlayerBumpedOnOtherBack(otherCollider) {
+          var p2 = new Vec2(this.node.getPosition().x, this.node.getPosition().z); // always will be the current node
+
+          var p1 = new Vec2(otherCollider.getPosition().x, otherCollider.getPosition().z);
+          var left = Math.round(otherCollider.eulerAngles.y) + 100;
+
+          if (left > 180) {
+            left -= 360;
+          }
+
+          var right = Math.round(otherCollider.eulerAngles.y) - 100;
+
+          if (right < -180) {
+            right += 360;
+          }
+
+          var hitAngle = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI;
+          hitAngle = this.commonFun.findGameAngle(hitAngle);
+
+          if (this.commonFun.angleBetweenAngle(hitAngle, left, right)) {
+            return true;
+          }
+
+          return false;
+        };
+
+        _proto.checkDidBumpedOnBck = function checkDidBumpedOnBck(otherCollider) {
+          var p1 = new Vec2(this.node.getPosition().x, this.node.getPosition().z); // always will be the current node
+
+          var p2 = new Vec2(otherCollider.getPosition().x, otherCollider.getPosition().z);
+          var left = Math.round(this.node.eulerAngles.y) + 100;
+
+          if (left > 180) {
+            left -= 360;
+          }
+
+          var right = Math.round(this.node.eulerAngles.y) - 100;
+
+          if (right < -180) {
+            right += 360;
+          }
+
+          var hitAngle = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI;
+          hitAngle = this.commonFun.findGameAngle(hitAngle);
+
+          if (this.commonFun.angleBetweenAngle(hitAngle, left, right)) {
+            return true;
+          }
+
+          return false;
+        } // Milo work
+        ;
+
+        _proto.collisionReceivedFromServer = function collisionReceivedFromServer(data, collider) {
+          var _this6 = this;
+
+          this._collidedOpponentPlayer = collider.node;
+          this.commonFun.setBumpStateAnimation(this);
+          this.getComponent(RigidBodyComponent).clearVelocity(); // let _vector = data.vector;
+          // var bumpValue = data.bumpValue;
+
+          var pos = data.bumpPos; //new Vec3((this.node.getPosition().x) + (bumpValue * _vector.x), (this.node.getPosition().z) + (bumpValue * _vector.z));
+
+          if (this.bumpTween != null) {
+            this.bumpTween.stop();
+            clearTimeout(this.bumptimeTween);
+          }
+
+          this.bumpTween = tween(this.node).to(GameConfig.commonData.bumpTime, {
+            position: new Vec3(pos.x, this.node.getPosition().y, pos.y)
+          }).start();
+          this.bumptimeTween = setTimeout(function () {
+            _this6.getComponent(RigidBodyComponent).clearVelocity();
+
+            _this6.commonFun.setWalkStateAnimation(_this6);
+
+            _this6.bumptimeTween = null;
+            _this6.bumptimeTween = setTimeout(function () {
+              _this6._collidedOpponentPlayer = null;
+
+              _this6.afterCollison();
+            }, GameConfig.commonData.bumpTime * 1000);
+          }, GameConfig.commonData.bumpTime * 1000);
+        };
+
+        _proto.powerUpBumpListener = function powerUpBumpListener(data) {
+          var _this7 = this;
+
+          console.log('OnPoweruUpBump', data);
+
+          if (data.resize) {
+            var scale = data.scale;
+            this.currentScale = scale;
+            tween(this.node.scale).to(1, new Vec3(scale, scale, scale)).call(function () {
+              _this7.updateSpeed();
+
+              _this7.afterCollisonToPowerUp();
+            }).start();
+
+            if (data.isGain) {
+              this.characterHud.tweenPosition(this.getCurrentScale());
+              this.commonFun.setPowerGainAnimation(this);
+            } else {
+              this.characterHud.tweenPosition(this.getCurrentScale());
+              this.commonFun.setPowerLoseAnimation(this);
+            }
+          } else {
+            this.reEvaluateSpeed(data.gainValue, data.duration, data.isGain);
+          }
+        };
+
+        _proto.afterCollison = function afterCollison() {
+          SocketConnection.instance.send({
+            command: SocketListener.ON_BUMP,
+            data: {
+              msg: 'After bump callback'
+            }
+          });
+        };
+
+        _proto.afterCollisonToPowerUp = function afterCollisonToPowerUp() {
+          SocketConnection.instance.send({
+            command: SocketListener.ON_POWERUP_BUMP,
+            data: {
+              msg: 'After powerup bump callback'
+            }
+          });
+        };
+
+        return Player;
+      }(PlayerMovement), _temp)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/localConfig.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc', './resourceUtil.ts', './csvManager.ts'], function (exports) {
+  'use strict';
+
+  var _defineProperty, _createClass, cclegacy, _decorator, resourceUtil, csvManager;
+
+  return {
+    setters: [function (module) {
+      _defineProperty = module.defineProperty;
+      _createClass = module.createClass;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+    }, function (module) {
+      resourceUtil = module.resourceUtil;
+    }, function (module) {
+      csvManager = module.csvManager;
+    }],
+    execute: function () {
+      var _dec, _class, _class2, _temp;
+
+      cclegacy._RF.push({}, "b04c1Prv6lKsZf481h5hCUF", "localConfig", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var localConfig = exports('localConfig', (_dec = ccclass("localConfig"), _dec(_class = (_temp = _class2 = /*#__PURE__*/function () {
+        function localConfig() {
+          _defineProperty(this, "csvManager", null);
+
+          _defineProperty(this, "arrCars", []);
+
+          _defineProperty(this, "_callback", null);
+
+          _defineProperty(this, "_skills", {});
+
+          _defineProperty(this, "currentLoad", 0);
+
+          _defineProperty(this, "cntLoad", 0);
+
+          _defineProperty(this, "servers", []);
+        }
+
+        var _proto = localConfig.prototype;
+
+        _proto.loadConfig = function loadConfig(cb) {
+          this._callback = cb;
+          this.csvManager = new csvManager();
+          this.loadCSV();
+        };
+
+        _proto.loadCSV = function loadCSV() {
+          var _this = this; //新增数据表 请往该数组中添加....
+
+
+          var arrTables = ['talk', 'car', 'signIn'];
+          this.cntLoad = arrTables.length + 1; //+1主要是后续还有技能配置的加载，特殊处理
+          //客户端加载
+
+          arrTables.forEach(function (tableName, index, array) {
+            resourceUtil.getData(tableName, function (err, content) {
+              _this.csvManager.addTable(tableName, content);
+
+              _this.tryToCallbackOnFinished();
+            });
+          }); //载入技能配置信息
+          // resourceUtil.getData("skills", function (err, content) {
+          //     _this._skills = JSON.parse(content);
+          //     _this.tryToCallbackOnFinished();
+          // });
+
+          resourceUtil.getJsonData("servers", function (err, content) {
+            _this.servers = content;
+
+            _this.tryToCallbackOnFinished();
+          });
+        };
+
+        _proto.queryOne = function queryOne(tableName, key, value) {
+          return this.csvManager.queryOne(tableName, key, value);
+        };
+
+        _proto.queryByID = function queryByID(tableName, ID) {
+          return this.csvManager.queryByID(tableName, ID);
+        };
+
+        _proto.getTable = function getTable(tableName) {
+          return this.csvManager.getTable(tableName);
+        };
+
+        _proto.getTableArr = function getTableArr(tableName) {
+          return this.csvManager.getTableArr(tableName);
+        };
+
+        _proto.getCars = function getCars() {
+          if (this.arrCars.length > 0) {
+            return this.arrCars;
+          }
+
+          var arr = localConfig.instance.getTableArr('car');
+          this.arrCars = arr.sort(function (elementA, elementB) {
+            return elementA.sort - elementB.sort;
+          });
+          return this.arrCars;
+        } // 选出指定表里面所有有 key=>value 键值对的数据
+        ;
+
+        _proto.queryAll = function queryAll(tableName, key, value) {
+          return this.csvManager.queryAll(tableName, key, value);
+        } // 选出指定表里所有 key 的值在 values 数组中的数据，返回 Object，key 为 ID
+        ;
+
+        _proto.queryIn = function queryIn(tableName, key, values) {
+          return this.csvManager.queryIn(tableName, key, values);
+        } // 选出符合条件的数据。condition key 为表格的key，value 为值的数组。返回的object，key 为数据在表格的ID，value为具体数据
+        ;
+
+        _proto.queryByCondition = function queryByCondition(tableName, condition) {
+          return this.csvManager.queryByCondition(tableName, condition);
+        };
+
+        _proto.tryToCallbackOnFinished = function tryToCallbackOnFinished() {
+          if (this._callback) {
+            this.currentLoad++;
+
+            if (this.currentLoad >= this.cntLoad) {
+              this._callback();
+            }
+          }
+        };
+
+        _proto.getCurrentServer = function getCurrentServer() {
+          return this.servers[0];
+        };
+
+        _proto.getVersion = function getVersion() {
+          var server = this.getCurrentServer();
+          var version = server ? server.version : 'unknown';
+          return version;
+        } // update (deltaTime: number) {
+        //     // Your update function goes here.
+        // }
+        ;
+
+        _createClass(localConfig, null, [{
+          key: "instance",
+          get: function get() {
+            if (this._instance) {
+              return this._instance;
+            }
+
+            this._instance = new localConfig();
+            return this._instance;
+          }
+        }]);
+
+        return localConfig;
+      }(), _defineProperty(_class2, "_instance", void 0), _temp)) || _class));
 
       cclegacy._RF.pop();
     }
@@ -1725,7 +8985,7 @@ System.register("chunks:///_virtual/MiloManager.ts", ['cc'], function (exports) 
       cclegacy = module.cclegacy;
     }],
     execute: function () {
-      cclegacy._RF.push({}, "81952g3tRNLaoAgi+Ql1OzL", "MiloManager", undefined);
+      cclegacy._RF.push({}, "b14a73ELXhMArrIH12FDw58", "MiloManager", undefined);
 
       var MiloManager = exports('MiloManager', function MiloManager() {
         var users = [{
@@ -1766,7 +9026,9 @@ System.register("chunks:///_virtual/MiloManager.ts", ['cc'], function (exports) 
             "userId": "mx-user-2"
           }]
         };
-        var userNum = window.location.href.split('?')[1].split("user")[1];
+        var urlArr = window.location.href.split('?');
+        var userNum = "1";
+        if (urlArr[1]) userNum = urlArr[1].split("user")[1];
         var userId = parseInt(userNum);
         var user = users[userId - 1];
         var initInfo = Object.assign({}, dataFromApp, {
@@ -1790,760 +9052,6 @@ System.register("chunks:///_virtual/MiloManager.ts", ['cc'], function (exports) 
           onError: onError
         };
       });
-
-      cclegacy._RF.pop();
-    }
-  };
-});
-
-System.register("chunks:///_virtual/PowerUpController.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc', './GameConfig.ts'], function (exports) {
-  'use strict';
-
-  var _inheritsLoose, _defineProperty, _assertThisInitialized, cclegacy, _decorator, randomRange, Vec3, instantiate, Component, GameConfig;
-
-  return {
-    setters: [function (module) {
-      _inheritsLoose = module.inheritsLoose;
-      _defineProperty = module.defineProperty;
-      _assertThisInitialized = module.assertThisInitialized;
-    }, function (module) {
-      cclegacy = module.cclegacy;
-      _decorator = module._decorator;
-      randomRange = module.randomRange;
-      Vec3 = module.Vec3;
-      instantiate = module.instantiate;
-      Component = module.Component;
-    }, function (module) {
-      GameConfig = module.GameConfig;
-    }],
-    execute: function () {
-      var _dec, _class, _temp;
-
-      cclegacy._RF.push({}, "8bf73q3+cdE0rnIIGpvubbX", "PowerUpController", undefined);
-
-      var ccclass = _decorator.ccclass,
-          property = _decorator.property;
-      var SAFEAREA = 5;
-      var PowerUpController = exports('PowerUpController', (_dec = ccclass('PowerUpController'), _dec(_class = (_temp = /*#__PURE__*/function (_Component) {
-        _inheritsLoose(PowerUpController, _Component);
-
-        function PowerUpController(gameController) {
-          var _this;
-
-          _this = _Component.call(this) || this;
-
-          _defineProperty(_assertThisInitialized(_this), "gameController", void 0);
-
-          _defineProperty(_assertThisInitialized(_this), "eatablesMap", {});
-
-          _defineProperty(_assertThisInitialized(_this), "powerUpType", void 0);
-
-          _defineProperty(_assertThisInitialized(_this), "powerupArray", []);
-
-          _defineProperty(_assertThisInitialized(_this), "gummySpawnInterval", void 0);
-
-          _defineProperty(_assertThisInitialized(_this), "totalGummyToPresent", void 0);
-
-          _this.gameController = gameController;
-          return _this;
-        }
-
-        var _proto = PowerUpController.prototype;
-
-        _proto.setEatables = function setEatables(powerupArray) {
-          var _this2 = this;
-
-          powerupArray.forEach(function (element) {
-            _this2.eatablesMap[element.data.name] = element;
-          });
-        };
-
-        _proto.spawnPowerup = function spawnPowerup(powerUpType) {
-          var totalPlayer = this.gameController.gameData.actualPlayerCount + this.gameController.gameData.totalBotPresent;
-          var initialTotalPowerup = this.getPercentage(GameConfig.powerup[powerUpType].earlySpawn * 100, totalPlayer);
-          this.totalGummyToPresent = this.getPercentage(GameConfig.powerup[powerUpType].totalSpawnInFeild * 100, totalPlayer);
-
-          for (var i = 0; i < initialTotalPowerup; i++) {
-            this.respawnGummys();
-          }
-
-          var currentScene = this;
-          this.gummySpawnInterval = setInterval(function () {
-            var currentGummy = currentScene.getGummyNumber();
-            if (currentGummy < currentScene.totalGummyToPresent) currentScene.respawnGummys();
-          }, GameConfig.powerup[powerUpType].spawnRate * 1000);
-        };
-
-        _proto.getGummyNumber = function getGummyNumber() {
-          var currentGummy = 0;
-
-          for (var i = 0; i < this.powerupArray.length; i++) {
-            if (this.powerupArray[i].active) currentGummy++;
-          }
-
-          return currentGummy;
-        };
-
-        _proto.getSpawnLocation = function getSpawnLocation() {
-          var platformXRange = this.gameController.platform.getScale().x / 2 - SAFEAREA;
-          var platformYRange = this.gameController.platform.getScale().z / 2 - SAFEAREA;
-          var platformXRandomRange = randomRange(-platformXRange, platformXRange);
-          var platformYRandomRange = randomRange(-platformYRange, platformYRange);
-          return new Vec3(platformXRandomRange, 3, platformYRandomRange);
-        };
-
-        _proto.spawnGummy = function spawnGummy(gummy) {
-          var loc = this.getSpawnLocation();
-          var newGummyNeeded = true;
-
-          for (var i = 0; i < this.powerupArray.length; i++) {
-            if (!this.powerupArray[i].active) {
-              this.powerupArray[i].setPosition(loc);
-              this.powerupArray[i].active = true;
-              newGummyNeeded = false;
-              break;
-            }
-          }
-
-          if (newGummyNeeded) {
-            var gummyBear = instantiate(gummy);
-            gummyBear.setPosition(loc);
-            this.powerupArray.push(gummyBear);
-            this.gameController.addToWorld(gummyBear);
-          }
-        };
-
-        _proto.getPowerUpArrayList = function getPowerUpArrayList() {
-          return this.powerupArray;
-        };
-
-        _proto.removeGummy = function removeGummy(collider) {
-          collider.node.active = false; // this.respawnGummys();
-        };
-
-        _proto.removeObjectFromArray = function removeObjectFromArray(array, value) {
-          var idx = array.indexOf(value);
-
-          if (idx !== -1) {
-            array.splice(idx, 1);
-          }
-
-          return array;
-        };
-
-        _proto.respawnGummys = function respawnGummys() {
-          this.spawnGummy(this.eatablesMap['GummyBear']);
-        };
-
-        _proto.getPercentage = function getPercentage(percentToGet, number) {
-          return Math.ceil(percentToGet / 100 * number);
-        };
-
-        return PowerUpController;
-      }(Component), _temp)) || _class));
-
-      cclegacy._RF.pop();
-    }
-  };
-});
-
-System.register("chunks:///_virtual/commonFun.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
-  'use strict';
-
-  var _inheritsLoose, cclegacy, _decorator, Component;
-
-  return {
-    setters: [function (module) {
-      _inheritsLoose = module.inheritsLoose;
-    }, function (module) {
-      cclegacy = module.cclegacy;
-      _decorator = module._decorator;
-      Component = module.Component;
-    }],
-    execute: function () {
-      var _dec, _class;
-
-      cclegacy._RF.push({}, "a12d4+l2AhNPJDGsDtZTX1+", "commonFun", undefined);
-
-      var ccclass = _decorator.ccclass,
-          property = _decorator.property;
-      /**
-       * Predefined variables
-       * Name = CommonFun
-       * DateTime = Wed Oct 20 2021 13:16:15 GMT+0530 (India Standard Time)
-       * Author = sushant
-       * FileBasename = commonFun.ts
-       * FileBasenameNoExtension = commonFun
-       * URL = db://assets/Script/config/commonFun.ts
-       * ManualUrl = https://docs.cocos.com/creator/3.3/manual/en/
-       *
-       */
-
-      var CommonFun = exports('CommonFun', (_dec = ccclass('CommonFun'), _dec(_class = /*#__PURE__*/function (_Component) {
-        _inheritsLoose(CommonFun, _Component);
-
-        function CommonFun() {
-          return _Component.apply(this, arguments) || this;
-        }
-
-        var _proto = CommonFun.prototype; // [1]
-        // dummy = '';
-        // [2]
-        // @property
-        // serializableDummy = 0;
-
-        _proto.start = function start() {// [3]
-        } // update (deltaTime: number) {
-        //     // [4]
-        // }
-        ;
-
-        return CommonFun;
-      }(Component)) || _class));
-      /**
-       * [1] Class member could be defined like this.
-       * [2] Use `property` decorator if your want the member to be serializable.
-       * [3] Your initialization goes here.
-       * [4] Your update function goes here.
-       *
-       * Learn more about scripting: https://docs.cocos.com/creator/3.3/manual/en/scripting/
-       * Learn more about CCClass: https://docs.cocos.com/creator/3.3/manual/en/scripting/ccclass.html
-       * Learn more about life-cycle callbacks: https://docs.cocos.com/creator/3.3/manual/en/scripting/life-cycle-callbacks.html
-       */
-
-      cclegacy._RF.pop();
-    }
-  };
-});
-
-System.register("chunks:///_virtual/Player.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc', './GameConfig.ts'], function (exports) {
-  'use strict';
-
-  var _inheritsLoose, _defineProperty, _assertThisInitialized, cclegacy, _decorator, Vec3, SkeletalAnimationComponent, RigidBody, instantiate, Label, tween, RigidBodyComponent, macro, Vec2, Component, GameConfig;
-
-  return {
-    setters: [function (module) {
-      _inheritsLoose = module.inheritsLoose;
-      _defineProperty = module.defineProperty;
-      _assertThisInitialized = module.assertThisInitialized;
-    }, function (module) {
-      cclegacy = module.cclegacy;
-      _decorator = module._decorator;
-      Vec3 = module.Vec3;
-      SkeletalAnimationComponent = module.SkeletalAnimationComponent;
-      RigidBody = module.RigidBody;
-      instantiate = module.instantiate;
-      Label = module.Label;
-      tween = module.tween;
-      RigidBodyComponent = module.RigidBodyComponent;
-      macro = module.macro;
-      Vec2 = module.Vec2;
-      Component = module.Component;
-    }, function (module) {
-      GameConfig = module.GameConfig;
-    }],
-    execute: function () {
-      var _dec, _class, _temp;
-
-      cclegacy._RF.push({}, "a3addpkf1lOCoVufXlKk5xR", "Player", undefined);
-
-      var ccclass = _decorator.ccclass,
-          property = _decorator.property;
-      var CELL_TIME = 0.016;
-      var STATE = {
-        IDLE: 0,
-        WALK: 1,
-        BUMP: 2
-      };
-      var Player = exports('Player', (_dec = ccclass('Player'), _dec(_class = (_temp = /*#__PURE__*/function (_Component) {
-        _inheritsLoose(Player, _Component);
-
-        function Player() {
-          var _this;
-
-          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-            args[_key] = arguments[_key];
-          }
-
-          _this = _Component.call.apply(_Component, [this].concat(args)) || this;
-
-          _defineProperty(_assertThisInitialized(_this), "playerCamera", null);
-
-          _defineProperty(_assertThisInitialized(_this), "playerName", null);
-
-          _defineProperty(_assertThisInitialized(_this), "_currentPlayerPosition", Vec3.ZERO);
-
-          _defineProperty(_assertThisInitialized(_this), "_vector", Vec3.ZERO);
-
-          _defineProperty(_assertThisInitialized(_this), "_vectorAngle", Vec3.ZERO);
-
-          _defineProperty(_assertThisInitialized(_this), "_now_time", 0);
-
-          _defineProperty(_assertThisInitialized(_this), "_skeletal", void 0);
-
-          _defineProperty(_assertThisInitialized(_this), "_currentState", STATE.IDLE);
-
-          _defineProperty(_assertThisInitialized(_this), "_charName", "LOL");
-
-          _defineProperty(_assertThisInitialized(_this), "lastColliderId", void 0);
-
-          _defineProperty(_assertThisInitialized(_this), "isReady", false);
-
-          _defineProperty(_assertThisInitialized(_this), "mass", 1);
-
-          _defineProperty(_assertThisInitialized(_this), "eatTimeout", null);
-
-          _defineProperty(_assertThisInitialized(_this), "gameController", null);
-
-          _defineProperty(_assertThisInitialized(_this), "initialSize", 0);
-
-          _defineProperty(_assertThisInitialized(_this), "playerMaxSize", 0);
-
-          _defineProperty(_assertThisInitialized(_this), "playerStartSpeed", 0);
-
-          _defineProperty(_assertThisInitialized(_this), "playerEndSpeed", 0);
-
-          _defineProperty(_assertThisInitialized(_this), "maxScale", 0);
-
-          _defineProperty(_assertThisInitialized(_this), "currentScale", 0);
-
-          _defineProperty(_assertThisInitialized(_this), "speed", 0);
-
-          return _this;
-        }
-
-        var _proto = Player.prototype;
-
-        _proto.start = function start() {
-          this._skeletal = this.node.getComponent(SkeletalAnimationComponent);
-          this.setIdleStateAnimation();
-          this.setProperties();
-          this.isReady = true;
-        };
-
-        _proto.setProperties = function setProperties() {
-          this.initialSize = GameConfig.player.initialSize;
-          this.playerMaxSize = GameConfig.player.playerMaxSize;
-          this.playerStartSpeed = GameConfig.player.playerStartSpeed;
-          this.playerEndSpeed = GameConfig.player.playerEndSpeed;
-          this.currentScale = this.initialSize;
-          this.node.scale.set(this.currentScale, this.currentScale, this.currentScale);
-          this.maxScale = this.playerMaxSize;
-          this.mass = this.node.getComponent(RigidBody).mass;
-          this.updateSpeed();
-        };
-
-        _proto.setCamera = function setCamera(camera, gameController) {
-          this.playerCamera = camera;
-          this.gameController = gameController;
-        };
-
-        _proto.addName = function addName(namePrefab, world) {
-          this.playerName = instantiate(namePrefab);
-          this.playerName.getComponent(Label).string = this._charName;
-          world.addChild(this.playerName);
-          this.updateNamePos();
-        };
-
-        _proto.updateSpeed = function updateSpeed() {
-          this.speed = this.getNewModifiedSpeed(this.currentScale);
-          console.log("bot speed    " + this.speed);
-          this.changeWalkAnimationSpeed(this.speed);
-          this.updateNameData();
-          console.log("Player speed    " + this.speed);
-        };
-
-        _proto.updateNameData = function updateNameData() {
-          this._charName = "MaxSize " + this.maxScale.toFixed(2) + " \n EndSpeed " + this.playerEndSpeed.toFixed(2) + " \n currentScale " + this.currentScale.toFixed(2) + " \n speed " + this.speed.toFixed(2);
-          this.playerName.getComponent(Label).string = this._charName;
-        };
-
-        _proto.resize = function resize(gain) {
-          var _this2 = this;
-
-          this.setEatbleAnimation();
-
-          if (this.currentScale <= this.maxScale) {
-            this.currentScale += gain;
-            this.node.getComponent(RigidBody).mass += 0.5;
-            tween(this.node.scale).to(1, new Vec3(this.currentScale, this.currentScale, this.currentScale)).call(function () {
-              _this2.updateSpeed();
-            }).start();
-            /* let cameraNode = this.playerCamera.getChildByName('playerCamera');
-            tween(cameraNode.position)
-                .to(1, new Vec3(0, 0, cameraNode.position.z + 2))
-                .start(); */
-
-            tween(this.playerName.position).to(1, {
-              y: this.playerName.position.y + 0.5
-            }).start();
-          }
-        };
-
-        _proto.moveStationCamera = function moveStationCamera() {
-          var cameraNode = this.playerCamera.getChildByName('playerCamera'); // cameraNode.eulerAngles = cameraNode.eulerAngles.add3f(0, 10, 0);
-
-          tween(cameraNode.position).to(1, new Vec3(0, 8, 8)).start();
-        };
-
-        _proto.resetStationCamera = function resetStationCamera() {
-          var cameraNode = this.playerCamera.getChildByName('playerCamera'); // cameraNode.eulerAngles = cameraNode.eulerAngles.add3f(0, 10, 0);
-
-          tween(cameraNode.position).to(1, new Vec3(0, 17.788, 25.71)).start();
-        };
-
-        _proto._onCollisionEnter = function _onCollisionEnter(event) {
-          var otherCollider = event.otherCollider;
-          var isBumpedOnBack = this.checkDidBumpedOnBck(otherCollider.node);
-          console.log("Player    " + isBumpedOnBack);
-          this.setBumpStateAnimation();
-          this.getComponent(RigidBodyComponent).clearVelocity();
-          var pos = new Vec3(this.node.getPosition().x - otherCollider.node.getPosition().x, this.node.getPosition().z - otherCollider.node.getPosition().z);
-
-          var _vector = pos.normalize();
-
-          var bumpValue = this.getBumpValue(otherCollider.node);
-          this.getComponent(RigidBodyComponent).applyImpulse(new Vec3(_vector.x * bumpValue, 0, _vector.y * bumpValue));
-        };
-
-        _proto.getBumpValue = function getBumpValue(opponentPlayer) {
-          var opponentSize = opponentPlayer.getComponent("Bot").getCurrentScale();
-          var playerSize = this.currentScale;
-          return opponentSize * 12;
-        };
-
-        _proto.getCurrentScale = function getCurrentScale() {
-          return this.currentScale;
-        };
-
-        _proto.touchCallBack = function touchCallBack(vector, angle) {
-          Vec3.rotateZ(vector, vector, Vec3.ZERO, this.playerCamera.eulerAngles.y * macro.RAD);
-          this._vector = vector.normalize();
-
-          if (angle) {
-            this.node.eulerAngles = new Vec3(0, angle + 90 + this.playerCamera.eulerAngles.y, 0);
-          }
-        };
-
-        _proto.touchAngleCallBack = function touchAngleCallBack(vector, angle) {
-          this._vectorAngle = vector.normalize();
-        };
-
-        _proto.updateNamePos = function updateNamePos() {
-          var namePos = this.node.getPosition();
-          this.playerName.setPosition(new Vec3(namePos.x, this.playerName.position.y, namePos.z));
-          this.playerName.eulerAngles = new Vec3(this.playerCamera.eulerAngles.x, 0, 0);
-        };
-
-        _proto.fix_update = function fix_update(dt) {
-          this.updateNamePos();
-
-          if (this._currentState == STATE.BUMP) {
-            var vec = new Vec3();
-            this.node.getComponent(RigidBody).getLinearVelocity(vec);
-            var mag = Math.sqrt(vec.x * vec.x + vec.z * vec.z);
-
-            if (mag <= 0.2) {
-              this.getComponent(RigidBodyComponent).clearVelocity();
-              this.setIdleStateAnimation();
-            } else return;
-          }
-
-          if (this._vector.lengthSqr() > 0) {
-            if (this._currentState == STATE.IDLE) {
-              this.setWalkStateAnimation();
-            }
-
-            this.node.setPosition(this.node.position.add3f(this._vector.x * this.speed * dt, 0, -this._vector.y * this.speed * dt));
-            this._currentPlayerPosition = new Vec3(this._vector.x, 0, this._vector.y);
-            this.playerCamera.setPosition(this.playerCamera.position.add3f(this._vector.x * this.speed * dt, 0, 0)); // this.updateNamePos();
-          } else {
-            if (this._currentState == STATE.WALK) {
-              this.setIdleStateAnimation();
-            } // this.node.setPosition(this.node.position.add3f(this._currentPlayerPosition.x * this.speed * dt, 0, -this._currentPlayerPosition.z * this.speed * dt));
-
-          }
-          /* if (this._vectorAngle.lengthSqr() > 0) {
-              this.playerCamera.eulerAngles = this.playerCamera.eulerAngles.add3f(0, -this._vectorAngle.x, 0);
-          } */
-
-        };
-
-        _proto.updateCamera = function updateCamera() {
-          var target_position = new Vec2(this.node.getPosition().x, this.node.getPosition().z);
-          target_position.lerp(target_position, 0.1);
-          this.playerCamera.setPosition(new Vec3(target_position.x, this.node.getPosition().y, target_position.y));
-        };
-
-        _proto.update = function update(deltaTime) {
-          if (!this.isReady) return;
-          this._now_time += deltaTime;
-
-          while (this._now_time >= CELL_TIME) {
-            this.fix_update(CELL_TIME);
-            this.updateCamera();
-            this._now_time -= CELL_TIME;
-          }
-        };
-
-        _proto.removeAllHud = function removeAllHud() {// this.getWorld().removeChild(this.playerName);
-        };
-
-        _proto.setIdleStateAnimation = function setIdleStateAnimation() {
-          this._currentState = STATE.IDLE;
-
-          this._skeletal.play('Armature|idle');
-        };
-
-        _proto.setBumpStateAnimation = function setBumpStateAnimation() {
-          this._currentState = STATE.BUMP;
-
-          this._skeletal.play('Armature|damage');
-
-          this._skeletal.getState('Armature|damage').repeatCount = 1;
-        };
-
-        _proto.setWalkStateAnimation = function setWalkStateAnimation() {
-          this._currentState = STATE.WALK;
-
-          this._skeletal.play('Armature|walk');
-        };
-
-        _proto.setEatbleAnimation = function setEatbleAnimation() {
-          var _this3 = this;
-
-          if (this.eatTimeout != null) clearTimeout(this.eatTimeout);
-
-          this._skeletal.play('Armature|attack');
-
-          this._skeletal.getState('Armature|attack').speed = 2;
-          this._skeletal.getState('Armature|attack').repeatCount = 1;
-
-          var duration = this._skeletal.getState('Armature|attack').duration;
-
-          this.eatTimeout = setTimeout(function () {
-            _this3._skeletal.play('Armature|walk');
-
-            _this3.eatTimeout = null;
-          }, 500 * duration);
-        };
-
-        _proto.changeWalkAnimationSpeed = function changeWalkAnimationSpeed(speed) {
-          this._skeletal.getState('Armature|walk').speed = speed / 2;
-        };
-
-        _proto.checkDidBumpedOnBck = function checkDidBumpedOnBck(otherCollider) {
-          var p1 = new Vec2(this.node.getPosition().x, this.node.getPosition().z); // always will be the current node
-
-          var p2 = new Vec2(otherCollider.getPosition().x, otherCollider.getPosition().z);
-          var left = Math.round(this.node.eulerAngles.y) + 100;
-
-          if (left > 180) {
-            left -= 360;
-          }
-
-          var right = Math.round(this.node.eulerAngles.y) - 100;
-
-          if (right < -180) {
-            right += 360;
-          }
-
-          var hitAngle = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI;
-          hitAngle = this.findGameAngle(hitAngle);
-
-          if (this.angleBetweenAngle(hitAngle, left, right)) {
-            return true;
-          }
-
-          return false;
-        };
-
-        _proto.angleTo360 = function angleTo360(angle) {
-          angle = angle % 360 + (angle - Math.trunc(angle));
-          if (angle > 0.0) return angle;else return angle + 360.0;
-        };
-
-        _proto.angleBetweenAngle = function angleBetweenAngle(hitAngle, left, right) {
-          hitAngle = this.angleTo360(hitAngle);
-          left = this.angleTo360(left);
-          right = this.angleTo360(right);
-          if (left < right) return left <= hitAngle && hitAngle <= right;
-          return left <= hitAngle || hitAngle <= right;
-        };
-
-        _proto.findGameAngle = function findGameAngle(hitAngle) {
-          var _final = 0;
-
-          if (hitAngle < 0 && hitAngle >= -90) {
-            // final = Math.abs(hitAngle) - 90 + 180;
-            _final = -(hitAngle - 90);
-          } else if (hitAngle < -90 && hitAngle >= -180) {
-            _final = -hitAngle - 90 - 180;
-          }
-
-          if (hitAngle > 0 && hitAngle <= 90) {
-            _final = -hitAngle + 90;
-          } else if (hitAngle > 90 && hitAngle <= 180) {
-            _final = -(hitAngle - 90);
-          }
-
-          return _final;
-        };
-
-        _proto.findAngle = function findAngle(p0, p1, p2) {
-          var b = Math.pow(p1.x - p0.x, 2) + Math.pow(p1.y - p0.y, 2),
-              a = Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2),
-              c = Math.pow(p2.x - p0.x, 2) + Math.pow(p2.y - p0.y, 2);
-          var angle = Math.acos((a + b - c) / Math.sqrt(4 * a * b));
-          angle = angle * (180 / Math.PI);
-          if (angle > 90) return true;
-          return false;
-        };
-
-        _proto.getNewModifiedSpeed = function getNewModifiedSpeed(playerScale) {
-          return (playerScale - this.initialSize) / (this.playerMaxSize - this.initialSize) * (this.playerEndSpeed - this.playerStartSpeed) + this.playerStartSpeed;
-        };
-
-        return Player;
-      }(Component), _temp)) || _class));
-
-      cclegacy._RF.pop();
-    }
-  };
-});
-
-System.register("chunks:///_virtual/SocketConnection.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc', './colyseus.js', './colyseus.mjs_cjs=&original=.js'], function (exports) {
-  'use strict';
-
-  var _applyDecoratedDescriptor, _inheritsLoose, _defineProperty, _assertThisInitialized, _initializerDefineProperty, _asyncToGenerator, cclegacy, _decorator, Component, _cjsExports;
-
-  return {
-    setters: [function (module) {
-      _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
-      _inheritsLoose = module.inheritsLoose;
-      _defineProperty = module.defineProperty;
-      _assertThisInitialized = module.assertThisInitialized;
-      _initializerDefineProperty = module.initializerDefineProperty;
-      _asyncToGenerator = module.asyncToGenerator;
-    }, function (module) {
-      cclegacy = module.cclegacy;
-      _decorator = module._decorator;
-      Component = module.Component;
-    }, function (module) {
-      _cjsExports = module.default;
-    }, null],
-    execute: function () {
-      var _dec, _class, _class2, _descriptor, _descriptor2, _descriptor3, _temp;
-
-      cclegacy._RF.push({}, "aa55cgJ/ItInrViJDo5FmqX", "SocketConnection", undefined);
-
-      var ccclass = _decorator.ccclass,
-          property = _decorator.property;
-      var SocketConnection = exports('SocketConnection', (_dec = ccclass('SocketConnection'), _dec(_class = (_class2 = (_temp = /*#__PURE__*/function (_Component) {
-        _inheritsLoose(SocketConnection, _Component);
-
-        function SocketConnection() {
-          var _this;
-
-          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-            args[_key] = arguments[_key];
-          }
-
-          _this = _Component.call.apply(_Component, [this].concat(args)) || this;
-
-          _defineProperty(_assertThisInitialized(_this), "playerName", void 0);
-
-          _defineProperty(_assertThisInitialized(_this), "isConnected", void 0);
-
-          _initializerDefineProperty(_assertThisInitialized(_this), "hostname", _descriptor, _assertThisInitialized(_this));
-
-          _initializerDefineProperty(_assertThisInitialized(_this), "port", _descriptor2, _assertThisInitialized(_this));
-
-          _initializerDefineProperty(_assertThisInitialized(_this), "useSSL", _descriptor3, _assertThisInitialized(_this));
-
-          return _this;
-        }
-
-        var _proto = SocketConnection.prototype;
-
-        _proto.start = function start() {
-          // Instantiate Colyseus Client
-          // connects into (ws|wss)://hostname[:port]
-
-          /* let domain = window.location.href.split('/')[2];
-          let url = "ws://" + domain.split(':')[0] + ':2567'; */
-          var url = (this.useSSL ? "wss" : "ws") + "://" + this.hostname + ([443, 80].includes(this.port) || this.useSSL ? "" : ":" + this.port);
-          this.client = new _cjsExports.Client((this.useSSL ? "wss" : "ws") + "://" + this.hostname + ([443, 80].includes(this.port) || this.useSSL ? "" : ":" + this.port));
-          console.log("Connecting server to " + url);
-          this.connect();
-        };
-
-        _proto.connect = /*#__PURE__*/function () {
-          var _connect = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-            return regeneratorRuntime.wrap(function _callee$(_context) {
-              while (1) {
-                switch (_context.prev = _context.next) {
-                  case 0:
-                    _context.prev = 0;
-                    _context.next = 3;
-                    return this.client.joinOrCreate("SumoRoom");
-
-                  case 3:
-                    this.room = _context.sent;
-                    console.log("Room joined successfully!");
-                    console.log("user's sessionId:", this.room.sessionId);
-                    this.room.onStateChange(function (state) {
-                      console.log("onStateChange: ", state);
-                    });
-                    this.room.onLeave(function (code) {
-                      console.log("onLeave:", code);
-                    });
-                    _context.next = 13;
-                    break;
-
-                  case 10:
-                    _context.prev = 10;
-                    _context.t0 = _context["catch"](0);
-                    console.error(_context.t0);
-
-                  case 13:
-                  case "end":
-                    return _context.stop();
-                }
-              }
-            }, _callee, this, [[0, 10]]);
-          }));
-
-          function connect() {
-            return _connect.apply(this, arguments);
-          }
-
-          return connect;
-        }();
-
-        return SocketConnection;
-      }(Component), _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "hostname", [property], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return "localhost";
-        }
-      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "port", [property], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return 2567;
-        }
-      }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "useSSL", [property], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return false;
-        }
-      })), _class2)) || _class));
 
       cclegacy._RF.pop();
     }
@@ -8757,25 +15265,1289 @@ System.register("chunks:///_virtual/colyseus.js", ['./cjs-loader.mjs'], function
   };
 });
 
-System.register("chunks:///_virtual/GameConfig.ts", ['cc'], function (exports) {
+System.register("chunks:///_virtual/shopMenu.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc', './mxManager.ts', './constant.ts', './audioManager.ts', './GameConfig.ts'], function (exports) {
   'use strict';
 
-  var cclegacy;
+  var _applyDecoratedDescriptor, _initializerDefineProperty, _inheritsLoose, _assertThisInitialized, _defineProperty, cclegacy, _decorator, Prefab, SpriteFrame, Material, Mesh, Node, Vec3, ScrollViewComponent, game, MeshRenderer, Animation, SkeletalAnimationComponent, Label, Sprite, instantiate, UITransform, RichText, tween, Component, MxManager, constant, audioManager, GameConfig;
+
+  return {
+    setters: [function (module) {
+      _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
+      _initializerDefineProperty = module.initializerDefineProperty;
+      _inheritsLoose = module.inheritsLoose;
+      _assertThisInitialized = module.assertThisInitialized;
+      _defineProperty = module.defineProperty;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      Prefab = module.Prefab;
+      SpriteFrame = module.SpriteFrame;
+      Material = module.Material;
+      Mesh = module.Mesh;
+      Node = module.Node;
+      Vec3 = module.Vec3;
+      ScrollViewComponent = module.ScrollViewComponent;
+      game = module.game;
+      MeshRenderer = module.MeshRenderer;
+      Animation = module.Animation;
+      SkeletalAnimationComponent = module.SkeletalAnimationComponent;
+      Label = module.Label;
+      Sprite = module.Sprite;
+      instantiate = module.instantiate;
+      UITransform = module.UITransform;
+      RichText = module.RichText;
+      tween = module.tween;
+      Component = module.Component;
+    }, function (module) {
+      MxManager = module.MxManager;
+    }, function (module) {
+      constant = module.constant;
+    }, function (module) {
+      audioManager = module.audioManager;
+    }, function (module) {
+      GameConfig = module.GameConfig;
+    }],
+    execute: function () {
+      var _dec, _dec2, _dec3, _dec4, _dec5, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _temp, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _class4, _class5, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _temp2;
+
+      cclegacy._RF.push({}, "bc1f9xPktZJfb90qNMLVw00", "shopMenu", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      /**
+       * Predefined variables
+       * Name = ShopMenu
+       * DateTime = Fri Jan 21 2022 12:26:31 GMT+0530 (India Standard Time)
+       * Author = sushant
+       * FileBasename = shopMenu.ts
+       * FileBasenameNoExtension = shopMenu
+       * URL = db://assets/Script/menuScene/shop/shopMenu.ts
+       * ManualUrl = https://docs.cocos.com/creator/3.3/manual/en/
+       *
+       */
+
+      var Item = exports('Item', (_dec = ccclass('Item'), _dec2 = property(Prefab), _dec3 = property(SpriteFrame), _dec4 = property(Material), _dec5 = property(Mesh), _dec(_class = (_class2 = (_temp = function Item() {
+        _initializerDefineProperty(this, "model", _descriptor, this);
+
+        _initializerDefineProperty(this, "frame", _descriptor2, this);
+
+        _initializerDefineProperty(this, "material", _descriptor3, this);
+
+        _initializerDefineProperty(this, "mesh", _descriptor4, this);
+      }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "model", [_dec2], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "frame", [_dec3], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "material", [_dec4], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "mesh", [_dec5], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      })), _class2)) || _class));
+      var ShopMenu = exports('ShopMenu', (_dec6 = ccclass('ShopMenu'), _dec7 = property({
+        type: Prefab
+      }), _dec8 = property({
+        type: Node
+      }), _dec9 = property({
+        type: Node
+      }), _dec10 = property({
+        type: Prefab
+      }), _dec11 = property({
+        type: Prefab
+      }), _dec12 = property({
+        type: Item
+      }), _dec13 = property({
+        type: Item
+      }), _dec14 = property({
+        type: Item
+      }), _dec15 = property({
+        type: Item
+      }), _dec16 = property({
+        type: SpriteFrame
+      }), _dec17 = property({
+        type: SpriteFrame
+      }), _dec18 = property({
+        type: SpriteFrame
+      }), _dec19 = property({
+        type: SpriteFrame
+      }), _dec20 = property({
+        type: SpriteFrame
+      }), _dec21 = property({
+        type: SpriteFrame
+      }), _dec6(_class4 = (_class5 = (_temp2 = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(ShopMenu, _Component);
+
+        function ShopMenu() {
+          var _this;
+
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+
+          _this = _Component.call.apply(_Component, [this].concat(args)) || this;
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "skinNode", _descriptor5, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "buyNode", _descriptor6, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "coinNode", _descriptor7, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "characterSkinNode", _descriptor8, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "foodSkinNode", _descriptor9, _assertThisInitialized(_this));
+
+          _defineProperty(_assertThisInitialized(_this), "menuController", null);
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "bagAcceesories", _descriptor10, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "headPhoneAcceesories", _descriptor11, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "gogglesAcceesories", _descriptor12, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "targetAcceesories", _descriptor13, _assertThisInitialized(_this));
+
+          _defineProperty(_assertThisInitialized(_this), "accessoriesType", {
+            "none": 0,
+            "bag": 1,
+            "headPhone": 2,
+            "goggles": 3,
+            "target": 4
+          });
+
+          _defineProperty(_assertThisInitialized(_this), "accessoriesArray", []);
+
+          _defineProperty(_assertThisInitialized(_this), "characterSkinArray", []);
+
+          _defineProperty(_assertThisInitialized(_this), "characterFoodArray", []);
+
+          _defineProperty(_assertThisInitialized(_this), "scrollView", null);
+
+          _defineProperty(_assertThisInitialized(_this), "scrollViewContent", null);
+
+          _defineProperty(_assertThisInitialized(_this), "currentAccessoriesClicked", null);
+
+          _defineProperty(_assertThisInitialized(_this), "selectedScaleValue", new Vec3(1.1, 1.1, 1.1));
+
+          _defineProperty(_assertThisInitialized(_this), "unSelectedScaleValue", new Vec3(0.8, 0.8, 0.8));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "characterSelectedframe", _descriptor14, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "characterUnSelectedframe", _descriptor15, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "foodSelectedframe", _descriptor16, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "foodUnSelectedframe", _descriptor17, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "accesSelectedframe", _descriptor18, _assertThisInitialized(_this));
+
+          _initializerDefineProperty(_assertThisInitialized(_this), "accesUnSelectedframe", _descriptor19, _assertThisInitialized(_this));
+
+          _defineProperty(_assertThisInitialized(_this), "buttonBlocked", false);
+
+          return _this;
+        }
+
+        var _proto = ShopMenu.prototype;
+
+        _proto.start = function start() {
+          this.scrollView = this.node.getChildByName("shopScroll").getComponent(ScrollViewComponent);
+          this.scrollViewContent = this.scrollView.content;
+        };
+
+        _proto.initialise = function initialise(canvas) {
+          var _this2 = this;
+
+          this.menuController = canvas;
+
+          if (constant.isMiloEnabled()) {
+            game.on('coinDeductAccessories', function (status) {
+              _this2.coinDeductAccessories(status);
+            }, this);
+          } else {
+            game.on('rewardinGameAccessories', function (status) {
+              _this2.rewardinGameAccessories(status);
+            }, this);
+            game.on('rewardAdsExist', function (status) {
+              _this2.rewardAdsExist(status);
+            }, this);
+          }
+
+          this.coinNode.active = false;
+
+          if (constant.isMiloEnabled()) {
+            this.coinNode.active = true;
+          }
+
+          this.updateCoinData();
+        };
+
+        _proto.onSopBackButtonClick = function onSopBackButtonClick() {
+          var _this3 = this;
+
+          this.resetData();
+          clearTimeout(this.menuController.animationTimeOut);
+          this.menuController.sumo.setRotationFromEuler(this.menuController.sumo.eulerAngles.x, 0, this.menuController.sumo.eulerAngles.z);
+          this.menuController.threedNode.getChildByName("bg").getComponent(MeshRenderer).setMaterial(this.menuController.menuMaterial, 0);
+          var anim = this.menuController.node.getComponent(Animation);
+          anim.play('shopClose');
+          var skeletalAnimation = this.menuController.sumo.getChildByName("Penguine_Anim").getComponent(SkeletalAnimationComponent);
+          skeletalAnimation.play('walk');
+          setTimeout(function () {
+            _this3.menuController.startAnimation();
+          }, 500);
+        };
+
+        _proto.updateCoinData = function updateCoinData() {
+          var coinValue = constant.getCoinBalance();
+          this.coinNode.getChildByName("coinLabel").getComponent(Label).string = coinValue;
+        };
+
+        _proto.addAccessoriesScrollContent = function addAccessoriesScrollContent() {
+          if (this.buttonBlocked) return;
+          this.resetData();
+          this.node.getChildByName("buttons").getChildByName("characterButton").getComponent(Sprite).spriteFrame = this.characterUnSelectedframe;
+          this.node.getChildByName("buttons").getChildByName("accessoriesButton").getComponent(Sprite).spriteFrame = this.accesSelectedframe;
+          this.node.getChildByName("buttons").getChildByName("FoodButton").getComponent(Sprite).spriteFrame = this.foodUnSelectedframe;
+          var accessories = constant.getAccessories();
+
+          for (var i = 0; i <= accessories.length; i++) {
+            var _skin = instantiate(this.skinNode);
+
+            this.scrollViewContent.addChild(_skin);
+
+            var skincomponent = _skin.getComponent("Skin");
+
+            skincomponent.initialiseData(accessories[i], i, this);
+            if (i < accessories.length) this.accessoriesArray.push(_skin);
+          }
+
+          var skin1 = instantiate(this.skinNode);
+          var heiight = skin1.getComponent(UITransform).height * Math.ceil(accessories.length / 3) + 10 * Math.ceil(accessories.length / 3);
+          this.scrollViewContent.getComponent(UITransform).height = heiight;
+        };
+
+        _proto.addCharacterScrollContent = function addCharacterScrollContent() {
+          if (this.buttonBlocked) return;
+          this.resetData();
+          this.node.getChildByName("buttons").getChildByName("characterButton").getComponent(Sprite).spriteFrame = this.characterSelectedframe;
+          this.node.getChildByName("buttons").getChildByName("accessoriesButton").getComponent(Sprite).spriteFrame = this.accesUnSelectedframe;
+          this.node.getChildByName("buttons").getChildByName("FoodButton").getComponent(Sprite).spriteFrame = this.foodUnSelectedframe;
+          var accessoriesSkin = constant.getSkin();
+
+          for (var i = 0; i <= accessoriesSkin.length; i++) {
+            var _skin2 = instantiate(this.characterSkinNode);
+
+            this.scrollViewContent.addChild(_skin2);
+
+            var skincomponent = _skin2.getComponent("CharacterSkins");
+
+            skincomponent.initialiseData(accessoriesSkin[i], i, this);
+            if (i < accessoriesSkin.length) this.characterSkinArray.push(_skin2);
+          }
+
+          var skin1 = instantiate(this.characterSkinNode);
+          var heiight = skin1.getComponent(UITransform).height * Math.ceil(accessoriesSkin.length / 3) + 10 * Math.ceil(accessoriesSkin.length / 3);
+          this.scrollViewContent.getComponent(UITransform).height = heiight;
+        };
+
+        _proto.addFoodScrollContent = function addFoodScrollContent() {
+          if (this.buttonBlocked) return;
+          this.resetData();
+          this.menuController.sumo.active = false;
+          this.node.getChildByName("buttons").getChildByName("characterButton").getComponent(Sprite).spriteFrame = this.characterUnSelectedframe;
+          this.node.getChildByName("buttons").getChildByName("accessoriesButton").getComponent(Sprite).spriteFrame = this.accesUnSelectedframe;
+          this.node.getChildByName("buttons").getChildByName("FoodButton").getComponent(Sprite).spriteFrame = this.foodSelectedframe;
+          var accessoriesfoodSkin = constant.getFood();
+
+          for (var i = 0; i <= accessoriesfoodSkin.length; i++) {
+            var _skin3 = instantiate(this.foodSkinNode);
+
+            this.scrollViewContent.addChild(_skin3);
+
+            var skincomponent = _skin3.getComponent("FoodSkins");
+
+            skincomponent.initialiseData(accessoriesfoodSkin[i], i, this);
+            if (i < accessoriesfoodSkin.length) this.characterFoodArray.push(_skin3);
+          }
+
+          var skin1 = instantiate(this.foodSkinNode);
+          var heiight = skin1.getComponent(UITransform).height * Math.ceil(accessoriesfoodSkin.length / 3) + 10 * Math.ceil(accessoriesfoodSkin.length / 3);
+          this.scrollViewContent.getComponent(UITransform).height = heiight;
+        };
+
+        _proto.resetData = function resetData() {
+          audioManager.instance.playSound(constant.AUDIO_SOUND.buttonClick);
+          this.menuController.sumo.active = true;
+          this.menuController.playerNode.getChildByName("foodNode").removeAllChildren();
+          this.scrollViewContent.removeAllChildren();
+        };
+
+        _proto.updatePlayerAccessoriesData = function updatePlayerAccessoriesData(skinType, count) {
+          switch (skinType) {
+            case 0:
+              this.menuController.playerData.character = count;
+              break;
+
+            case 1:
+              this.menuController.playerData.bag = count;
+              break;
+
+            case 2:
+              this.menuController.playerData.headPhone = count;
+              break;
+
+            case 3:
+              this.menuController.playerData.goggles = count;
+              break;
+
+            case 4:
+              this.menuController.playerData.target = count;
+              break;
+
+            case 5:
+              this.menuController.playerData.food = count;
+              break;
+          }
+
+          var strngData = JSON.stringify(this.menuController.playerData);
+          window.localStorage.setItem("playerData", strngData);
+        };
+
+        _proto.onShowBuyPopup = function onShowBuyPopup(buynode) {
+          audioManager.instance.playSound(constant.AUDIO_SOUND.buttonClick);
+          this.currentAccessoriesClicked = buynode;
+          var text = constant.TEXT.BUYCOIN;
+
+          if (constant.isMiloEnabled()) {
+            var buyAmount = GameConfig.purchases.accessories;
+            text = constant.TEXT.BUYCOIN;
+            text = text.replace("@", buynode.skinName);
+            text = text.replace("#", buyAmount.toString());
+            this.buyNode.getChildByName("popup").getChildByName("textPopup").getComponent(RichText).string = "<color=#000000>" + "<size=60>" + text + "</size>";
+            if (constant.getCoinBalance() < buyAmount) return;
+          } else {
+            text = constant.TEXT.WATCHAD;
+            text = text.replace("@", buynode.skinName);
+            this.buyNode.getChildByName("popup").getChildByName("textPopup").getComponent(RichText).string = "<color=#000000>" + "<size=60>" + text + "</size>";
+            MxManager.instance.onCheckRewardedVideoAds('rewardAdsExist', this);
+            return;
+          }
+
+          this.buyNode.active = true;
+        };
+
+        _proto.rewardAdsExist = function rewardAdsExist(args) {
+          var status = args && args.status;
+
+          if (status == 0) {
+            this.buyNode.active = true;
+          }
+        };
+
+        _proto.rewardinGameAccessories = function rewardinGameAccessories(args) {
+          var status = args && args.status;
+
+          if (status === 0) {
+            this.activateAccessories();
+          }
+
+          this.onBuyClosed();
+        };
+
+        _proto.coinDeductAccessories = function coinDeductAccessories(status) {
+          if (status == undefined || status == null) {
+            this.onBuyClosed();
+            return;
+          }
+
+          status = JSON.parse(status);
+
+          if (status.success) {
+            //deduct coins
+            constant.setCoinBalance(status.balance);
+            this.updateCoinData();
+            this.activateAccessories();
+          }
+
+          this.onBuyClosed();
+        };
+
+        _proto.onBuyclicked = function onBuyclicked() {
+          audioManager.instance.playSound(constant.AUDIO_SOUND.buttonClick);
+
+          if (this.currentAccessoriesClicked != null) {
+            if (constant.isMiloEnabled()) {
+              var data = {
+                type: 'accessories'
+              };
+              MxManager.instance.deductCoins('coinDeductAccessories', data, this);
+            } else {
+              MxManager.instance.onShowRewardedVideoAds('rewardinGameAccessories', this);
+            }
+          }
+        };
+
+        _proto.activateAccessories = function activateAccessories() {
+          this.currentAccessoriesClicked.isActive = true;
+          constant.updateAccessories(this.currentAccessoriesClicked.type, this.currentAccessoriesClicked.currentIndex);
+          tween(this.currentAccessoriesClicked.node.getChildByName("lockIcon")).to(0.1, {
+            position: new Vec3(100, -100, 0)
+          }).to(0.5, {
+            scale: new Vec3(2, 2, 2)
+          }).to(0.1, {
+            scale: new Vec3(0, 0, 0)
+          }).start();
+          this.onBuyClosed();
+        };
+
+        _proto.onBuyClosed = function onBuyClosed() {
+          audioManager.instance.playSound(constant.AUDIO_SOUND.buttonClick);
+          this.currentAccessoriesClicked = null;
+          this.buyNode.active = false;
+        };
+
+        _proto.onLayerClicked = function onLayerClicked() {};
+
+        return ShopMenu;
+      }(Component), _temp2), (_descriptor5 = _applyDecoratedDescriptor(_class5.prototype, "skinNode", [_dec7], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor6 = _applyDecoratedDescriptor(_class5.prototype, "buyNode", [_dec8], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor7 = _applyDecoratedDescriptor(_class5.prototype, "coinNode", [_dec9], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor8 = _applyDecoratedDescriptor(_class5.prototype, "characterSkinNode", [_dec10], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor9 = _applyDecoratedDescriptor(_class5.prototype, "foodSkinNode", [_dec11], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor10 = _applyDecoratedDescriptor(_class5.prototype, "bagAcceesories", [_dec12], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return [];
+        }
+      }), _descriptor11 = _applyDecoratedDescriptor(_class5.prototype, "headPhoneAcceesories", [_dec13], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return [];
+        }
+      }), _descriptor12 = _applyDecoratedDescriptor(_class5.prototype, "gogglesAcceesories", [_dec14], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return [];
+        }
+      }), _descriptor13 = _applyDecoratedDescriptor(_class5.prototype, "targetAcceesories", [_dec15], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return [];
+        }
+      }), _descriptor14 = _applyDecoratedDescriptor(_class5.prototype, "characterSelectedframe", [_dec16], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor15 = _applyDecoratedDescriptor(_class5.prototype, "characterUnSelectedframe", [_dec17], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor16 = _applyDecoratedDescriptor(_class5.prototype, "foodSelectedframe", [_dec18], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor17 = _applyDecoratedDescriptor(_class5.prototype, "foodUnSelectedframe", [_dec19], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor18 = _applyDecoratedDescriptor(_class5.prototype, "accesSelectedframe", [_dec20], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor19 = _applyDecoratedDescriptor(_class5.prototype, "accesUnSelectedframe", [_dec21], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      })), _class5)) || _class4));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/lodash.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
+  'use strict';
+
+  var _defineProperty, cclegacy, _decorator;
+
+  return {
+    setters: [function (module) {
+      _defineProperty = module.defineProperty;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+    }],
+    execute: function () {
+      var _dec, _class, _class2, _temp;
+
+      cclegacy._RF.push({}, "bf88fX3aSFOYLiDYhjB7I97", "lodash", undefined);
+
+      var ccclass = _decorator.ccclass;
+      var lodash = exports('lodash', (_dec = ccclass("lodash"), _dec(_class = (_temp = _class2 = /*#__PURE__*/function () {
+        function lodash() {}
+        /* class member could be defined like this */
+        // dummy = '';
+
+
+        lodash.find = function find(collection, predicate) {
+          var result;
+
+          if (!Array.isArray(collection)) {
+            collection = this.toArray(collection);
+          }
+
+          result = collection.filter(predicate);
+
+          if (result.length) {
+            return result[0];
+          }
+
+          return undefined;
+        };
+
+        lodash.forEach = function forEach(collection, iteratee) {
+          if (!Array.isArray(collection)) {
+            var _array = this.toArrayKey(collection);
+
+            _array.forEach(function (value, index, arr) {
+              var key1 = value['key'];
+              var value1 = value['value'];
+              iteratee(value1, key1, collection);
+            });
+          } else {
+            collection.forEach(iteratee);
+          }
+        };
+
+        lodash.cloneDeep = function cloneDeep(sObj) {
+          if (sObj === null || typeof sObj !== "object") {
+            return sObj;
+          }
+
+          var s = {};
+
+          if (sObj.constructor === Array) {
+            s = [];
+          }
+
+          for (var i in sObj) {
+            if (sObj.hasOwnProperty(i)) {
+              s[i] = this.cloneDeep(sObj[i]);
+            }
+          }
+
+          return s;
+        };
+
+        lodash.map = function map(collection, iteratee) {
+          if (!Array.isArray(collection)) {
+            collection = this.toArray(collection);
+          }
+
+          var arr = [];
+          collection.forEach(function (value, index, array) {
+            arr.push(iteratee(value, index, array));
+          });
+          return arr;
+        };
+
+        lodash.random = function random(min, max) {
+          var r = Math.random();
+          var rr = r * (max - min + 1) + min;
+          return Math.floor(rr);
+        };
+
+        lodash.toArrayKey = function toArrayKey(srcObj) {
+          var resultArr = []; // to array
+
+          for (var _key in srcObj) {
+            if (!srcObj.hasOwnProperty(_key)) {
+              continue;
+            }
+
+            resultArr.push({
+              key: _key,
+              value: srcObj[_key]
+            });
+          }
+
+          return resultArr;
+        };
+
+        lodash.toArray = function toArray(srcObj) {
+          var resultArr = []; // to array
+
+          for (var _key2 in srcObj) {
+            if (!srcObj.hasOwnProperty(_key2)) {
+              continue;
+            }
+
+            resultArr.push(srcObj[_key2]);
+          }
+
+          return resultArr;
+        };
+
+        lodash.filter = function filter(collection, iteratees) {
+          if (!Array.isArray(collection)) {
+            collection = this.toArray(collection);
+          }
+
+          return collection.filter(iteratees);
+        };
+
+        lodash.isEqual = function isEqual(x, y) {
+          var in1 = x instanceof Object;
+          var in2 = y instanceof Object;
+
+          if (!in1 || !in2) {
+            return x === y;
+          }
+
+          if (Object.keys(x).length !== Object.keys(y).length) {
+            return false;
+          }
+
+          for (var p in x) {
+            var a = x[p] instanceof Object;
+            var b = y[p] instanceof Object;
+
+            if (a && b) {
+              return this.isEqual(x[p], y[p]);
+            } else if (x[p] !== y[p]) {
+              return false;
+            }
+          }
+
+          return true;
+        };
+
+        lodash.pullAllWith = function pullAllWith(array, value, comparator) {
+          value.forEach(function (item) {
+            var res = array.filter(function (n) {
+              return comparator(n, item);
+            });
+            res.forEach(function (item) {
+              var index = array.indexOf(item);
+
+              if (array.indexOf(item) !== -1) {
+                array.splice(index, 1);
+              }
+            });
+          });
+          return array;
+        };
+
+        lodash.now = function now() {
+          return Date.now();
+        };
+
+        lodash.pullAll = function pullAll(array, value) {
+          value.forEach(function (item) {
+            var index = array.indexOf(item);
+
+            if (array.indexOf(item) !== -1) {
+              array.splice(index, 1);
+            }
+          });
+          return array;
+        };
+
+        lodash.forEachRight = function forEachRight(collection, iteratee) {
+          if (!Array.isArray(collection)) {
+            collection = this.toArray(collection);
+          }
+
+          for (var i = collection.length - 1; i >= 0; i--) {
+            var ret = iteratee(collection[i]);
+            if (!ret) break;
+          }
+        };
+
+        lodash.startsWith = function startsWith(str, target, position) {
+          str = str.substr(position);
+          return str.startsWith(target);
+        };
+
+        lodash.endsWith = function endsWith(str, target, position) {
+          str = str.substr(position);
+          return str.endsWith(target);
+        };
+
+        lodash.remove = function remove(array, predicate) {
+          var result = [];
+          var indexes = [];
+          array.forEach(function (item, index) {
+            if (predicate(item)) {
+              result.push(item);
+              indexes.push(index);
+            }
+          });
+          this.basePullAt(array, indexes);
+          return result;
+        };
+
+        lodash.basePullAt = function basePullAt(array, indexes) {
+          var length = array ? indexes.length : 0;
+          var lastIndex = length - 1;
+          var previous;
+
+          while (length--) {
+            var index = indexes[length];
+
+            if (length === lastIndex || index !== previous) {
+              previous = index;
+              Array.prototype.splice.call(array, index, 1);
+            }
+          }
+
+          return array;
+        };
+
+        lodash.findIndex = function findIndex(array, predicate, fromIndex) {
+          array = array.slice(fromIndex);
+          var i;
+
+          if (typeof predicate === "function") {
+            for (i = 0; i < array.length; i++) {
+              if (predicate(array[i])) {
+                return i;
+              }
+            }
+          } else if (Array.isArray(predicate)) {
+            for (i = 0; i < array.length; i++) {
+              var key = predicate[0];
+              var vaule = true;
+
+              if (predicate.length > 1) {
+                vaule = predicate[1];
+              }
+
+              if (array[i][key] === vaule) {
+                return i;
+              }
+            }
+          } else {
+            for (i = 0; i < array.length; i++) {
+              if (array[i] === predicate) {
+                return i;
+              }
+            }
+          }
+
+          return -1;
+        };
+
+        lodash.concat = function concat() {
+          var length = arguments.length;
+
+          if (!length) {
+            return [];
+          }
+
+          var array = arguments[0];
+          var index = 1;
+
+          while (index < length) {
+            array = array.concat(arguments[index]);
+            index++;
+          }
+
+          return array;
+        };
+
+        lodash.isNumber = function isNumber(value) {
+          return typeof value === 'number';
+        };
+
+        lodash.indexOf = function indexOf(array, value, fromIndex) {
+          array = array.slice(fromIndex);
+          return array.indexOf(value);
+        };
+
+        lodash.join = function join(array, separator) {
+          if (array === null) return '';
+          var result = '';
+          array.forEach(function (item) {
+            result += item + separator;
+          });
+          return result.substr(0, result.length - 1);
+        };
+
+        lodash.split = function split(str, separator, limit) {
+          return str.split(separator, limit);
+        };
+
+        lodash.max = function max(array) {
+          if (array && array.length) {
+            var result;
+
+            for (var i = 0; i < array.length; i++) {
+              if (i === 0) {
+                result = array[0];
+              } else if (result < array[i]) {
+                result = array[i];
+              }
+            }
+
+            return result;
+          }
+
+          return undefined;
+        };
+
+        lodash.drop = function drop(array, n) {
+          var length = array === null ? 0 : array.length;
+
+          if (!length) {
+            return [];
+          }
+
+          return array.slice(n);
+        };
+
+        lodash.flattenDeep = function flattenDeep(arr) {
+          return arr.reduce(function (prev, cur) {
+            return prev.concat(
+            /*Array.isArray(cur) ? this.flattenDeep(cur) :*/
+            cur);
+          });
+        };
+
+        lodash.uniq = function uniq(array) {
+          var result = [];
+          array.forEach(function (item) {
+            if (result.indexOf(item) === -1) {
+              result.push(item);
+            }
+          });
+          return result;
+        };
+
+        lodash.isNaN = function isNaN(value) {
+          // An `NaN` primitive is the only value that is not equal to itself.
+          // Perform the `toStringTag` check first to avoid errors with some
+          // ActiveX objects in IE.
+          return this.isNumber(value) && value !== +value;
+        };
+
+        lodash.chunk = function chunk(array, size) {
+          var length = array === null ? 0 : array.length;
+
+          if (!length || size < 1) {
+            return [];
+          }
+
+          var result = [];
+
+          while (array.length > size) {
+            result.push(array.slice(0, size));
+            array = array.slice(size);
+          }
+
+          result.push(array);
+          return result;
+        };
+
+        lodash.toFinite = function toFinite(value) {
+          var INFINITY = 1 / 0;
+          var MAX_INTEGER = 1.7976931348623157e+308;
+
+          if (!value) {
+            return value === 0 ? value : 0;
+          }
+
+          value = Number(value);
+
+          if (value === INFINITY || value === -INFINITY) {
+            var sign = value < 0 ? -1 : 1;
+            return sign * MAX_INTEGER;
+          }
+
+          return value === value ? value : 0;
+        };
+
+        lodash.baseRange = function baseRange(start, end, step, fromRight) {
+          var nativeMax = Math.max;
+          var nativeCeil = Math.ceil;
+          var index = -1,
+              length = nativeMax(nativeCeil((end - start) / (step || 1)), 0),
+              result = Array(length);
+
+          while (length--) {
+            result[fromRight ? length : ++index] = start;
+            start += step;
+          }
+
+          return result;
+        };
+
+        lodash.isObject = function isObject(value) {
+          var type = typeof value;
+          return value !== null && (type === 'object' || type === 'function');
+        };
+
+        lodash.isLength = function isLength(value) {
+          return typeof value === 'number' && value > -1 && value % 1 === 0 && value <= lodash.MAX_SAFE_INTEGER;
+        };
+
+        lodash.isArrayLike = function isArrayLike(value) {
+          return value !== null && this.isLength(value.length)
+          /*&& !isFunction(value)*/
+          ;
+        };
+
+        lodash.eq = function eq(value, other) {
+          return value === other || value !== value && other !== other;
+        };
+
+        lodash.isIndex = function isIndex(value, length) {
+          var type = typeof value;
+          length = length === null ? lodash.MAX_SAFE_INTEGER : length;
+          var reIsUint = /^(?:0|[1-9]\d*)$/;
+          return !!length && (type === 'number' || type !== 'symbol' && reIsUint.test(value)) && value > -1 && value % 1 === 0 && value < length;
+        };
+
+        lodash.isIterateeCall = function isIterateeCall(value, index, object) {
+          if (!this.isObject(object)) {
+            return false;
+          }
+
+          var type = typeof index;
+
+          if (type === 'number' ? this.isArrayLike(object) && this.isIndex(index, object.length) : type === 'string' && index in object) {
+            return this.eq(object[index], value);
+          }
+
+          return false;
+        };
+
+        lodash.createRange = function createRange(fromRight) {
+          var _this = this;
+
+          return function (start, end, step) {
+            if (step && typeof step !== 'number' && _this.isIterateeCall(start, end, step)) {
+              end = step = undefined;
+            } // Ensure the sign of `-0` is preserved.
+
+
+            start = _this.toFinite(start);
+
+            if (end === undefined) {
+              end = start;
+              start = 0;
+            } else {
+              end = _this.toFinite(end);
+            }
+
+            step = step === undefined ? start < end ? 1 : -1 : _this.toFinite(step);
+            return _this.baseRange(start, end, step, fromRight);
+          }.bind(this);
+        };
+
+        lodash.maxBy = function maxBy(array, predicate) {
+          if (array && array.length) {
+            var result = -1;
+            var objResult = -1;
+
+            for (var i = 0; i < array.length; i++) {
+              if (i === 0) {
+                result = predicate(array[0]);
+                objResult = array[0];
+              } else if (result < array[i]) {
+                result = array[i];
+                objResult = array[i];
+              }
+            }
+
+            return objResult;
+          }
+
+          return undefined;
+        };
+
+        lodash.minBy = function minBy(array, predicate) {
+          if (array && array.length) {
+            var result = -1;
+            var objResult = -1;
+
+            for (var i = 0; i < array.length; i++) {
+              if (i === 0) {
+                result = predicate(array[0]);
+                objResult = array[0];
+              } else if (result > array[i]) {
+                result = predicate(array[i]);
+                objResult = array[i];
+              }
+            }
+
+            return objResult;
+          }
+
+          return undefined;
+        };
+
+        lodash.sumBy = function sumBy(collection, predicate) {
+          var sum = 0;
+
+          for (var _key3 in collection) {
+            sum += predicate(collection[_key3]);
+          }
+
+          return sum;
+        };
+
+        lodash.countBy = function countBy(collection) {
+          var objRet = {};
+
+          for (var _key4 in collection) {
+            var _value = collection[_key4];
+
+            if (objRet.hasOwnProperty(_value)) {
+              objRet[_value] += 1;
+            } else {
+              objRet[_value] = 1;
+            }
+          }
+
+          return objRet;
+        };
+
+        return lodash;
+      }(), _defineProperty(_class2, "MAX_SAFE_INTEGER", 9007199254740991), _temp)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/GameManager.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
+  'use strict';
+
+  var _defineProperty, cclegacy, _decorator;
+
+  return {
+    setters: [function (module) {
+      _defineProperty = module.defineProperty;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+    }],
+    execute: function () {
+      var _dec, _class, _temp;
+
+      cclegacy._RF.push({}, "c73dePapjJAnLg+9aXUBSrj", "GameManager", undefined);
+
+      var ccclass = _decorator.ccclass;
+      var GameManager = exports('GameManager', (_dec = ccclass('GameManager'), _dec(_class = (_temp = /*#__PURE__*/function () {
+        function GameManager() {
+          _defineProperty(this, "initInfo", {
+            "players": [{
+              "bot": false,
+              "host": true,
+              "name": "Player1",
+              "profilePicUrl": "https://i.picsum.photos/id/177/200/200.jpg?hmac=785Vry8HsdS9dQ7mFYbwV8bR2tWVtzJWWl9YLp6L0n8",
+              "userId": "mx-user-1"
+            }]
+          });
+
+          _defineProperty(this, "userInfo", {
+            "userId": "mx-user-2",
+            "gameId": "86a01a92a84646e4ad33252f19b39385",
+            "roomId": "7d1b376b-0eee-4d53-bd91-3cda5de62b43-1625715627668",
+            "highestScore": 90,
+            "lastLevel": 0,
+            "gameMode": "score",
+            "isFirstOpen": true,
+            "roomType": "public/private",
+            balance: 100,
+            micEnabled: true
+          });
+        }
+
+        var _proto = GameManager.prototype;
+
+        _proto.setData = function setData(initInfo) {};
+
+        _proto.onGameInit = function onGameInit() {};
+
+        _proto.onGameOver = function onGameOver() {};
+
+        _proto.onGameStart = function onGameStart() {};
+
+        _proto.onError = function onError() {};
+
+        return GameManager;
+      }(), _temp)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/clientEvent.ts", ['./_rollupPluginModLoBabelHelpers.js', 'cc', './oneToMultiListener.ts'], function (exports) {
+  'use strict';
+
+  var _defineProperty, _inheritsLoose, cclegacy, _decorator, oneToMultiListener;
+
+  return {
+    setters: [function (module) {
+      _defineProperty = module.defineProperty;
+      _inheritsLoose = module.inheritsLoose;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+    }, function (module) {
+      oneToMultiListener = module.oneToMultiListener;
+    }],
+    execute: function () {
+      var _dec, _class, _class2, _temp;
+
+      cclegacy._RF.push({}, "e0d8biI9TpEO6Z8pVTWWXiY", "clientEvent", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var clientEvent = exports('clientEvent', (_dec = ccclass("clientEvent"), _dec(_class = (_temp = _class2 = /*#__PURE__*/function (_oneToMultiListener) {
+        _inheritsLoose(clientEvent, _oneToMultiListener);
+
+        function clientEvent() {
+          return _oneToMultiListener.apply(this, arguments) || this;
+        }
+
+        return clientEvent;
+      }(oneToMultiListener), _defineProperty(_class2, "handlers", {}), _temp)) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/GameConfig.ts", ['cc', './mxManager.ts'], function (exports) {
+  'use strict';
+
+  var cclegacy, MxManager;
   return {
     setters: [function (module) {
       cclegacy = module.cclegacy;
+    }, function (module) {
+      MxManager = module.MxManager;
     }],
     execute: function () {
       cclegacy._RF.push({}, "e823dOXK0JI6raju8IgRB5T", "GameConfig", undefined);
 
       var GameConfig = exports('GameConfig', {
+        "network": {
+          "dataPerSec": 10
+        },
+        "serverInfo": {
+          "resultEndPoint": {
+            "dev": "https://mxgamesapi.dev.mxplay.com/v1/game/result",
+            "prod": "https://mxgamesapi.mxplay.com/v1/game/result"
+          },
+          "serverUrlEndPoint": {
+            "dev": "wss://zatsvu.colyseus.in/",
+            "prod": "wss://iy5aen.colyseus.in/"
+          },
+          "isProd": false
+        },
+        "gameStartTime": 30,
         "gameplay": {
           "levels": [{
-            "noOfBotsInGame": 6,
+            "noOfBotsInGame": 1,
             "botsProbabilty": {
-              "easy": 0.8,
-              "medium": 0.1,
-              "hard": 0.1
+              "easy": 1,
+              "medium": 0,
+              "hard": 0
+            },
+            "time": 300,
+            "map": {
+              "currentMap": "triangle"
+            },
+            "powerUp": {
+              "totalSpawn": 0.5,
+              "initialiseDuration": 5,
+              "spawnDuration": 5,
+              "spawnProbability": {
+                "PoisionSize": 20,
+                "PoisionSpeed": 20,
+                "GainSpeed": 30,
+                "Sheild": 30
+              }
             }
           }, {
             "noOfBotsInGame": 8,
@@ -8783,16 +16555,49 @@ System.register("chunks:///_virtual/GameConfig.ts", ['cc'], function (exports) {
               "easy": 0.4,
               "medium": 0.4,
               "hard": 0.2
+            },
+            "time": 300,
+            "map": {
+              "currentMap": "triangle"
+            },
+            "powerUp": {
+              "totalSpawn": 0.5,
+              "initialiseDuration": 5,
+              "spawnDuration": 5,
+              "spawnProbability": {
+                "PoisionSize": 20,
+                "PoisionSpeed": 20,
+                "GainSpeed": 30,
+                "Sheild": 30
+              }
             }
           }],
           "default": {
-            "noOfBotsInGame": 10,
+            "noOfBotsInGame": 1,
             "botsProbabilty": {
-              "easy": 0.2,
-              "medium": 0.4,
-              "hard": 0.4
+              "easy": 1,
+              "medium": 0,
+              "hard": 0
+            },
+            "time": 100,
+            "map": {
+              "currentMap": "triangle"
+            },
+            "powerUp": {
+              "totalSpawn": 0.5,
+              "initialiseDuration": 5,
+              "spawnDuration": 5,
+              "spawnProbability": {
+                "PoisionSize": 20,
+                "PoisionSpeed": 20,
+                "GainSpeed": 20,
+                "Sheild": 40
+              }
             }
           }
+        },
+        "purchases": {
+          "accessories": 1
         },
         "player": {
           "initialSize": 0.5,
@@ -8800,77 +16605,566 @@ System.register("chunks:///_virtual/GameConfig.ts", ['cc'], function (exports) {
           "playerStartSpeed": 6,
           "playerEndSpeed": 5
         },
+        "debug": {
+          "camera": {
+            "angleChange": false,
+            "isdebugEnabled": false,
+            "Yangle": -35,
+            "Xangle": 0,
+            "Zangle": 0,
+            "YAxis": 15,
+            "ZAxis": 15,
+            "XAxis": 0
+          },
+          "playerPos": 0,
+          "mapList": ["triangle", "circular", "infinite", "star", "square"],
+          "mapDefault": "isRandom"
+        },
         "bot": {
           "initialSize": 0.5,
           "botMaxSize": 2,
           "botConfig": {
             "easy": {
+              "criticalMass": 1,
               "botStartSpeed": 6,
               "botEndSpeed": 5
             },
             "medium": {
+              "criticalMass": 1,
               "botStartSpeed": 8,
               "botEndSpeed": 5
             },
             "hard": {
+              "criticalMass": 1,
               "botStartSpeed": 8,
               "botEndSpeed": 7
             }
           }
         },
+        "commonData": {
+          "deathPercent": 50,
+          "deathScore": 10,
+          "bumpTime": 0.5,
+          "bumpSizeDecreasePercentage": 10
+        },
+        "obstacles": {
+          "nonMovable": {
+            "sizeDecreasePercent": 2
+          }
+        },
         "powerup": {
-          "Sushi": {
-            "earlySpawn": 0.5,
-            "gain": 0.2,
-            "life": {
-              "min": 5,
-              "max": 10
-            },
-            "size": 1,
-            "rotation": 1,
-            "spawnRate": 5,
-            "totalSpawnInFeild": 0.5
-          },
           "GummyBear": {
-            "earlySpawn": 0.5,
-            "gain": 0.2,
-            "life": {
-              "min": 5,
-              "max": 10
-            },
+            "gainPercentage": 0.2,
+            "score": 10,
+            "size": 1
+          },
+          "PoisionSize": {
+            "lossPercentage": 0.2,
+            "score": -10,
+            "size": 1
+          },
+          "PoisionSpeed": {
+            "lossSpeedPercentage": 0.2,
+            "score": -10,
             "size": 1,
-            "rotation": 1,
-            "spawnRate": 5,
-            "totalSpawnInFeild": 0.5
+            "duration": 10
+          },
+          "GainSpeed": {
+            "increaseSpeedPercentage": 0.5,
+            "score": 10,
+            "size": 1,
+            "duration": 10
+          },
+          "Sheild": {
+            "score": 10,
+            "duration": 10
           }
         }
       });
+      MxManager.instance.init();
+      var latestGameConfig = MxManager.instance.onGameInit();
 
-      if (typeof window['gameManager'] !== 'undefined') {
-        try {
-          var gameSettingString = window['gameManager'].getGameSettings();
-          var config = JSON.parse(gameSettingString);
-          GameConfig = exports('GameConfig', config);
-          console.log("from game " + JSON.stringify(config));
-        } catch (e) {
-          GameConfig = exports('GameConfig', GameConfig);
-          console.log("from catch " + JSON.stringify(GameConfig));
-        }
-      } else {
-        GameConfig = exports('GameConfig', GameConfig);
-        console.log("from else " + JSON.stringify(GameConfig));
+      if (latestGameConfig != null && !(Object.keys(latestGameConfig).length === 0 && latestGameConfig.constructor === Object)) {
+        GameConfig = exports('GameConfig', latestGameConfig);
       }
+
+      console.log("CurrentGameConfig ----   " + JSON.stringify(GameConfig));
 
       cclegacy._RF.pop();
     }
   };
 });
 
-System.register("chunks:///_virtual/main", ['./Sumo.ts', './MenuController.ts', './Gummy.ts', './Config.ts', './BotController.ts', './GameConfig.ts', './PowerUpController.ts', './GameController.ts', './GameUIController.ts', './Bot.ts', './MiloManager.ts', './commonFun.ts', './Player.ts', './colyseus.mjs_cjs=&original=.js', './SocketConnection.ts', './Menu.ts'], function () {
+System.register("chunks:///_virtual/util.ts", ['cc'], function (exports) {
+  'use strict';
+
+  var cclegacy, _decorator;
+
+  return {
+    setters: [function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+    }],
+    execute: function () {
+      var _dec, _class;
+
+      cclegacy._RF.push({}, "f38ecZtzoND0r955vpu2xww", "util", undefined);
+
+      var ccclass = _decorator.ccclass,
+          property = _decorator.property;
+      var util = exports('util', (_dec = ccclass("util"), _dec(_class = /*#__PURE__*/function () {
+        function util() {}
+        /**
+         * !#zh 拷贝object。
+         */
+
+
+        util.clone = function clone(sObj) {
+          if (sObj === null || typeof sObj !== "object") {
+            return sObj;
+          }
+
+          var s = {};
+
+          if (sObj.constructor === Array) {
+            s = [];
+          }
+
+          for (var i in sObj) {
+            if (sObj.hasOwnProperty(i)) {
+              s[i] = this.clone(sObj[i]);
+            }
+          }
+
+          return s;
+        }
+        /**
+         * 将object转化为数组。
+         */
+        ;
+
+        util.objectToArray = function objectToArray(srcObj) {
+          var resultArr = []; // to array
+
+          for (var key in srcObj) {
+            if (!srcObj.hasOwnProperty(key)) {
+              continue;
+            }
+
+            resultArr.push(srcObj[key]);
+          }
+
+          return resultArr;
+        }
+        /**
+         * !#zh 将数组转化为object。
+         */
+        ;
+
+        util.arrayToObject = function arrayToObject(srcObj, objectKey) {
+          var resultObj = {}; // to object
+
+          for (var key in srcObj) {
+            if (!srcObj.hasOwnProperty(key) || !srcObj[key][objectKey]) {
+              continue;
+            }
+
+            resultObj[srcObj[key][objectKey]] = srcObj[key];
+          }
+
+          return resultObj;
+        } // 根据权重,计算随机内容
+        ;
+
+        util.getWeightRandIndex = function getWeightRandIndex(weightArr, totalWeight) {
+          var randWeight = Math.floor(Math.random() * totalWeight);
+          var sum = 0;
+          var weightIndex = 0;
+
+          for (weightIndex; weightIndex < weightArr.length; weightIndex++) {
+            sum += weightArr[weightIndex];
+
+            if (randWeight < sum) {
+              break;
+            }
+          }
+
+          return weightIndex;
+        }
+        /**
+         * 从n个数中获取m个随机数
+         * @param {Number} n   总数
+         * @param {Number} m    获取数
+         * @returns {Array} array   获取数列
+         */
+        ;
+
+        util.getRandomNFromM = function getRandomNFromM(n, m) {
+          var array = [];
+          var intRd = 0;
+          var count = 0;
+
+          while (count < m) {
+            if (count >= n + 1) {
+              break;
+            }
+
+            intRd = this.getRandomInt(0, n);
+            var flag = 0;
+
+            for (var i = 0; i < count; i++) {
+              if (array[i] === intRd) {
+                flag = 1;
+                break;
+              }
+            }
+
+            if (flag === 0) {
+              array[count] = intRd;
+              count++;
+            }
+          }
+
+          return array;
+        };
+
+        util.getRandomInt = function getRandomInt(min, max) {
+          var r = Math.random();
+          var rr = r * (max - min + 1) + min;
+          return Math.floor(rr);
+        };
+
+        util.getStringLength = function getStringLength(render) {
+          var strArr = render;
+          var len = 0;
+
+          for (var i = 0, n = strArr.length; i < n; i++) {
+            var val = strArr.charCodeAt(i);
+
+            if (val <= 255) {
+              len = len + 1;
+            } else {
+              len = len + 2;
+            }
+          }
+
+          return Math.ceil(len / 2);
+        }
+        /**
+         * 判断传入的参数是否为空的Object。数组或undefined会返回false
+         * @param obj
+         */
+        ;
+
+        util.isEmptyObject = function isEmptyObject(obj) {
+          var result = true;
+
+          if (obj && obj.constructor === Object) {
+            for (var key in obj) {
+              if (obj.hasOwnProperty(key)) {
+                result = false;
+                break;
+              }
+            }
+          } else {
+            result = false;
+          }
+
+          return result;
+        };
+
+        util.formatNum = function formatNum(num) {
+          // 0 和负数均返回 NaN。特殊处理。
+          if (num <= 0) {
+            return '0';
+          }
+
+          var k = 1000;
+          var sizes = ['', '', 'K', 'M', 'B'];
+          var i = Math.round(Math.log(num) / Math.log(k));
+          return parseInt((num / Math.pow(k, i - 1 < 0 ? 0 : i - 1)).toString(), 10) + sizes[i];
+        }
+        /**
+         * 判断是否是新的一天
+         * @param {Object|Number} dateValue 时间对象 todo MessageCenter 与 pve 相关的时间存储建议改为 Date 类型
+         * @returns {boolean}
+         */
+        ;
+
+        util.isNewDay = function isNewDay(dateValue) {
+          // todo：是否需要判断时区？
+          var oldDate = new Date(dateValue);
+          var curDate = new Date();
+          var oldYear = oldDate.getFullYear();
+          var oldMonth = oldDate.getMonth();
+          var oldDay = oldDate.getDate();
+          var curYear = curDate.getFullYear();
+          var curMonth = curDate.getMonth();
+          var curDay = curDate.getDate();
+
+          if (curYear > oldYear) {
+            return true;
+          } else {
+            if (curMonth > oldMonth) {
+              return true;
+            } else {
+              if (curDay > oldDay) {
+                return true;
+              }
+            }
+          }
+
+          return false;
+        };
+
+        util.getPropertyCount = function getPropertyCount(o) {
+          var n,
+              count = 0;
+
+          for (n in o) {
+            if (o.hasOwnProperty(n)) {
+              count++;
+            }
+          }
+
+          return count;
+        }
+        /**
+         * 返回一个差异化数组（将array中diff里的值去掉）
+         * @param array
+         * @param diff
+         */
+        ;
+
+        util.difference = function difference(array, diff) {
+          var result = [];
+
+          if (array.constructor !== Array || diff.constructor !== Array) {
+            return result;
+          }
+
+          var length = array.length;
+
+          for (var i = 0; i < length; i++) {
+            if (diff.indexOf(array[i]) === -1) {
+              result.push(array[i]);
+            }
+          }
+
+          return result;
+        } // 模拟传msg的uuid
+        ;
+
+        util.simulationUUID = function simulationUUID() {
+          function s4() {
+            return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+          }
+
+          return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+        };
+
+        util.trim = function trim(str) {
+          return str.replace(/(^\s*)|(\s*$)/g, "");
+        }
+        /**
+         * 判断当前时间是否在有效时间内
+         * @param {String|Number} start 起始时间。带有时区信息
+         * @param {String|Number} end 结束时间。带有时区信息
+         */
+        ;
+
+        util.isNowValid = function isNowValid(start, end) {
+          var startTime = new Date(start);
+          var endTime = new Date(end);
+          var result = false;
+
+          if (startTime.getDate() + '' !== 'NaN' && endTime.getDate() + '' !== 'NaN') {
+            var curDate = new Date();
+            result = curDate < endTime && curDate > startTime;
+          }
+
+          return result;
+        };
+
+        util.getDeltaDays = function getDeltaDays(start, end) {
+          var startData = new Date(start);
+          var endData = new Date(end);
+          var startYear = startData.getFullYear();
+          var startMonth = startData.getMonth() + 1;
+          var startDate = startData.getDate();
+          var endYear = endData.getFullYear();
+          var endMonth = endData.getMonth() + 1;
+          var endDate = endData.getDate();
+          start = new Date(startYear + '/' + startMonth + '/' + startDate + ' GMT+0800').getTime();
+          end = new Date(endYear + '/' + endMonth + '/' + endDate + ' GMT+0800').getTime();
+          var deltaTime = end - start;
+          return Math.floor(deltaTime / (24 * 60 * 60 * 1000));
+        };
+
+        util.getMin = function getMin(array) {
+          var result = 0;
+
+          if (array.constructor === Array) {
+            var length = array.length;
+
+            for (var i = 0; i < length; i++) {
+              if (i === 0) {
+                result = Number(array[0]);
+              } else {
+                result = result > Number(array[i]) ? Number(array[i]) : result;
+              }
+            }
+          }
+
+          return result;
+        };
+
+        util.formatTwoDigits = function formatTwoDigits(time) {
+          return (Array(2).join('0') + time).slice(-2);
+        };
+
+        util.formatDate = function formatDate(date, fmt) {
+          var o = {
+            "M+": date.getMonth() + 1,
+            //月份
+            "d+": date.getDate(),
+            //日
+            "h+": date.getHours(),
+            //小时
+            "m+": date.getMinutes(),
+            //分
+            "s+": date.getSeconds(),
+            //秒
+            "q+": Math.floor((date.getMonth() + 3) / 3),
+            //季度
+            "S": date.getMilliseconds() //毫秒
+
+          };
+          if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (date.getFullYear() + "").substr(4 - RegExp.$1.length));
+
+          for (var k in o) {
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, RegExp.$1.length === 1 ? "" + o[k] : ("00" + o[k]).substr(("" + o[k]).length));
+          }
+
+          return fmt;
+        }
+        /**
+         * 获取格式化后的日期（不含小时分秒）
+         */
+        ;
+
+        util.getDay = function getDay() {
+          var date = new Date();
+          return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+        }
+        /**
+         * 格式化钱数，超过10000 转换位 10K   10000K 转换为 10M
+         */
+        ;
+
+        util.formatMoney = function formatMoney(money) {
+          var arrUnit = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y', 'B', 'N', 'D'];
+          var strValue = '';
+
+          for (var idx = 0; idx < arrUnit.length; idx++) {
+            if (money >= 10000) {
+              money /= 1000;
+            } else {
+              strValue = Math.floor(money) + arrUnit[idx];
+              break;
+            }
+          }
+
+          if (strValue === '') {
+            strValue = Math.floor(money) + 'U'; //超过最大值就加个U
+          }
+
+          return strValue;
+        }
+        /**
+         * 根据剩余秒数格式化剩余时间 返回 HH:MM:SS
+         * @param {Number} leftSec
+         */
+        ;
+
+        util.formatTimeForSecond = function formatTimeForSecond(leftSec) {
+          var timeStr = '';
+          var sec = leftSec % 60;
+          var leftMin = Math.floor(leftSec / 60);
+          leftMin = leftMin < 0 ? 0 : leftMin;
+          var hour = Math.floor(leftMin / 60);
+          var min = leftMin % 60;
+
+          if (hour > 0) {
+            timeStr += hour > 9 ? hour.toString() : '0' + hour;
+            timeStr += ':';
+          }
+
+          timeStr += min > 9 ? min.toString() : '0' + min;
+          timeStr += ':';
+          timeStr += sec > 9 ? sec.toString() : '0' + sec;
+          return timeStr;
+        }
+        /**
+         *  根据剩余毫秒数格式化剩余时间 返回 HH:MM:SS
+         *
+         * @param {Number} ms
+         */
+        ;
+
+        util.formatTimeForMillisecond = function formatTimeForMillisecond(ms) {
+          var second = Math.floor(ms / 1000 % 60);
+          var minute = Math.floor(ms / 1000 / 60 % 60);
+          var hour = Math.floor(ms / 1000 / 60 / 60);
+          var strSecond = second < 10 ? '0' + second : second;
+          var strMinute = minute < 10 ? '0' + minute : minute;
+          var strHour = hour < 10 ? '0' + hour : hour;
+          return strSecond + ":" + strMinute + ":" + strHour;
+        }
+        /**
+         * TODO 需要将pako进行引入，目前已经去除了压缩算法的需要，如需要使用需引入库文件
+         * 将字符串进行压缩
+         * @param {String} str
+         */
+        ;
+
+        util.zip = function zip(str) {
+          var binaryString = pako.gzip(encodeURIComponent(str), {
+            to: 'string'
+          }); // @ts-ignore
+
+          return this.base64encode(binaryString);
+        };
+
+        util.rand = function rand(arr) {
+          var arrClone = this.clone(arr); // 首先从最大的数开始遍历，之后递减
+
+          for (var i = arrClone.length - 1; i >= 0; i--) {
+            // 随机索引值randomIndex是从0-arrClone.length中随机抽取的
+            var randomIndex = Math.floor(Math.random() * (i + 1)); // 下面三句相当于把从数组中随机抽取到的值与当前遍历的值互换位置
+
+            var itemIndex = arrClone[randomIndex];
+            arrClone[randomIndex] = arrClone[i];
+            arrClone[i] = itemIndex;
+          } // 每一次的遍历都相当于把从数组中随机抽取（不重复）的一个元素放到数组的最后面（索引顺序为：len-1,len-2,len-3......0）
+
+
+          return arrClone;
+        };
+
+        return util;
+      }()) || _class));
+
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/main", ['./mxManager.ts', './constant.ts', './resourceUtil.ts', './audioManager.ts', './GameRoot.ts', './poolManager.ts', './Sumo.ts', './colyseus.mjs_cjs=&original=.js', './GameConfig.ts', './EventManager.ts', './MiloManager.ts', './SocketConnection.ts', './InitSceneManager.ts', './MenuController.ts', './Gummy.ts', './foodSkins.ts', './csvManager.ts', './configuration.ts', './BotController.ts', './Helper.ts', './PlayerMovement.ts', './commonFun.ts', './PowerUpController.ts', './GameController.ts', './characterSkins.ts', './gameOver.ts', './GameUIController.ts', './skin.ts', './oneToMultiListener.ts', './Bot.ts', './leaderBoardBanner.ts', './CharacterHud.ts', './eventListener.ts', './Player.ts', './localConfig.ts', './Menu.ts', './shopMenu.ts', './lodash.ts', './GameManager.ts', './clientEvent.ts', './util.ts'], function () {
   'use strict';
 
   return {
-    setters: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+    setters: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
     execute: function () {}
   };
 });

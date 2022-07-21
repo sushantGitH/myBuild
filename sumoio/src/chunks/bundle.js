@@ -8,6 +8,7 @@ System.register("chunks:///_virtual/_rollupPluginModLoBabelHelpers.js", [], func
         applyDecoratedDescriptor: _applyDecoratedDescriptor,
         assertThisInitialized: _assertThisInitialized,
         asyncToGenerator: _asyncToGenerator,
+        createClass: _createClass,
         defineProperty: _defineProperty,
         inheritsLoose: _inheritsLoose,
         initializerDefineProperty: _initializerDefineProperty,
@@ -48,6 +49,22 @@ System.register("chunks:///_virtual/_rollupPluginModLoBabelHelpers.js", [], func
             _next(undefined);
           });
         };
+      }
+
+      function _defineProperties(target, props) {
+        for (var i = 0; i < props.length; i++) {
+          var descriptor = props[i];
+          descriptor.enumerable = descriptor.enumerable || false;
+          descriptor.configurable = true;
+          if ("value" in descriptor) descriptor.writable = true;
+          Object.defineProperty(target, descriptor.key, descriptor);
+        }
+      }
+
+      function _createClass(Constructor, protoProps, staticProps) {
+        if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+        if (staticProps) _defineProperties(Constructor, staticProps);
+        return Constructor;
       }
 
       function _defineProperty(obj, key, value) {

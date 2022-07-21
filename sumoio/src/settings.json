@@ -10,7 +10,7 @@
     "bundleVers": {},
     "subpackages": [],
     "remoteBundles": [],
-    "hasResourcesBundle": false,
+    "hasResourcesBundle": true,
     "hasStartSceneBundle": false,
     "launchScene": "db://assets/MenuScene.scene",
     "jsList": [],
@@ -44,10 +44,30 @@
         "fixedTimeStep": 0.0166667,
         "maxSubSteps": 1,
         "defaultMaterial": {
-            "friction": 0.6,
+            "friction": 0.5,
             "rollingFriction": 0,
             "spinningFriction": 0,
             "restitution": 0.1
+        },
+        "collisionGroups": [
+            {
+                "index": 1,
+                "name": "player"
+            },
+            {
+                "index": 2,
+                "name": "powerup"
+            },
+            {
+                "index": 3,
+                "name": "nonCollidingPlayer"
+            }
+        ],
+        "collisionMatrix": {
+            "0": 15,
+            "1": 15,
+            "2": 7,
+            "3": 11
         }
     },
     "scriptPackages": [

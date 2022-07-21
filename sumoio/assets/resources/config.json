@@ -1,0 +1,84 @@
+{
+    "importBase": "import",
+    "nativeBase": "native",
+    "name": "resources",
+    "deps": [],
+    "uuids": [
+        "0344d9fe-1e7c-4da2-b526-29589a89e9e7",
+        "06f9dc5b-9118-45c9-9db5-62ac8174453c",
+        "253fb0df-a6bc-4ccb-8130-bcec4a8fc74b",
+        "4685bb20-309f-4e4a-8a2e-bc40fba50e6a",
+        "48429d5b-8589-43be-9315-fb708822d7a7",
+        "6746103b-3398-47f3-90ea-382a091388e7",
+        "b376e20c-55f8-4616-9c4a-0d1ef5153b3f",
+        "b8a755aa-88d5-44e2-a536-5c5a5f360432",
+        "c07db7b2-e241-4853-9af3-e448dd47861a",
+        "cbe410a1-800b-484a-a68e-1e9bb79f5b97",
+        "cce504d2-b2c3-43b8-ba56-925789d7d9a8",
+        "e82af02a-1a66-4a4b-8465-dd7124dd51d4",
+        "f56cea0d-fbb4-4559-b339-0b0735bb21d6"
+    ],
+    "paths": {
+        "4685bb20-309f-4e4a-8a2e-bc40fba50e6a": [
+            "gamePackage/audio/music/background",
+            "cc.AudioClip"
+        ],
+        "f56cea0d-fbb4-4559-b339-0b0735bb21d6": [
+            "gamePackage/audio/sound/click",
+            "cc.AudioClip"
+        ],
+        "b376e20c-55f8-4616-9c4a-0d1ef5153b3f": [
+            "gamePackage/audio/sound/countDown",
+            "cc.AudioClip"
+        ],
+        "253fb0df-a6bc-4ccb-8130-bcec4a8fc74b": [
+            "gamePackage/audio/sound/foodEat",
+            "cc.AudioClip"
+        ],
+        "06f9dc5b-9118-45c9-9db5-62ac8174453c": [
+            "gamePackage/audio/sound/gainPowerUp",
+            "cc.AudioClip"
+        ],
+        "48429d5b-8589-43be-9315-fb708822d7a7": [
+            "gamePackage/audio/sound/myDeath",
+            "cc.AudioClip"
+        ],
+        "0344d9fe-1e7c-4da2-b526-29589a89e9e7": [
+            "gamePackage/audio/sound/otherDeath",
+            "cc.AudioClip"
+        ],
+        "cce504d2-b2c3-43b8-ba56-925789d7d9a8": [
+            "gamePackage/audio/sound/poisonPowerUp",
+            "cc.AudioClip"
+        ],
+        "cbe410a1-800b-484a-a68e-1e9bb79f5b97": [
+            "gamePackage/audio/sound/push",
+            "cc.AudioClip"
+        ],
+        "e82af02a-1a66-4a4b-8465-dd7124dd51d4": [
+            "gamePackage/audio/sound/sheildPowerUp",
+            "cc.AudioClip"
+        ],
+        "b8a755aa-88d5-44e2-a536-5c5a5f360432": [
+            "gamePackage/audio/sound/slowPowerUp",
+            "cc.AudioClip"
+        ],
+        "c07db7b2-e241-4853-9af3-e448dd47861a": [
+            "gamePackage/audio/sound/speedPowerUp",
+            "cc.AudioClip"
+        ],
+        "6746103b-3398-47f3-90ea-382a091388e7": [
+            "gamePackage/audio/sound/win",
+            "cc.AudioClip"
+        ]
+    },
+    "scenes": {},
+    "packs": {},
+    "versions": {
+        "import": [],
+        "native": []
+    },
+    "redirect": [],
+    "debug": true,
+    "extensionMap": {}
+}
